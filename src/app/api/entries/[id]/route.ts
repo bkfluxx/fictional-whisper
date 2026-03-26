@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { encryptString, decryptString } from "@/lib/crypto";
 import { getSessionDEK, isDEKResult } from "@/lib/api-helpers";
 import { indexEntry, deleteEntryTokens } from "@/lib/search/hmac-index";
+import { embedEntryText } from "@/lib/ai/embed";
 import type { EntryPayload, DecryptedEntry } from "@/types/entry";
 
 /** GET /api/entries/[id] — fetch and decrypt a single entry */
@@ -86,13 +87,15 @@ export async function PATCH(
     include: { tags: { select: { id: true, name: true } } },
   });
 
-  // Re-index search tokens if body changed
+  // Re-index search tokens and re-embed if body changed
   if (body.body !== undefined) {
+    const plainBody = body.body!;
     setImmediate(async () => {
       await deleteEntryTokens(id);
-      await indexEntry(id, body.body!, process.env.SEARCH_HMAC_SECRET!).catch(
+      await indexEntry(id, plainBody, process.env.SEARCH_HMAC_SECRET!).catch(
         console.error,
       );
+      await embedEntryText(id, plainBody).catch(console.error);
     });
   }
 

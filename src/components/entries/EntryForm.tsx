@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import type { DecryptedEntry, EntryPayload } from "@/types/entry";
 import { getJournalType } from "@/lib/journal-types";
+import AiPanel from "./AiPanel";
 
 const MarkdownEditor = dynamic(
   () => import("@/components/editor/MarkdownEditor"),
@@ -37,6 +38,7 @@ export default function EntryForm({
   const [saveState, setSaveState] = useState<SaveState>(
     initial ? "saved" : "unsaved",
   );
+  const [aiOpen, setAiOpen] = useState(false);
   const entryIdRef = useRef<string | null>(initial?.id ?? null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -109,94 +111,141 @@ export default function EntryForm({
   }, [save, body, title, tags, mood, journalType]);
 
   return (
-    <div className="flex flex-col h-full px-6 py-4 gap-4">
-      {/* Header row */}
-      <div className="flex items-center gap-4">
-        <input
-          type="text"
-          placeholder="Title (optional)"
-          value={title}
-          onChange={(e) => {
-            setTitle(e.target.value);
-            scheduleSave(body, e.target.value, tags, mood, journalType);
-          }}
-          className="flex-1 bg-transparent text-2xl font-semibold text-white placeholder-neutral-600 focus:outline-none"
-        />
-        <span className="text-xs text-neutral-500 shrink-0">
-          {saveState === "saving"
-            ? "Saving…"
-            : saveState === "saved"
-              ? "Saved"
-              : saveState === "error"
-                ? "Error saving"
-                : "Unsaved"}
-        </span>
-      </div>
-
-      {/* Metadata row */}
-      <div className="flex flex-wrap gap-3 text-sm text-neutral-400">
-        <input
-          placeholder="Tags (comma-separated)"
-          value={tags}
-          onChange={(e) => {
-            setTags(e.target.value);
-            scheduleSave(body, title, e.target.value, mood, journalType);
-          }}
-          className="bg-transparent focus:outline-none flex-1 min-w-[120px] placeholder-neutral-600"
-        />
-
-        {availableJournalTypes.length > 0 && (
-          <select
-            value={journalType}
+    <div className="flex h-full">
+      {/* Main editor column */}
+      <div className="flex flex-col flex-1 min-w-0 px-6 py-4 gap-4">
+        {/* Header row */}
+        <div className="flex items-center gap-4">
+          <input
+            type="text"
+            placeholder="Title (optional)"
+            value={title}
             onChange={(e) => {
-              setJournalType(e.target.value);
-              scheduleSave(body, title, tags, mood, e.target.value);
+              setTitle(e.target.value);
+              scheduleSave(body, e.target.value, tags, mood, journalType);
+            }}
+            className="flex-1 bg-transparent text-2xl font-semibold text-white placeholder-neutral-600 focus:outline-none"
+          />
+          <span className="text-xs text-neutral-500 shrink-0">
+            {saveState === "saving"
+              ? "Saving…"
+              : saveState === "saved"
+                ? "Saved"
+                : saveState === "error"
+                  ? "Error saving"
+                  : "Unsaved"}
+          </span>
+          {/* AI panel toggle */}
+          <button
+            onClick={() => setAiOpen((o) => !o)}
+            title="AI assistant"
+            className={`shrink-0 p-1.5 rounded-lg transition-colors ${
+              aiOpen
+                ? "bg-indigo-600 text-white"
+                : "text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800"
+            }`}
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.8}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"
+              />
+            </svg>
+          </button>
+        </div>
+
+        {/* Metadata row */}
+        <div className="flex flex-wrap gap-3 text-sm text-neutral-400">
+          <input
+            placeholder="Tags (comma-separated)"
+            value={tags}
+            onChange={(e) => {
+              setTags(e.target.value);
+              scheduleSave(body, title, e.target.value, mood, journalType);
+            }}
+            className="bg-transparent focus:outline-none flex-1 min-w-[120px] placeholder-neutral-600"
+          />
+
+          {availableJournalTypes.length > 0 && (
+            <select
+              value={journalType}
+              onChange={(e) => {
+                setJournalType(e.target.value);
+                scheduleSave(body, title, tags, mood, e.target.value);
+              }}
+              className="bg-neutral-900 text-neutral-400 text-sm rounded focus:outline-none"
+            >
+              <option value="">Journal type</option>
+              {availableJournalTypes.map((id) => {
+                const type = getJournalType(id);
+                if (!type) return null;
+                return (
+                  <option key={id} value={id}>
+                    {type.emoji} {type.name}
+                  </option>
+                );
+              })}
+            </select>
+          )}
+
+          <select
+            value={mood}
+            onChange={(e) => {
+              setMood(e.target.value);
+              scheduleSave(body, title, tags, e.target.value, journalType);
             }}
             className="bg-neutral-900 text-neutral-400 text-sm rounded focus:outline-none"
           >
-            <option value="">Journal type</option>
-            {availableJournalTypes.map((id) => {
-              const type = getJournalType(id);
-              if (!type) return null;
-              return (
-                <option key={id} value={id}>
-                  {type.emoji} {type.name}
-                </option>
-              );
-            })}
+            <option value="">Mood</option>
+            <option value="joyful">Joyful</option>
+            <option value="content">Content</option>
+            <option value="neutral">Neutral</option>
+            <option value="reflective">Reflective</option>
+            <option value="anxious">Anxious</option>
+            <option value="frustrated">Frustrated</option>
+            <option value="sad">Sad</option>
           </select>
-        )}
+        </div>
 
-        <select
-          value={mood}
-          onChange={(e) => {
-            setMood(e.target.value);
-            scheduleSave(body, title, tags, e.target.value, journalType);
-          }}
-          className="bg-neutral-900 text-neutral-400 text-sm rounded focus:outline-none"
-        >
-          <option value="">Mood</option>
-          <option value="joyful">Joyful</option>
-          <option value="content">Content</option>
-          <option value="neutral">Neutral</option>
-          <option value="reflective">Reflective</option>
-          <option value="anxious">Anxious</option>
-          <option value="frustrated">Frustrated</option>
-          <option value="sad">Sad</option>
-        </select>
+        {/* Editor */}
+        <div className="flex-1 min-h-0">
+          <MarkdownEditor
+            value={body}
+            onChange={(v) => {
+              setBody(v);
+              scheduleSave(v, title, tags, mood, journalType);
+            }}
+            placeholder="Start writing…"
+          />
+        </div>
       </div>
 
-      {/* Editor */}
-      <div className="flex-1 min-h-0">
-        <MarkdownEditor
-          value={body}
-          onChange={(v) => {
-            setBody(v);
-            scheduleSave(v, title, tags, mood, journalType);
-          }}
-          placeholder="Start writing…"
-        />
-      </div>
+      {/* AI sidebar */}
+      {aiOpen && (
+        <aside className="w-72 shrink-0 border-l border-neutral-800 px-4 py-4">
+          <AiPanel
+            entryId={entryIdRef.current}
+            journalType={journalType}
+            currentMood={mood}
+            onApplyMood={(m) => {
+              setMood(m);
+              scheduleSave(body, title, tags, m, journalType);
+            }}
+            onApplyPrompt={(p) => {
+              const newBody = body ? `${body}\n\n${p}\n` : `${p}\n`;
+              setBody(newBody);
+              scheduleSave(newBody, title, tags, mood, journalType);
+            }}
+          />
+        </aside>
+      )}
     </div>
   );
 }

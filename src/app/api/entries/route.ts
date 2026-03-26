@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { encryptString, decryptString } from "@/lib/crypto";
 import { getSessionDEK, isDEKResult } from "@/lib/api-helpers";
 import { indexEntry } from "@/lib/search/hmac-index";
+import { embedEntryText } from "@/lib/ai/embed";
 import type { EntryPayload, EntryStub } from "@/types/entry";
 
 /** GET /api/entries — list entries (stubs, no body) */
@@ -82,10 +83,12 @@ export async function POST(req: NextRequest) {
     include: { tags: { select: { id: true, name: true } } },
   });
 
+  const plainBody = body.body;
   setImmediate(() => {
-    indexEntry(entry.id, body.body, process.env.SEARCH_HMAC_SECRET!).catch(
+    indexEntry(entry.id, plainBody, process.env.SEARCH_HMAC_SECRET!).catch(
       console.error,
     );
+    embedEntryText(entry.id, plainBody).catch(console.error);
   });
 
   return NextResponse.json(

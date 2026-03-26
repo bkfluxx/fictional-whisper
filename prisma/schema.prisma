@@ -43,9 +43,12 @@ model Entry {
   tags        Tag[]         @relation("EntryTags")
   attachments Attachment[]
   tokens      SearchToken[]
-  // pgvector embedding — used in Phase 2. Prisma doesn't understand vector natively,
-  // so it's typed as Unsupported. Leave null until Phase 2 embedding pipeline is built.
-  embedding   Unsupported("vector(1536)")?
+  // AI-generated fields (Phase 2). summary is encrypted; aiMood is a plain slug.
+  summary     String?
+  aiMood      String?
+  // pgvector embedding (nomic-embed-text = 768 dims). Prisma doesn't support vector
+  // natively so it's typed as Unsupported. Populated by the AI embedding pipeline.
+  embedding   Unsupported("vector(768)")?
 
   @@index([entryDate])
   @@index([mood])
