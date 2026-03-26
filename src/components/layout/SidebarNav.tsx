@@ -1,12 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { getJournalType } from "@/lib/journal-types";
 
-const NAV_ITEMS = [
+interface SidebarNavProps {
+  journalTypes: string[];
+}
+
+const MAIN_NAV = [
   {
     href: "/journal",
-    label: "Journal",
+    label: "All entries",
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
         <path strokeLinecap="round" strokeLinejoin="round"
@@ -33,6 +38,9 @@ const NAV_ITEMS = [
       </svg>
     ),
   },
+];
+
+const BOTTOM_NAV = [
   {
     href: "/settings",
     label: "Settings",
@@ -46,32 +54,95 @@ const NAV_ITEMS = [
   },
 ];
 
-export default function SidebarNav() {
+function NavLink({
+  href,
+  label,
+  icon,
+  isActive,
+}: {
+  href: string;
+  label: string;
+  icon: React.ReactNode;
+  isActive: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
+        isActive
+          ? "bg-neutral-800 text-white font-medium"
+          : "text-neutral-400 hover:bg-neutral-800/60 hover:text-neutral-200"
+      }`}
+    >
+      {icon}
+      {label}
+    </Link>
+  );
+}
+
+export default function SidebarNav({ journalTypes }: SidebarNavProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const activeType = searchParams.get("type");
+
+  const resolvedTypes = journalTypes
+    .map((id) => getJournalType(id))
+    .filter(Boolean) as NonNullable<ReturnType<typeof getJournalType>>[];
 
   return (
-    <nav className="flex flex-col gap-0.5">
-      {NAV_ITEMS.map((item) => {
+    <nav className="flex flex-col gap-0.5 flex-1 min-h-0 overflow-y-auto">
+      {/* Main nav */}
+      {MAIN_NAV.map((item) => {
         const isActive =
           item.href === "/journal"
-            ? pathname === "/journal" || (pathname.startsWith("/journal/") && !pathname.startsWith("/journal/new"))
+            ? (pathname === "/journal" ||
+                (pathname.startsWith("/journal/") &&
+                  !pathname.startsWith("/journal/new"))) &&
+              !activeType
             : pathname.startsWith(item.href);
-
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
-              isActive
-                ? "bg-neutral-800 text-white font-medium"
-                : "text-neutral-400 hover:bg-neutral-800/60 hover:text-neutral-200"
-            }`}
-          >
-            {item.icon}
-            {item.label}
-          </Link>
-        );
+        return <NavLink key={item.href} {...item} isActive={isActive} />;
       })}
+
+      {/* Journal type shortcuts */}
+      {resolvedTypes.length > 0 && (
+        <>
+          <div className="px-3 pt-4 pb-1">
+            <span className="text-xs font-semibold text-neutral-600 uppercase tracking-widest">
+              My journals
+            </span>
+          </div>
+          {resolvedTypes.map((type) => {
+            const href = `/journal?type=${type.id}`;
+            const isActive =
+              pathname === "/journal" && activeType === type.id;
+            return (
+              <Link
+                key={type.id}
+                href={href}
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
+                  isActive
+                    ? "bg-neutral-800 text-white font-medium"
+                    : "text-neutral-400 hover:bg-neutral-800/60 hover:text-neutral-200"
+                }`}
+              >
+                <span className="text-base leading-none">{type.emoji}</span>
+                <span className="truncate">{type.name}</span>
+              </Link>
+            );
+          })}
+        </>
+      )}
+
+      {/* Settings — pinned to bottom */}
+      <div className="mt-auto pt-3 border-t border-neutral-800/60">
+        {BOTTOM_NAV.map((item) => (
+          <NavLink
+            key={item.href}
+            {...item}
+            isActive={pathname.startsWith(item.href)}
+          />
+        ))}
+      </div>
     </nav>
   );
 }

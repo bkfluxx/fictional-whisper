@@ -38,6 +38,8 @@ model Entry {
   body        String        // AES-256-GCM encrypted
   // Mood is NOT encrypted — stored as a plain slug so it can be queried/charted
   mood        String?
+  // Journal type slug — e.g. "brain-dump", "gratitude", "goals". Not encrypted.
+  journalType String?
   tags        Tag[]         @relation("EntryTags")
   attachments Attachment[]
   tokens      SearchToken[]
@@ -47,6 +49,7 @@ model Entry {
 
   @@index([entryDate])
   @@index([mood])
+  @@index([journalType])
 }
 
 model Tag {
@@ -81,10 +84,13 @@ model SearchToken {
 }
 
 model AppSettings {
-  id                String    @id @default("singleton")
-  backupPath        String    @default("/app/backups")
-  backupRetainCount Int       @default(30)
-  lastBackupAt      DateTime?
-  lastBackupSuccess Boolean?
+  id                  String    @id @default("singleton")
+  backupPath          String    @default("/app/backups")
+  backupRetainCount   Int       @default(30)
+  lastBackupAt        DateTime?
+  lastBackupSuccess   Boolean?
   lastBackupSizeBytes Int?
+  // Onboarding
+  onboardingDone      Boolean   @default(false)
+  journalTypes        String[]  @default([])
 }

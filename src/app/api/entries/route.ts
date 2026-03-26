@@ -16,12 +16,14 @@ export async function GET(req: NextRequest) {
   const from = searchParams.get("from");
   const to = searchParams.get("to");
   const mood = searchParams.get("mood");
+  const type = searchParams.get("type");
   const sort = searchParams.get("sort") === "updatedAt" ? "updatedAt" : "entryDate";
 
   const entries = await prisma.entry.findMany({
     where: {
       ...(tag ? { tags: { some: { name: tag } } } : {}),
       ...(mood ? { mood } : {}),
+      ...(type ? { journalType: type } : {}),
       ...(from || to
         ? {
             entryDate: {
@@ -42,6 +44,7 @@ export async function GET(req: NextRequest) {
     entryDate: e.entryDate.toISOString(),
     title: e.title ? decryptString(e.title, dek) : null,
     mood: e.mood,
+    journalType: e.journalType,
     tags: e.tags,
   }));
 
@@ -59,7 +62,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "body is required" }, { status: 400 });
   }
 
-  // Extract inline #tags from the markdown body
   const inlineTags = extractInlineTags(body.body);
   const allTags = [...new Set([...(body.tags ?? []), ...inlineTags])];
 
@@ -69,6 +71,7 @@ export async function POST(req: NextRequest) {
       title: body.title ? encryptString(body.title, dek) : null,
       body: encryptString(body.body, dek),
       mood: body.mood ?? null,
+      journalType: body.journalType ?? null,
       tags: {
         connectOrCreate: allTags.map((name) => ({
           where: { name },
@@ -79,7 +82,6 @@ export async function POST(req: NextRequest) {
     include: { tags: { select: { id: true, name: true } } },
   });
 
-  // Index search tokens asynchronously — don't block the response
   setImmediate(() => {
     indexEntry(entry.id, body.body, process.env.SEARCH_HMAC_SECRET!).catch(
       console.error,
@@ -94,6 +96,7 @@ export async function POST(req: NextRequest) {
       entryDate: entry.entryDate.toISOString(),
       title: body.title ?? null,
       mood: entry.mood,
+      journalType: entry.journalType,
       tags: entry.tags,
     },
     { status: 201 },

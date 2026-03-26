@@ -19,10 +19,13 @@ export default async function EditEntryPage({
   const dek = getDEK(session.jti);
   if (!dek) redirect("/login");
 
-  const entry = await prisma.entry.findUnique({
-    where: { id },
-    include: { tags: true },
-  });
+  const [entry, settings] = await Promise.all([
+    prisma.entry.findUnique({ where: { id }, include: { tags: true } }),
+    prisma.appSettings.findUnique({
+      where: { id: "singleton" },
+      select: { journalTypes: true },
+    }),
+  ]);
 
   if (!entry) notFound();
 
@@ -34,12 +37,16 @@ export default async function EditEntryPage({
     title: entry.title ? decryptString(entry.title, dek) : null,
     body: decryptString(entry.body, dek),
     mood: entry.mood,
+    journalType: entry.journalType,
     tags: entry.tags,
   };
 
   return (
     <div className="h-full flex flex-col">
-      <EntryForm initial={initial} />
+      <EntryForm
+        initial={initial}
+        availableJournalTypes={settings?.journalTypes ?? []}
+      />
     </div>
   );
 }

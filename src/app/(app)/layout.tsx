@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import SearchBar from "@/components/search/SearchBar";
 import SidebarNav from "@/components/layout/SidebarNav";
 
@@ -12,6 +13,13 @@ export default async function AppLayout({
   const session = await getServerSession(authOptions);
   if (!session) redirect("/login");
 
+  const settings = await prisma.appSettings.findUnique({
+    where: { id: "singleton" },
+    select: { onboardingDone: true, journalTypes: true },
+  });
+
+  if (!settings?.onboardingDone) redirect("/onboarding");
+
   return (
     <div className="flex h-screen bg-neutral-950 text-neutral-100 overflow-hidden">
       <aside className="w-56 shrink-0 border-r border-neutral-800 flex flex-col py-5 px-3">
@@ -21,7 +29,7 @@ export default async function AppLayout({
           </span>
         </div>
 
-        <SidebarNav />
+        <SidebarNav journalTypes={settings.journalTypes} />
 
         <div className="mt-auto pt-4 border-t border-neutral-800">
           <SearchBar />
