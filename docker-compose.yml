@@ -1,0 +1,48 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.local
+    volumes:
+      - attachments:/app/attachments
+      - backups:/app/backups
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: fictional_whisper
+      POSTGRES_USER: fw
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fw -d fictional_whisper"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # Uncomment to include Ollama (Phase 2)
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   volumes:
+  #     - ollama_models:/root/.ollama
+  #   environment:
+  #     - OLLAMA_NUM_PARALLEL=1
+  #     - OLLAMA_MAX_LOADED_MODELS=1
+  #   restart: unless-stopped
+
+volumes:
+  pgdata:
+  attachments:
+  backups:
+  # ollama_models:

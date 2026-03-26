@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Stores the encrypted DEK (Data Encryption Key).
+// There is exactly one row, inserted by scripts/create-user.ts at first run.
+model KeyStore {
+  id           String   @id @default("singleton")
+  encryptedDek String   // base64( AES-256-GCM( DEK, KEK ) )
+  dekSalt      String   // base64 Argon2id salt used to derive KEK from password
+  // Optional second copy of the DEK wrapped with BACKUP_SECRET, used by the
+  // nightly backup cron (which can't log in interactively).
+  backupDek    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// Single user. Password hash stored here for NextAuth credentials provider.
+model User {
+  id           String   @id @default(cuid())
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Entry {
+  id          String        @id @default(cuid())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  // The date the entry is "about" — can differ from createdAt (e.g. backdated imports)
+  entryDate   DateTime
+  title       String?       // AES-256-GCM encrypted, nullable
+  body        String        // AES-256-GCM encrypted
+  // Mood is NOT encrypted — stored as a plain slug so it can be queried/charted
+  mood        String?
+  tags        Tag[]         @relation("EntryTags")
+  attachments Attachment[]
+  tokens      SearchToken[]
+  // pgvector embedding — used in Phase 2. Prisma doesn't understand vector natively,
+  // so it's typed as Unsupported. Leave null until Phase 2 embedding pipeline is built.
+  embedding   Unsupported("vector(1536)")?
+
+  @@index([entryDate])
+  @@index([mood])
+}
+
+model Tag {
+  id      String  @id @default(cuid())
+  name    String  @unique
+  entries Entry[] @relation("EntryTags")
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  entryId   String
+  entry     Entry    @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  filename  String
+  mimeType  String
+  // AES-256-GCM encrypted file bytes. Max 10 MB enforced in the API route.
+  data      Bytes
+  createdAt DateTime @default(now())
+}
+
+// HMAC-SHA256 search tokens. Each row is HMAC(word, SEARCH_HMAC_SECRET).
+// Allows keyword search without storing plaintext in a searchable column.
+// IMPORTANT: If SEARCH_HMAC_SECRET changes, this table must be fully rebuilt
+// via scripts/reindex-search.ts.
+model SearchToken {
+  id      String @id @default(cuid())
+  entryId String
+  entry   Entry  @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  token   String // hex HMAC
+
+  @@index([token])
+  @@index([entryId])
+}
+
+model AppSettings {
+  id                String    @id @default("singleton")
+  backupPath        String    @default("/app/backups")
+  backupRetainCount Int       @default(30)
+  lastBackupAt      DateTime?
+  lastBackupSuccess Boolean?
+  lastBackupSizeBytes Int?
+}

@@ -1,0 +1,86 @@
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { getDEK } from "@/lib/session/dek-store";
+import { prisma } from "@/lib/prisma";
+import { decryptString } from "@/lib/crypto";
+
+export default async function EntryViewPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const session = await getServerSession(authOptions);
+  if (!session?.jti) redirect("/login");
+
+  const dek = getDEK(session.jti);
+  if (!dek) redirect("/login");
+
+  const entry = await prisma.entry.findUnique({
+    where: { id: params.id },
+    include: { tags: true },
+  });
+
+  if (!entry) notFound();
+
+  const title = entry.title ? decryptString(entry.title, dek) : null;
+  const body = decryptString(entry.body, dek);
+
+  return (
+    <div className="max-w-3xl mx-auto px-6 py-8">
+      <div className="flex items-center justify-between mb-6">
+        <Link href="/journal" className="text-sm text-neutral-400 hover:text-white">
+          ← Journal
+        </Link>
+        <Link
+          href={`/journal/${entry.id}/edit`}
+          className="text-sm text-indigo-400 hover:text-indigo-300"
+        >
+          Edit
+        </Link>
+      </div>
+
+      <h1 className="text-2xl font-semibold text-white mb-1">
+        {title ?? <span className="text-neutral-500 italic">Untitled</span>}
+      </h1>
+      <p className="text-sm text-neutral-500 mb-4">
+        {new Date(entry.entryDate).toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}
+        {entry.mood && ` · ${entry.mood}`}
+      </p>
+
+      {entry.tags.length > 0 && (
+        <div className="flex gap-1 mb-6 flex-wrap">
+          {entry.tags.map((t) => (
+            <span
+              key={t.id}
+              className="text-xs px-2 py-0.5 bg-neutral-800 text-neutral-400 rounded-full"
+            >
+              {t.name}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <div
+        className="prose prose-invert prose-neutral max-w-none text-neutral-200"
+        dangerouslySetInnerHTML={{ __html: renderMarkdown(body) }}
+      />
+    </div>
+  );
+}
+
+// Minimal server-side markdown → HTML (install react-markdown or marked for full support)
+function renderMarkdown(md: string): string {
+  // Placeholder — replace with `marked` or `remark` in a follow-up
+  return md
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\n/g, "<br>");
+}

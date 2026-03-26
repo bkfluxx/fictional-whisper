@@ -1,0 +1,2 @@
+# Nightly backup at 2 AM
+0 2 * * * node /app/scripts/backup-cron.js
