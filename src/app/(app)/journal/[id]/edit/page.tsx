@@ -10,8 +10,9 @@ import type { DecryptedEntry } from "@/types/entry";
 export default async function EditEntryPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
   if (!session?.jti) redirect("/login");
 
@@ -19,7 +20,7 @@ export default async function EditEntryPage({
   if (!dek) redirect("/login");
 
   const entry = await prisma.entry.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { tags: true },
   });
 

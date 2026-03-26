@@ -8,14 +8,15 @@ import type { EntryPayload, DecryptedEntry } from "@/types/entry";
 /** GET /api/entries/[id] — fetch and decrypt a single entry */
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const auth = await getSessionDEK();
   if (!isDEKResult(auth)) return auth;
   const { dek } = auth;
 
   const entry = await prisma.entry.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { tags: { select: { id: true, name: true } } },
   });
 
@@ -40,15 +41,16 @@ export async function GET(
 /** PATCH /api/entries/[id] — update an entry */
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const auth = await getSessionDEK();
   if (!isDEKResult(auth)) return auth;
   const { dek } = auth;
 
   const body: Partial<EntryPayload> = await req.json();
 
-  const existing = await prisma.entry.findUnique({ where: { id: params.id } });
+  const existing = await prisma.entry.findUnique({ where: { id } });
   if (!existing) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
@@ -57,7 +59,7 @@ export async function PATCH(
   const allTags = [...new Set([...(body.tags ?? []), ...inlineTags])];
 
   const updated = await prisma.entry.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       ...(body.entryDate ? { entryDate: new Date(body.entryDate) } : {}),
       ...(body.title !== undefined
@@ -85,12 +87,10 @@ export async function PATCH(
   // Re-index search tokens if body changed
   if (body.body !== undefined) {
     setImmediate(async () => {
-      await deleteEntryTokens(params.id);
-      await indexEntry(
-        params.id,
-        body.body!,
-        process.env.SEARCH_HMAC_SECRET!,
-      ).catch(console.error);
+      await deleteEntryTokens(id);
+      await indexEntry(id, body.body!, process.env.SEARCH_HMAC_SECRET!).catch(
+        console.error,
+      );
     });
   }
 
@@ -99,9 +99,12 @@ export async function PATCH(
     createdAt: updated.createdAt.toISOString(),
     updatedAt: updated.updatedAt.toISOString(),
     entryDate: updated.entryDate.toISOString(),
-    title: body.title !== undefined
-      ? (body.title ?? null)
-      : (existing.title ? "(encrypted)" : null),
+    title:
+      body.title !== undefined
+        ? (body.title ?? null)
+        : existing.title
+          ? "(encrypted)"
+          : null,
     mood: updated.mood,
     tags: updated.tags,
   });
@@ -110,12 +113,13 @@ export async function PATCH(
 /** DELETE /api/entries/[id] */
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const auth = await getSessionDEK();
   if (!isDEKResult(auth)) return auth;
 
-  await prisma.entry.delete({ where: { id: params.id } });
+  await prisma.entry.delete({ where: { id } });
   return new NextResponse(null, { status: 204 });
 }
 

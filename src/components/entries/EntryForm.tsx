@@ -17,7 +17,7 @@ interface EntryFormProps {
 }
 
 export default function EntryForm({ initial }: EntryFormProps) {
-  const router = useRouter();
+  const _router = useRouter(); // reserved for post-save navigation
   const [title, setTitle] = useState(initial?.title ?? "");
   const [body, setBody] = useState(initial?.body ?? "");
   const [tags, setTags] = useState(

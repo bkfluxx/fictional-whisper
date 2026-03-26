@@ -5,7 +5,6 @@ import { prisma } from "@/lib/prisma";
 import { deriveKEK, unwrapDEK } from "@/lib/crypto";
 import { setDEK } from "@/lib/session/dek-store";
 import { isRateLimited, resetRateLimit } from "@/lib/rate-limit";
-import { headers } from "next/headers";
 
 export const authOptions: NextAuthOptions = {
   session: {

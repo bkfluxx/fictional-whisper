@@ -9,8 +9,9 @@ import { decryptString } from "@/lib/crypto";
 export default async function EntryViewPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
   if (!session?.jti) redirect("/login");
 
@@ -18,7 +19,7 @@ export default async function EntryViewPage({
   if (!dek) redirect("/login");
 
   const entry = await prisma.entry.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { tags: true },
   });
 
