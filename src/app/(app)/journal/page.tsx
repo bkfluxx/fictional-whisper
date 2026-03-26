@@ -5,11 +5,12 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getDEK } from "@/lib/session/dek-store";
 import { decryptString } from "@/lib/crypto";
+import { getJournalType } from "@/lib/journal-types";
 
 export default async function JournalPage({
   searchParams,
 }: {
-  searchParams: { tag?: string; from?: string; to?: string };
+  searchParams: Promise<{ tag?: string; from?: string; to?: string; type?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.jti) redirect("/login");
@@ -17,18 +18,18 @@ export default async function JournalPage({
   const dek = getDEK(session.jti);
   if (!dek) redirect("/login");
 
+  const { tag, from, to, type } = await searchParams;
+  const journalTypeDef = type ? getJournalType(type) : null;
+
   const entries = await prisma.entry.findMany({
     where: {
-      ...(searchParams.tag
-        ? { tags: { some: { name: searchParams.tag } } }
-        : {}),
-      ...(searchParams.from || searchParams.to
+      ...(tag ? { tags: { some: { name: tag } } } : {}),
+      ...(type ? { journalType: type } : {}),
+      ...(from || to
         ? {
             entryDate: {
-              ...(searchParams.from
-                ? { gte: new Date(searchParams.from) }
-                : {}),
-              ...(searchParams.to ? { lte: new Date(searchParams.to) } : {}),
+              ...(from ? { gte: new Date(from) } : {}),
+              ...(to ? { lte: new Date(to) } : {}),
             },
           }
         : {}),
@@ -38,12 +39,18 @@ export default async function JournalPage({
     take: 50,
   });
 
+  const heading = journalTypeDef
+    ? `${journalTypeDef.emoji} ${journalTypeDef.name}`
+    : "All entries";
+
+  const newHref = type ? `/journal/new?type=${type}` : "/journal/new";
+
   return (
     <div className="max-w-3xl mx-auto px-6 py-8">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-xl font-semibold text-white">Journal</h1>
+        <h1 className="text-xl font-semibold text-white">{heading}</h1>
         <Link
-          href="/journal/new"
+          href={newHref}
           className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors"
         >
           New entry
