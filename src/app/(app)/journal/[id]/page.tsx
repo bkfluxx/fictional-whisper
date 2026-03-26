@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeSanitize from "rehype-sanitize";
 import { authOptions } from "@/lib/auth";
 import { getDEK } from "@/lib/session/dek-store";
 import { prisma } from "@/lib/prisma";
@@ -31,12 +34,12 @@ export default async function EntryViewPage({
   return (
     <div className="max-w-3xl mx-auto px-6 py-8">
       <div className="flex items-center justify-between mb-6">
-        <Link href="/journal" className="text-sm text-neutral-400 hover:text-white">
+        <Link href="/journal" className="text-sm text-neutral-400 hover:text-white transition-colors">
           ← Journal
         </Link>
         <Link
           href={`/journal/${entry.id}/edit`}
-          className="text-sm text-indigo-400 hover:text-indigo-300"
+          className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
         >
           Edit
         </Link>
@@ -68,20 +71,26 @@ export default async function EntryViewPage({
         </div>
       )}
 
-      <div
-        className="prose prose-invert prose-neutral max-w-none text-neutral-200"
-        dangerouslySetInnerHTML={{ __html: renderMarkdown(body) }}
-      />
+      <div className="prose prose-invert prose-neutral max-w-none
+        prose-headings:text-white prose-headings:font-semibold
+        prose-p:text-neutral-300 prose-p:leading-7
+        prose-a:text-indigo-400 prose-a:no-underline hover:prose-a:underline
+        prose-strong:text-white
+        prose-code:text-indigo-300 prose-code:bg-neutral-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
+        prose-pre:bg-neutral-900 prose-pre:border prose-pre:border-neutral-700
+        prose-blockquote:border-l-indigo-500 prose-blockquote:text-neutral-400
+        prose-li:text-neutral-300
+        prose-hr:border-neutral-700
+        prose-table:text-neutral-300
+        prose-th:text-neutral-200 prose-th:border-neutral-700
+        prose-td:border-neutral-700">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeSanitize]}
+        >
+          {body}
+        </ReactMarkdown>
+      </div>
     </div>
   );
-}
-
-// Minimal server-side markdown → HTML (install react-markdown or marked for full support)
-function renderMarkdown(md: string): string {
-  // Placeholder — replace with `marked` or `remark` in a follow-up
-  return md
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\n/g, "<br>");
 }
