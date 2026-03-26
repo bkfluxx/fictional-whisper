@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
@@ -51,31 +52,30 @@ export const authOptions: NextAuthOptions = {
 
         resetRateLimit(ip);
 
-        // The DEK is stored keyed by userId; the JWT callback will associate it
-        // with the session token after the JWT is created.
-        // We stash it temporarily on the returned user object so the jwt callback
-        // can pick it up. It is NOT serialized into the JWT itself.
+        // Generate a stable session ID here, in authorize(), so we control the key.
+        // We cannot use token.jti from the jwt callback — NextAuth sets jti AFTER
+        // the jwt callback runs (during JWT encoding), so it would be undefined.
+        const sessionId = crypto.randomUUID();
+        setDEK(sessionId, dek);
+
         return {
           id: user.id,
-          _dekHex: dek.toString("hex"), // temp carrier, stripped in jwt callback
+          _sessionId: sessionId, // carries the key into the jwt callback
         };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user && "_dekHex" in user) {
-        // First sign-in: seed the DEK store keyed by the JWT token's jti (unique ID)
-        const dek = Buffer.from((user as { _dekHex: string })._dekHex, "hex");
-        if (token.jti) {
-          setDEK(token.jti, dek);
-        }
+      if (user && "_sessionId" in user) {
+        // First sign-in: persist the session ID we generated in authorize()
+        token.sessionId = (user as { _sessionId: string })._sessionId;
         token.userId = user.id;
       }
       return token;
     },
     async session({ session, token }) {
-      session.jti = token.jti as string;
+      session.jti = token.sessionId as string;
       session.userId = token.userId as string;
       return session;
     },
