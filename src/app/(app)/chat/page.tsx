@@ -149,12 +149,17 @@ export default function ChatPage() {
         ]);
       }
 
-      // Decode entry draft from header (if AI created one)
+      // Decode entry draft from header (if AI created one).
+      // atob() returns a binary string (bytes as Latin-1); run through
+      // TextDecoder to restore proper UTF-8 before JSON.parse.
       let entryDraft: EntryDraft | undefined;
       const draftHeader = res.headers.get("X-Entry-Draft");
       if (draftHeader) {
         try {
-          entryDraft = JSON.parse(atob(draftHeader)) as EntryDraft;
+          const bytes = Uint8Array.from(atob(draftHeader), (c) =>
+            c.charCodeAt(0),
+          );
+          entryDraft = JSON.parse(new TextDecoder().decode(bytes)) as EntryDraft;
         } catch {
           // ignore malformed header
         }
