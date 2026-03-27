@@ -28,7 +28,6 @@ function entryFromExport(e: ExportEntry): ImportEntry {
     title: e.title ?? null,
     body: e.body,
     mood: e.mood ?? null,
-    // Support both new `categories` array and legacy `journalType` string
     categories: e.categories ?? [],
     tags: e.tags ?? [],
   };
