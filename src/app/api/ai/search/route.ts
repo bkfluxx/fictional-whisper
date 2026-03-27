@@ -13,6 +13,7 @@ import { getSessionDEK, isDEKResult } from "@/lib/api-helpers";
 import { prisma } from "@/lib/prisma";
 import { decryptString } from "@/lib/crypto";
 import { isOllamaAvailable, embedText } from "@/lib/ollama";
+import { getAiModels } from "@/lib/ai/config";
 import type { EntryStub } from "@/types/entry";
 
 interface RawRow {
@@ -47,7 +48,8 @@ export async function GET(req: NextRequest) {
     20,
   );
 
-  const queryVec = await embedText(q);
+  const { embedModel } = await getAiModels();
+  const queryVec = await embedText(q, embedModel);
   const vecLiteral = `[${queryVec.join(",")}]`;
 
   const rows = await prisma.$queryRaw<RawRow[]>`

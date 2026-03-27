@@ -1,16 +1,26 @@
 /**
  * Thin wrapper around the Ollama REST API.
  *
- * Env vars:
+ * Env vars (used as defaults when no model is passed explicitly):
  *   OLLAMA_BASE_URL      default: http://localhost:11434
  *   OLLAMA_MODEL         default: llama3.2   (text generation)
  *   OLLAMA_EMBED_MODEL   default: nomic-embed-text  (768-dim embeddings)
+ *
+ * All generate/embed functions accept an optional `model` argument that
+ * overrides the env-var default — used by the AI routes when the user has
+ * selected a preferred model in Settings.
  */
 
 const BASE = () => process.env.OLLAMA_BASE_URL ?? "http://localhost:11434";
-export const MODEL = () => process.env.OLLAMA_MODEL ?? "llama3.2";
-export const EMBED_MODEL = () =>
+export const DEFAULT_MODEL = () => process.env.OLLAMA_MODEL ?? "llama3.2";
+export const DEFAULT_EMBED_MODEL = () =>
   process.env.OLLAMA_EMBED_MODEL ?? "nomic-embed-text";
+
+export interface OllamaModelInfo {
+  name: string;
+  size: number; // bytes
+  modifiedAt: string;
+}
 
 /** Returns true if Ollama is reachable. */
 export async function isOllamaAvailable(): Promise<boolean> {
@@ -24,19 +34,36 @@ export async function isOllamaAvailable(): Promise<boolean> {
   }
 }
 
+/** Returns the list of models that have been pulled into this Ollama instance. */
+export async function listModels(): Promise<OllamaModelInfo[]> {
+  const res = await fetch(`${BASE()}/api/tags`, {
+    signal: AbortSignal.timeout(5000),
+  });
+  if (!res.ok) throw new Error(`Ollama /api/tags failed (${res.status})`);
+  const data = (await res.json()) as {
+    models: Array<{ name: string; size: number; modified_at: string }>;
+  };
+  return (data.models ?? []).map((m) => ({
+    name: m.name,
+    size: m.size,
+    modifiedAt: m.modified_at,
+  }));
+}
+
 /**
  * Generate text from a prompt (non-streaming).
- * Throws if Ollama returns an error.
+ * @param model  Override the default model (uses OLLAMA_MODEL env var if omitted).
  */
 export async function generateText(
   prompt: string,
   system?: string,
+  model?: string,
 ): Promise<string> {
   const res = await fetch(`${BASE()}/api/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: MODEL(),
+      model: model ?? DEFAULT_MODEL(),
       prompt,
       system,
       stream: false,
@@ -53,13 +80,15 @@ export async function generateText(
 /**
  * Generate an embedding vector for `text`.
  * Supports both the newer `/api/embed` (v0.5+) and legacy `/api/embeddings` APIs.
+ * @param model  Override the default embed model.
  */
-export async function embedText(text: string): Promise<number[]> {
+export async function embedText(text: string, model?: string): Promise<number[]> {
+  const embedModel = model ?? DEFAULT_EMBED_MODEL();
   // Try new API first
   const res = await fetch(`${BASE()}/api/embed`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ model: EMBED_MODEL(), input: text }),
+    body: JSON.stringify({ model: embedModel, input: text }),
   });
   if (res.ok) {
     const data = (await res.json()) as {
@@ -74,7 +103,7 @@ export async function embedText(text: string): Promise<number[]> {
   const res2 = await fetch(`${BASE()}/api/embeddings`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ model: EMBED_MODEL(), prompt: text }),
+    body: JSON.stringify({ model: embedModel, prompt: text }),
   });
   if (!res2.ok) {
     throw new Error(`Ollama embed failed (${res2.status})`);
@@ -85,18 +114,18 @@ export async function embedText(text: string): Promise<number[]> {
 
 /**
  * Async generator that yields text tokens from a streaming Ollama generate call.
- * Usage:
- *   for await (const token of generateStream(prompt)) { ... }
+ * @param model  Override the default model.
  */
 export async function* generateStream(
   prompt: string,
   system?: string,
+  model?: string,
 ): AsyncGenerator<string> {
   const res = await fetch(`${BASE()}/api/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: MODEL(),
+      model: model ?? DEFAULT_MODEL(),
       prompt,
       system,
       stream: true,

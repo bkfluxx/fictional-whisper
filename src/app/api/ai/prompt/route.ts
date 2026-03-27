@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSessionDEK, isDEKResult } from "@/lib/api-helpers";
 import { isOllamaAvailable, generateText } from "@/lib/ollama";
 import { getJournalType } from "@/lib/journal-types";
+import { getAiModels } from "@/lib/ai/config";
 
 export async function POST(req: NextRequest) {
   const auth = await getSessionDEK();
@@ -25,6 +26,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { journalType } = (await req.json()) as { journalType?: string };
+  const { model } = await getAiModels();
   const typeDef = journalType ? getJournalType(journalType) : null;
   const typeLabel = typeDef
     ? `${typeDef.name} journal (${typeDef.description})`
@@ -35,6 +37,7 @@ export async function POST(req: NextRequest) {
       `Return only the 3 prompts as a numbered list (1. ... 2. ... 3. ...). ` +
       `No intro, no outro, no extra text.`,
     "You are a thoughtful journaling coach. Keep prompts concise and personal.",
+    model,
   );
 
   // Parse numbered list — handle "1. ", "1) ", "1 " etc.

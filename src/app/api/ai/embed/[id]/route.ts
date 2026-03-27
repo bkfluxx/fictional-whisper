@@ -14,6 +14,7 @@ import { getSessionDEK, isDEKResult } from "@/lib/api-helpers";
 import { prisma } from "@/lib/prisma";
 import { decryptString } from "@/lib/crypto";
 import { isOllamaAvailable, embedText } from "@/lib/ollama";
+import { getAiModels } from "@/lib/ai/config";
 
 export async function POST(
   _req: NextRequest,
@@ -36,8 +37,9 @@ export async function POST(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  const { embedModel } = await getAiModels();
   const plain = decryptString(entry.body, dek);
-  const vector = await embedText(plain);
+  const vector = await embedText(plain, embedModel);
 
   // pgvector expects the literal string "[n1,n2,...]"
   const vecLiteral = `[${vector.join(",")}]`;

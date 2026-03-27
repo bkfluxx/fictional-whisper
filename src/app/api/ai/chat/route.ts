@@ -13,6 +13,7 @@ import { getSessionDEK, isDEKResult } from "@/lib/api-helpers";
 import { prisma } from "@/lib/prisma";
 import { decryptString } from "@/lib/crypto";
 import { isOllamaAvailable, embedText, generateStream } from "@/lib/ollama";
+import { getAiModels } from "@/lib/ai/config";
 
 interface EntryRow {
   id: string;
@@ -42,8 +43,10 @@ export async function POST(req: NextRequest) {
     return new Response("message is required", { status: 400 });
   }
 
+  const { model, embedModel } = await getAiModels();
+
   // Embed query and find similar entries
-  const queryVec = await embedText(message);
+  const queryVec = await embedText(message, embedModel);
   const vecLiteral = `[${queryVec.join(",")}]`;
 
   const rows = await prisma.$queryRaw<EntryRow[]>`
@@ -80,7 +83,7 @@ export async function POST(req: NextRequest) {
     async start(controller) {
       const encoder = new TextEncoder();
       try {
-        for await (const token of generateStream(prompt, SYSTEM_PROMPT)) {
+        for await (const token of generateStream(prompt, SYSTEM_PROMPT, model)) {
           controller.enqueue(encoder.encode(token));
         }
       } catch (err) {

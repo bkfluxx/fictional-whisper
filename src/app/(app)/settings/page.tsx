@@ -6,6 +6,7 @@ import PasswordChangeForm from "@/components/settings/PasswordChangeForm";
 import JournalTypesSettings from "@/components/settings/JournalTypesSettings";
 import ExportSection from "@/components/settings/ExportSection";
 import ImportSection from "@/components/settings/ImportSection";
+import AiModelsSettings from "@/components/settings/AiModelsSettings";
 
 export default async function SettingsPage() {
   const session = await getServerSession(authOptions);
@@ -68,6 +69,20 @@ export default async function SettingsPage() {
           </p>
         </div>
         <ImportSection />
+      </section>
+
+      <div className="border-t border-neutral-800" />
+
+      {/* AI models */}
+      <section>
+        <div className="mb-5">
+          <h2 className="text-base font-medium text-white">AI models</h2>
+          <p className="text-sm text-neutral-500 mt-0.5">
+            Select which Ollama models to use for text generation and embeddings.
+            Only models already pulled in your Ollama instance are shown.
+          </p>
+        </div>
+        <AiModelsSettings />
       </section>
     </div>
   );

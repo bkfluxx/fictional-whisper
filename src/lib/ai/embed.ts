@@ -8,6 +8,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { isOllamaAvailable, embedText } from "@/lib/ollama";
+import { getAiModels } from "./config";
 
 /**
  * Embed `plainText` and store the vector for the given entry.
@@ -20,7 +21,8 @@ export async function embedEntryText(
   if (!process.env.OLLAMA_BASE_URL) return;
   if (!(await isOllamaAvailable())) return;
 
-  const vector = await embedText(plainText);
+  const { embedModel } = await getAiModels();
+  const vector = await embedText(plainText, embedModel);
   const vecLiteral = `[${vector.join(",")}]`;
 
   await prisma.$executeRaw`
