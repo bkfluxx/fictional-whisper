@@ -33,21 +33,21 @@ export const JOURNAL_TYPES: JournalType[] = [
   },
   {
     id: "creativity",
-    name: "Creativity Journal",
+    name: "Creativity",
     category: "General",
     description: "Capture ideas, sketches, and creative sparks",
     emoji: "🎨",
   },
   {
     id: "productivity",
-    name: "Productivity Journal",
+    name: "Productivity",
     category: "General",
     description: "Plan your day, track focus, and reflect on output",
     emoji: "⚡",
   },
   {
     id: "bullet",
-    name: "Bullet Journal",
+    name: "Bullet",
     category: "General",
     description: "A flexible system of logs, tasks, and trackers",
     emoji: "📋",
@@ -62,7 +62,7 @@ export const JOURNAL_TYPES: JournalType[] = [
   },
   {
     id: "reading",
-    name: "Reading Journal",
+    name: "Reading",
     category: "Personal Growth",
     description: "Capture highlights, summaries, and reflections",
     emoji: "📚",
@@ -84,7 +84,7 @@ export const JOURNAL_TYPES: JournalType[] = [
   // Wellness
   {
     id: "gratitude",
-    name: "Gratitude Journal",
+    name: "Gratitude",
     category: "Wellness",
     description: "Daily appreciation to shift your perspective",
     emoji: "🙏",
@@ -98,7 +98,7 @@ export const JOURNAL_TYPES: JournalType[] = [
   },
   {
     id: "sleep",
-    name: "Sleep & Dream Journal",
+    name: "Sleep & Dream",
     category: "Wellness",
     description: "Log sleep quality and explore dream symbolism",
     emoji: "🌙",
