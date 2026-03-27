@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
         title: entry.title ? encryptString(entry.title, dek) : null,
         body: encryptString(entry.body, dek),
         mood: entry.mood,
-        journalType: entry.journalType,
+        categories: entry.categories,
         tags: {
           connectOrCreate: entry.tags.map((name) => ({
             where: { name },

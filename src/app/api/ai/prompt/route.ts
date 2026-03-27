@@ -1,9 +1,9 @@
 /**
  * POST /api/ai/prompt
- * Body: { journalType?: string }
+ * Body: { category?: string }
  *
- * Returns 3 short writing prompts tailored to the given journal type.
- * If no journal type is provided, returns general journaling prompts.
+ * Returns 3 short writing prompts tailored to the given category.
+ * If no category is provided, returns general journaling prompts.
  *
  * Returns: { prompts: string[] }
  */
@@ -11,7 +11,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionDEK, isDEKResult } from "@/lib/api-helpers";
 import { isOllamaAvailable, generateText } from "@/lib/ollama";
-import { getJournalType } from "@/lib/journal-types";
 import { getOllamaConfig } from "@/lib/ai/config";
 
 export async function POST(req: NextRequest) {
@@ -23,11 +22,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Ollama is not available" }, { status: 503 });
   }
 
-  const { journalType } = (await req.json()) as { journalType?: string };
-  const typeDef = journalType ? getJournalType(journalType) : null;
-  const typeLabel = typeDef
-    ? `${typeDef.name} journal (${typeDef.description})`
-    : "personal journal";
+  const { category } = (await req.json()) as { category?: string };
+  const typeLabel = category ? `${category} journal` : "personal journal";
 
   const raw = await generateText(
     `Give me exactly 3 short journaling prompts for a ${typeLabel}. ` +

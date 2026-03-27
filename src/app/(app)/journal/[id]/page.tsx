@@ -8,6 +8,7 @@ import { authOptions } from "@/lib/auth";
 import { getDEK } from "@/lib/session/dek-store";
 import { prisma } from "@/lib/prisma";
 import { decryptString } from "@/lib/crypto";
+import { getJournalType } from "@/lib/journal-types";
 
 export default async function EntryViewPage({
   params,
@@ -58,8 +59,19 @@ export default async function EntryViewPage({
         {entry.mood && ` · ${entry.mood}`}
       </p>
 
-      {entry.tags.length > 0 && (
+      {(entry.categories.length > 0 || entry.tags.length > 0) && (
         <div className="flex gap-1 mb-6 flex-wrap">
+          {entry.categories.map((c) => {
+            const jt = getJournalType(c);
+            return (
+              <span
+                key={c}
+                className="text-xs px-2 py-0.5 bg-indigo-950 text-indigo-400 rounded-full"
+              >
+                {jt ? `${jt.emoji} ${jt.name}` : c}
+              </span>
+            );
+          })}
           {entry.tags.map((t) => (
             <span
               key={t.id}

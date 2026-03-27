@@ -38,8 +38,8 @@ model Entry {
   body        String        // AES-256-GCM encrypted
   // Mood is NOT encrypted — stored as a plain slug so it can be queried/charted
   mood        String?
-  // Journal type slug — e.g. "brain-dump", "gratitude", "goals". Not encrypted.
-  journalType String?
+  // Categories — multi-value tags like "gratitude", "goals", "brain-dump". Not encrypted.
+  categories  String[]      @default([])
   tags        Tag[]         @relation("EntryTags")
   attachments Attachment[]
   tokens      SearchToken[]
@@ -52,7 +52,6 @@ model Entry {
 
   @@index([entryDate])
   @@index([mood])
-  @@index([journalType])
 }
 
 model Tag {
@@ -114,7 +113,6 @@ model AppSettings {
   lastBackupSizeBytes Int?
   // Onboarding
   onboardingDone      Boolean   @default(false)
-  journalTypes        String[]  @default([])
   // AI configuration (null = fall back to env vars)
   ollamaBaseUrl       String?   // overrides OLLAMA_BASE_URL; set during onboarding or in Settings
   ollamaModel         String?

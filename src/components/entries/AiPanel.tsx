@@ -6,14 +6,14 @@
  * Features:
  *   - Analyze: requests summary + mood detection from Ollama
  *   - Apply mood: lets the user push the AI-detected mood back to the form
- *   - Writing prompts: fetches 3 prompts for the current journal type
+ *   - Writing prompts: fetches 3 prompts for the current categories
  */
 
 import { useState } from "react";
 
 interface AiPanelProps {
   entryId: string | null; // null = entry not yet saved
-  journalType: string;
+  categories: string[];
   currentMood: string;
   onApplyMood: (mood: string) => void;
   onApplyPrompt: (prompt: string) => void;
@@ -24,7 +24,7 @@ type PromptState = "idle" | "loading" | "done" | "error";
 
 export default function AiPanel({
   entryId,
-  journalType,
+  categories,
   onApplyMood,
   onApplyPrompt,
 }: AiPanelProps) {
@@ -72,7 +72,7 @@ export default function AiPanel({
       const res = await fetch("/api/ai/prompt", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ journalType }),
+        body: JSON.stringify({ category: categories[0] }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -199,7 +199,10 @@ export default function AiPanel({
         {promptState === "idle" && (
           <p className="text-xs text-neutral-600">
             Get writing ideas for your{" "}
-            {journalType ? journalType.replace(/-/g, " ") : "journal"}.
+            {categories.length > 0
+              ? categories[0].replace(/-/g, " ")
+              : "journal"}
+            .
           </p>
         )}
       </section>

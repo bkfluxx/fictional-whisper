@@ -15,7 +15,7 @@ export default async function AppLayout({
 
   const settings = await prisma.appSettings.findUnique({
     where: { id: "singleton" },
-    select: { onboardingDone: true, journalTypes: true },
+    select: { onboardingDone: true },
   });
 
   if (!settings?.onboardingDone) redirect("/onboarding");
@@ -29,7 +29,7 @@ export default async function AppLayout({
           </span>
         </div>
 
-        <SidebarNav journalTypes={settings.journalTypes} />
+        <SidebarNav />
 
         <div className="mt-auto pt-4 border-t border-neutral-800">
           <SearchBar />

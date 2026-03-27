@@ -10,7 +10,7 @@ export interface ExportEntry {
   title: string | null;
   body: string;
   mood: string | null;
-  journalType: string | null;
+  categories: string[];
   tags: string[];
 }
 
@@ -35,7 +35,7 @@ async function decryptAllEntries(dek: Buffer): Promise<ExportEntry[]> {
     title: row.title ? decryptString(row.title, dek) : null,
     body: decryptString(row.body, dek),
     mood: row.mood,
-    journalType: row.journalType,
+    categories: row.categories,
     tags: row.tags.map((t) => t.name),
   }));
 }
@@ -88,7 +88,7 @@ function buildMarkdownFile(entry: ExportEntry): string {
   };
   if (entry.title) fm.title = entry.title;
   if (entry.mood) fm.mood = entry.mood;
-  if (entry.journalType) fm.type = entry.journalType;
+  if (entry.categories.length) fm.categories = entry.categories;
   if (entry.tags.length) fm.tags = entry.tags;
 
   const frontmatter = Object.entries(fm)

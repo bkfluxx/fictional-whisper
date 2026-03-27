@@ -20,7 +20,7 @@ interface EntryDraft {
   title: string;
   body: string;
   mood?: string;
-  journalType?: string;
+  categories?: string[];
 }
 
 interface Session {
@@ -215,7 +215,7 @@ export default function ChatPage() {
           title: draft.title,
           body: draft.body,
           mood: draft.mood,
-          journalType: draft.journalType,
+          categories: draft.categories ?? [],
           entryDate: new Date().toISOString(),
         }),
       });
@@ -381,11 +381,11 @@ export default function ChatPage() {
                       {msg.entryDraft.body}
                     </p>
                     <div className="flex items-center gap-2 flex-wrap">
-                      {msg.entryDraft.journalType && (
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-400">
-                          {msg.entryDraft.journalType}
+                      {msg.entryDraft.categories?.map((c) => (
+                        <span key={c} className="text-xs px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-400">
+                          {c}
                         </span>
-                      )}
+                      ))}
                       {msg.entryDraft.mood && (
                         <span className="text-xs px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-400">
                           {msg.entryDraft.mood}

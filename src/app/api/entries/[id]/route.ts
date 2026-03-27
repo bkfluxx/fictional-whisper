@@ -33,7 +33,7 @@ export async function GET(
     title: entry.title ? decryptString(entry.title, dek) : null,
     body: decryptString(entry.body, dek),
     mood: entry.mood,
-    journalType: entry.journalType,
+    categories: entry.categories,
     tags: entry.tags,
   };
 
@@ -71,7 +71,7 @@ export async function PATCH(
         ? { body: encryptString(body.body, dek) }
         : {}),
       ...(body.mood !== undefined ? { mood: body.mood } : {}),
-      ...(body.journalType !== undefined ? { journalType: body.journalType || null } : {}),
+      ...(body.categories !== undefined ? { categories: body.categories } : {}),
       ...(allTags.length > 0
         ? {
             tags: {
@@ -111,7 +111,7 @@ export async function PATCH(
           ? "(encrypted)"
           : null,
     mood: updated.mood,
-    journalType: updated.journalType,
+    categories: updated.categories,
     tags: updated.tags,
   });
 }

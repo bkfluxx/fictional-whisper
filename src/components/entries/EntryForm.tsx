@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import type { DecryptedEntry, EntryPayload } from "@/types/entry";
-import { getJournalType } from "@/lib/journal-types";
+import { JOURNAL_TYPES } from "@/lib/journal-types";
 import AiPanel from "./AiPanel";
 
 const MarkdownEditor = dynamic(
@@ -16,15 +16,9 @@ type SaveState = "saved" | "saving" | "unsaved" | "error";
 
 interface EntryFormProps {
   initial?: DecryptedEntry;
-  availableJournalTypes?: string[];
-  defaultJournalType?: string;
 }
 
-export default function EntryForm({
-  initial,
-  availableJournalTypes = [],
-  defaultJournalType,
-}: EntryFormProps) {
+export default function EntryForm({ initial }: EntryFormProps) {
   const _router = useRouter();
   const [title, setTitle] = useState(initial?.title ?? "");
   const [body, setBody] = useState(initial?.body ?? "");
@@ -32,8 +26,8 @@ export default function EntryForm({
     initial?.tags.map((t) => t.name).join(", ") ?? "",
   );
   const [mood, setMood] = useState(initial?.mood ?? "");
-  const [journalType, setJournalType] = useState(
-    initial?.journalType ?? defaultJournalType ?? "",
+  const [categories, setCategories] = useState<string[]>(
+    initial?.categories ?? [],
   );
   const [saveState, setSaveState] = useState<SaveState>(
     initial ? "saved" : "unsaved",
@@ -48,7 +42,7 @@ export default function EntryForm({
       currentTitle: string,
       currentTags: string,
       currentMood: string,
-      currentJournalType: string,
+      currentCategories: string[],
     ) => {
       setSaveState("saving");
       const payload: EntryPayload = {
@@ -59,7 +53,7 @@ export default function EntryForm({
           .map((t) => t.trim())
           .filter(Boolean),
         mood: currentMood || undefined,
-        journalType: currentJournalType || undefined,
+        categories: currentCategories,
       };
 
       try {
@@ -90,25 +84,33 @@ export default function EntryForm({
   );
 
   const scheduleSave = useCallback(
-    (b: string, t: string, tg: string, m: string, jt: string) => {
+    (b: string, t: string, tg: string, m: string, cats: string[]) => {
       setSaveState("unsaved");
       if (debounceRef.current) clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => save(b, t, tg, m, jt), 2000);
+      debounceRef.current = setTimeout(() => save(b, t, tg, m, cats), 2000);
     },
     [save],
   );
+
+  function toggleCategory(id: string) {
+    const next = categories.includes(id)
+      ? categories.filter((c) => c !== id)
+      : [...categories, id];
+    setCategories(next);
+    scheduleSave(body, title, tags, mood, next);
+  }
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "s") {
         e.preventDefault();
         if (debounceRef.current) clearTimeout(debounceRef.current);
-        save(body, title, tags, mood, journalType);
+        save(body, title, tags, mood, categories);
       }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [save, body, title, tags, mood, journalType]);
+  }, [save, body, title, tags, mood, categories]);
 
   return (
     <div className="flex h-full">
@@ -122,7 +124,7 @@ export default function EntryForm({
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
-              scheduleSave(body, e.target.value, tags, mood, journalType);
+              scheduleSave(body, e.target.value, tags, mood, categories);
             }}
             className="flex-1 bg-transparent text-2xl font-semibold text-white placeholder-neutral-600 focus:outline-none"
           />
@@ -168,38 +170,16 @@ export default function EntryForm({
             value={tags}
             onChange={(e) => {
               setTags(e.target.value);
-              scheduleSave(body, title, e.target.value, mood, journalType);
+              scheduleSave(body, title, e.target.value, mood, categories);
             }}
             className="bg-transparent focus:outline-none flex-1 min-w-[120px] placeholder-neutral-600"
           />
-
-          {availableJournalTypes.length > 0 && (
-            <select
-              value={journalType}
-              onChange={(e) => {
-                setJournalType(e.target.value);
-                scheduleSave(body, title, tags, mood, e.target.value);
-              }}
-              className="bg-neutral-900 text-neutral-400 text-sm rounded focus:outline-none"
-            >
-              <option value="">Journal type</option>
-              {availableJournalTypes.map((id) => {
-                const type = getJournalType(id);
-                if (!type) return null;
-                return (
-                  <option key={id} value={id}>
-                    {type.emoji} {type.name}
-                  </option>
-                );
-              })}
-            </select>
-          )}
 
           <select
             value={mood}
             onChange={(e) => {
               setMood(e.target.value);
-              scheduleSave(body, title, tags, e.target.value, journalType);
+              scheduleSave(body, title, tags, e.target.value, categories);
             }}
             className="bg-neutral-900 text-neutral-400 text-sm rounded focus:outline-none"
           >
@@ -214,13 +194,34 @@ export default function EntryForm({
           </select>
         </div>
 
+        {/* Category pills */}
+        <div className="flex flex-wrap gap-1.5">
+          {JOURNAL_TYPES.map((jt) => {
+            const active = categories.includes(jt.id);
+            return (
+              <button
+                key={jt.id}
+                type="button"
+                onClick={() => toggleCategory(jt.id)}
+                className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                  active
+                    ? "bg-indigo-600 border-indigo-500 text-white"
+                    : "bg-transparent border-neutral-700 text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
+                }`}
+              >
+                {jt.emoji} {jt.name}
+              </button>
+            );
+          })}
+        </div>
+
         {/* Editor */}
         <div className="flex-1 min-h-0">
           <MarkdownEditor
             value={body}
             onChange={(v) => {
               setBody(v);
-              scheduleSave(v, title, tags, mood, journalType);
+              scheduleSave(v, title, tags, mood, categories);
             }}
             placeholder="Start writing…"
           />
@@ -232,16 +233,16 @@ export default function EntryForm({
         <aside className="w-72 shrink-0 border-l border-neutral-800 px-4 py-4">
           <AiPanel
             entryId={entryIdRef.current}
-            journalType={journalType}
+            categories={categories}
             currentMood={mood}
             onApplyMood={(m) => {
               setMood(m);
-              scheduleSave(body, title, tags, m, journalType);
+              scheduleSave(body, title, tags, m, categories);
             }}
             onApplyPrompt={(p) => {
               const newBody = body ? `${body}\n\n${p}\n` : `${p}\n`;
               setBody(newBody);
-              scheduleSave(newBody, title, tags, mood, journalType);
+              scheduleSave(newBody, title, tags, mood, categories);
             }}
           />
         </aside>

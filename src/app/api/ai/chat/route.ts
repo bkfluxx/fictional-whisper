@@ -43,7 +43,7 @@ interface EntryDraft {
   title: string;
   body: string;
   mood?: string;
-  journalType?: string;
+  categories?: string[];
 }
 
 // Number of previous message pairs to include as conversation history
@@ -126,9 +126,9 @@ export async function POST(req: NextRequest) {
           `User's request: "${message.trim()}"\n\n` +
           (contextSummary ? `Recent conversation:\n${contextSummary}\n\n` : "") +
           `Write a journal entry in first person based on the request. ` +
-          `Choose a journalType from: ${JOURNAL_TYPE_LIST}. ` +
+          `Optionally suggest 1-3 relevant categories from this list: ${JOURNAL_TYPE_LIST}. ` +
           `Choose a mood from: happy, sad, anxious, calm, energized, tired, grateful, frustrated, excited, neutral — or omit if unclear.\n\n` +
-          `Return ONLY valid JSON: {"title":"...","body":"...","mood":"...","journalType":"..."}`,
+          `Return ONLY valid JSON: {"title":"...","body":"...","mood":"...","categories":["..."]}`,
         "You are a journaling assistant. Output only JSON, nothing else.",
         model,
         baseUrl,
@@ -140,9 +140,15 @@ export async function POST(req: NextRequest) {
         ...(typeof raw.mood === "string" && VALID_MOODS.has(raw.mood)
           ? { mood: raw.mood }
           : {}),
-        ...(typeof raw.journalType === "string" &&
-        VALID_JOURNAL_TYPE_IDS.has(raw.journalType)
-          ? { journalType: raw.journalType }
+        ...(Array.isArray(raw.categories) && raw.categories.length > 0
+          ? {
+              categories: raw.categories
+                .filter(
+                  (c): c is string =>
+                    typeof c === "string" && VALID_JOURNAL_TYPE_IDS.has(c),
+                )
+                .slice(0, 5),
+            }
           : {}),
       };
 

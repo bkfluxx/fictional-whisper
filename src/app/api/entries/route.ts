@@ -17,14 +17,14 @@ export async function GET(req: NextRequest) {
   const from = searchParams.get("from");
   const to = searchParams.get("to");
   const mood = searchParams.get("mood");
-  const type = searchParams.get("type");
+  const category = searchParams.get("category");
   const sort = searchParams.get("sort") === "updatedAt" ? "updatedAt" : "entryDate";
 
   const entries = await prisma.entry.findMany({
     where: {
       ...(tag ? { tags: { some: { name: tag } } } : {}),
       ...(mood ? { mood } : {}),
-      ...(type ? { journalType: type } : {}),
+      ...(category ? { categories: { has: category } } : {}),
       ...(from || to
         ? {
             entryDate: {
@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
     entryDate: e.entryDate.toISOString(),
     title: e.title ? decryptString(e.title, dek) : null,
     mood: e.mood,
-    journalType: e.journalType,
+    categories: e.categories,
     tags: e.tags,
   }));
 
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
       title: body.title ? encryptString(body.title, dek) : null,
       body: encryptString(body.body, dek),
       mood: body.mood ?? null,
-      journalType: body.journalType ?? null,
+      categories: body.categories ?? [],
       tags: {
         connectOrCreate: allTags.map((name) => ({
           where: { name },
@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
       entryDate: entry.entryDate.toISOString(),
       title: body.title ?? null,
       mood: entry.mood,
-      journalType: entry.journalType,
+      categories: entry.categories,
       tags: entry.tags,
     },
     { status: 201 },

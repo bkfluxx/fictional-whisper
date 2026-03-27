@@ -10,7 +10,7 @@ import { getJournalType } from "@/lib/journal-types";
 export default async function JournalPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tag?: string; from?: string; to?: string; type?: string }>;
+  searchParams: Promise<{ tag?: string; from?: string; to?: string; category?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.jti) redirect("/login");
@@ -18,13 +18,13 @@ export default async function JournalPage({
   const dek = getDEK(session.jti);
   if (!dek) redirect("/login");
 
-  const { tag, from, to, type } = await searchParams;
-  const journalTypeDef = type ? getJournalType(type) : null;
+  const { tag, from, to, category } = await searchParams;
+  const categoryDef = category ? getJournalType(category) : null;
 
   const entries = await prisma.entry.findMany({
     where: {
       ...(tag ? { tags: { some: { name: tag } } } : {}),
-      ...(type ? { journalType: type } : {}),
+      ...(category ? { categories: { has: category } } : {}),
       ...(from || to
         ? {
             entryDate: {
@@ -39,18 +39,16 @@ export default async function JournalPage({
     take: 50,
   });
 
-  const heading = journalTypeDef
-    ? `${journalTypeDef.emoji} ${journalTypeDef.name}`
+  const heading = categoryDef
+    ? `${categoryDef.emoji} ${categoryDef.name}`
     : "All entries";
-
-  const newHref = type ? `/journal/new?type=${type}` : "/journal/new";
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-8">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-xl font-semibold text-white">{heading}</h1>
         <Link
-          href={newHref}
+          href="/journal/new"
           className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors"
         >
           New entry
@@ -83,8 +81,19 @@ export default async function JournalPage({
                       })}
                     </span>
                   </div>
-                  {e.tags.length > 0 && (
+                  {(e.categories.length > 0 || e.tags.length > 0) && (
                     <div className="flex gap-1 mt-1.5 flex-wrap">
+                      {e.categories.map((c) => {
+                        const jt = getJournalType(c);
+                        return (
+                          <span
+                            key={c}
+                            className="text-xs px-2 py-0.5 bg-indigo-950 text-indigo-400 rounded-full"
+                          >
+                            {jt ? `${jt.emoji} ${jt.name}` : c}
+                          </span>
+                        );
+                      })}
                       {e.tags.map((t) => (
                         <span
                           key={t.id}

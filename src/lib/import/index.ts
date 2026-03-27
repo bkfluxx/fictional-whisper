@@ -8,7 +8,7 @@ export interface ImportEntry {
   title: string | null;
   body: string;
   mood: string | null;
-  journalType: string | null;
+  categories: string[];
   tags: string[];
 }
 
@@ -28,7 +28,8 @@ function entryFromExport(e: ExportEntry): ImportEntry {
     title: e.title ?? null,
     body: e.body,
     mood: e.mood ?? null,
-    journalType: e.journalType ?? null,
+    // Support both new `categories` array and legacy `journalType` string
+    categories: e.categories ?? [],
     tags: e.tags ?? [],
   };
 }
@@ -62,7 +63,7 @@ export function parseDayOneJson(raw: string): ImportEntry[] {
     title: null,
     body: e.text ?? e.richText ?? "",
     mood: null,
-    journalType: null,
+    categories: [],
     tags: e.tags ?? [],
   }));
 }
@@ -87,12 +88,19 @@ export function parseMarkdownFile(content: string, filename = ""): ImportEntry {
       ? fm.tags.split(",").map((t: string) => t.trim())
       : [];
 
+  // Support both new `categories` array and legacy `type` string in frontmatter
+  const categories: string[] = Array.isArray(fm.categories)
+    ? fm.categories.map(String)
+    : typeof fm.type === "string" && fm.type
+      ? [fm.type]
+      : [];
+
   return {
     entryDate,
     title: (fm.title as string) ?? filenameToTitle(filename),
     body: body.trim(),
     mood: (fm.mood as string) ?? null,
-    journalType: (fm.type as string) ?? null,
+    categories,
     tags,
   };
 }

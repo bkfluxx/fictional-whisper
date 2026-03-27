@@ -7,7 +7,7 @@ export interface DecryptedEntry {
   title: string | null;
   body: string;
   mood: string | null;
-  journalType: string | null;
+  categories: string[];
   tags: { id: string; name: string }[];
 }
 
@@ -19,7 +19,7 @@ export interface EntryStub {
   entryDate: string;
   title: string | null;
   mood: string | null;
-  journalType: string | null;
+  categories: string[];
   tags: { id: string; name: string }[];
 }
 
@@ -29,6 +29,6 @@ export interface EntryPayload {
   body: string;
   entryDate?: string; // ISO date string
   mood?: string;
-  journalType?: string;
+  categories?: string[];
   tags?: string[]; // tag names
 }
