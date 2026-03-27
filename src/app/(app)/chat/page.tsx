@@ -13,6 +13,14 @@ interface Message {
   id?: string;
   role: "user" | "assistant";
   content: string;
+  entryDraft?: EntryDraft; // only present on assistant messages that contain a draft
+}
+
+interface EntryDraft {
+  title: string;
+  body: string;
+  mood?: string;
+  journalType?: string;
 }
 
 interface Session {
@@ -47,6 +55,9 @@ export default function ChatPage() {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  // tracks which draft cards are being saved (keyed by message index)
+  const [savingDraft, setSavingDraft] = useState<Record<number, boolean>>({});
+  const [savedDraft, setSavedDraft] = useState<Record<number, true>>({});
   const bottomRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom on new content
@@ -127,7 +138,6 @@ export default function ChatPage() {
       const returnedId = res.headers.get("X-Session-Id");
       if (returnedId && returnedId !== activeSessionId) {
         setActiveSessionId(returnedId);
-        // Add to sidebar immediately with a placeholder title
         setSessions((prev) => [
           {
             id: returnedId,
@@ -137,6 +147,17 @@ export default function ChatPage() {
           },
           ...prev.filter((s) => s.id !== returnedId),
         ]);
+      }
+
+      // Decode entry draft from header (if AI created one)
+      let entryDraft: EntryDraft | undefined;
+      const draftHeader = res.headers.get("X-Entry-Draft");
+      if (draftHeader) {
+        try {
+          entryDraft = JSON.parse(atob(draftHeader)) as EntryDraft;
+        } catch {
+          // ignore malformed header
+        }
       }
 
       // Stream tokens into the last assistant message
@@ -157,6 +178,18 @@ export default function ChatPage() {
         });
       }
 
+      // Attach the entry draft to the final assistant message so the UI can show it
+      if (entryDraft) {
+        setMessages((prev) => {
+          const next = [...prev];
+          next[next.length - 1] = {
+            ...next[next.length - 1],
+            entryDraft,
+          };
+          return next;
+        });
+      }
+
       // Refresh session list so updatedAt + count are current
       fetchSessions();
     } catch (err) {
@@ -164,6 +197,28 @@ export default function ChatPage() {
       setMessages((prev) => prev.slice(0, -1));
     } finally {
       setStreaming(false);
+    }
+  }
+
+  async function saveEntryDraft(draft: EntryDraft, msgIndex: number) {
+    setSavingDraft((s) => ({ ...s, [msgIndex]: true }));
+    try {
+      const res = await fetch("/api/entries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: draft.title,
+          body: draft.body,
+          mood: draft.mood,
+          journalType: draft.journalType,
+          entryDate: new Date().toISOString(),
+        }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      setSavedDraft((s) => ({ ...s, [msgIndex]: true }));
+    } catch {
+      // show generic error inline
+      setSavingDraft((s) => { const n = { ...s }; delete n[msgIndex]; return n; });
     }
   }
 
@@ -307,6 +362,48 @@ export default function ChatPage() {
                       <span className="inline-block w-1 h-4 bg-neutral-400 animate-pulse ml-0.5 align-middle" />
                     )}
                 </div>
+
+                {/* Entry draft card — only on assistant messages with a draft */}
+                {msg.role === "assistant" && msg.entryDraft && (
+                  <div className="mt-3 rounded-xl border border-indigo-800/60 bg-indigo-950/40 p-4 text-sm max-w-[85%]">
+                    <p className="text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-2">
+                      Journal entry draft
+                    </p>
+                    <p className="text-white font-medium mb-1">
+                      {msg.entryDraft.title}
+                    </p>
+                    <p className="text-neutral-400 text-xs leading-relaxed line-clamp-3 mb-3">
+                      {msg.entryDraft.body}
+                    </p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {msg.entryDraft.journalType && (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-400">
+                          {msg.entryDraft.journalType}
+                        </span>
+                      )}
+                      {msg.entryDraft.mood && (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-400">
+                          {msg.entryDraft.mood}
+                        </span>
+                      )}
+                      <div className="ml-auto">
+                        {savedDraft[i] ? (
+                          <span className="text-xs text-emerald-400">
+                            Saved to journal
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => saveEntryDraft(msg.entryDraft!, i)}
+                            disabled={savingDraft[i]}
+                            className="text-xs px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg transition-colors"
+                          >
+                            {savingDraft[i] ? "Saving…" : "Save as journal entry"}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             ))
           )}

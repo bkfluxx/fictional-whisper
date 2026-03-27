@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
       baseUrl: config.baseUrl,
       model: config.model,
       embedModel: config.embedModel,
+      systemPrompt: config.systemPrompt,
     },
   });
 }
@@ -48,6 +49,7 @@ export async function PATCH(req: NextRequest) {
     baseUrl?: string | null;
     model?: string | null;
     embedModel?: string | null;
+    systemPrompt?: string | null;
   };
 
   await prisma.appSettings.upsert({
@@ -57,6 +59,7 @@ export async function PATCH(req: NextRequest) {
       ollamaBaseUrl: body.baseUrl || null,
       ollamaModel: body.model || null,
       ollamaEmbedModel: body.embedModel || null,
+      chatSystemPrompt: body.systemPrompt || null,
     },
     update: {
       ...(body.baseUrl !== undefined
@@ -66,9 +69,19 @@ export async function PATCH(req: NextRequest) {
       ...(body.embedModel !== undefined
         ? { ollamaEmbedModel: body.embedModel || null }
         : {}),
+      ...(body.systemPrompt !== undefined
+        ? { chatSystemPrompt: body.systemPrompt || null }
+        : {}),
     },
   });
 
   const config = await getOllamaConfig();
-  return NextResponse.json({ selected: config });
+  return NextResponse.json({
+    selected: {
+      baseUrl: config.baseUrl,
+      model: config.model,
+      embedModel: config.embedModel,
+      systemPrompt: config.systemPrompt,
+    },
+  });
 }

@@ -7,7 +7,8 @@
  * Loaded by the Settings page.
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { DEFAULT_SYSTEM_PROMPT } from "@/lib/ai/config";
 
 interface ModelInfo {
   name: string;
@@ -19,6 +20,7 @@ interface SelectedConfig {
   baseUrl: string;
   model: string;
   embedModel: string;
+  systemPrompt: string;
 }
 
 type LoadState = "loading" | "offline" | "ready" | "saving" | "saved" | "error";
@@ -36,11 +38,13 @@ export default function AiModelsSettings() {
     baseUrl: "",
     model: "",
     embedModel: "",
+    systemPrompt: DEFAULT_SYSTEM_PROMPT,
   });
   const [draft, setDraft] = useState<SelectedConfig>({
     baseUrl: "",
     model: "",
     embedModel: "",
+    systemPrompt: DEFAULT_SYSTEM_PROMPT,
   });
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [testingUrl, setTestingUrl] = useState(false);
@@ -54,6 +58,7 @@ export default function AiModelsSettings() {
           baseUrl: data.selected?.baseUrl ?? "",
           model: data.selected?.model ?? "",
           embedModel: data.selected?.embedModel ?? "",
+          systemPrompt: data.selected?.systemPrompt ?? DEFAULT_SYSTEM_PROMPT,
         };
         setSelected(cfg);
         setDraft(cfg);
@@ -70,7 +75,12 @@ export default function AiModelsSettings() {
   const isDirty =
     draft.baseUrl !== selected.baseUrl ||
     draft.model !== selected.model ||
-    draft.embedModel !== selected.embedModel;
+    draft.embedModel !== selected.embedModel ||
+    draft.systemPrompt !== selected.systemPrompt;
+
+  const resetPrompt = useCallback(() => {
+    setDraft((d) => ({ ...d, systemPrompt: DEFAULT_SYSTEM_PROMPT }));
+  }, []);
 
   async function testUrl() {
     if (!draft.baseUrl.trim()) return;
@@ -105,6 +115,10 @@ export default function AiModelsSettings() {
           baseUrl: draft.baseUrl || null,
           model: draft.model || null,
           embedModel: draft.embedModel || null,
+          systemPrompt:
+            draft.systemPrompt.trim() === DEFAULT_SYSTEM_PROMPT.trim()
+              ? null
+              : draft.systemPrompt || null,
         }),
       });
       if (!res.ok) throw new Error(await res.text());
@@ -113,6 +127,7 @@ export default function AiModelsSettings() {
         baseUrl: data.selected?.baseUrl ?? "",
         model: data.selected?.model ?? "",
         embedModel: data.selected?.embedModel ?? "",
+        systemPrompt: data.selected?.systemPrompt ?? DEFAULT_SYSTEM_PROMPT,
       };
       setSelected(cfg);
       setDraft(cfg);
@@ -281,6 +296,37 @@ export default function AiModelsSettings() {
           </div>
         </div>
       )}
+
+      {/* System prompt */}
+      <div>
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="text-xs font-medium text-neutral-400">
+            Chat system prompt
+            <span className="text-neutral-600 font-normal ml-1">
+              (instructs the AI how to respond)
+            </span>
+          </label>
+          <button
+            onClick={resetPrompt}
+            disabled={draft.systemPrompt.trim() === DEFAULT_SYSTEM_PROMPT.trim()}
+            className="text-xs text-neutral-500 hover:text-white disabled:opacity-30 transition-colors"
+          >
+            Reset to default
+          </button>
+        </div>
+        <textarea
+          value={draft.systemPrompt}
+          onChange={(e) =>
+            setDraft((d) => ({ ...d, systemPrompt: e.target.value }))
+          }
+          rows={5}
+          className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 placeholder:text-neutral-600 resize-y font-mono leading-relaxed"
+        />
+        <p className="text-xs text-neutral-600 mt-1">
+          {draft.systemPrompt.length} chars · Changes take effect on the next
+          chat message.
+        </p>
+      </div>
 
       {/* Save row */}
       <div className="flex items-center gap-3">

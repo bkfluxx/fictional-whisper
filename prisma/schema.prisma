@@ -119,4 +119,5 @@ model AppSettings {
   ollamaBaseUrl       String?   // overrides OLLAMA_BASE_URL; set during onboarding or in Settings
   ollamaModel         String?
   ollamaEmbedModel    String?
+  chatSystemPrompt    String?   // custom system prompt for RAG chat (null = use hardcoded default)
 }
