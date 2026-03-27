@@ -137,6 +137,59 @@ export async function embedText(
   return data2.embedding;
 }
 
+export interface ChatMessage {
+  role: "system" | "user" | "assistant";
+  content: string;
+}
+
+/**
+ * Multi-turn streaming chat via /api/chat.
+ * Accepts a full messages array (system + history + current user message).
+ */
+export async function* chatStream(
+  messages: ChatMessage[],
+  model?: string,
+  baseUrl?: string,
+): AsyncGenerator<string> {
+  const res = await fetch(`${baseUrl ?? DEFAULT_BASE_URL()}/api/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: model ?? DEFAULT_MODEL(),
+      messages,
+      stream: true,
+    }),
+  });
+  if (!res.ok || !res.body) {
+    throw new Error(`Ollama chat failed (${res.status})`);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() ?? "";
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      try {
+        const obj = JSON.parse(line) as {
+          message?: { content?: string };
+          done?: boolean;
+        };
+        if (obj.message?.content) yield obj.message.content;
+        if (obj.done) return;
+      } catch {
+        // skip malformed lines
+      }
+    }
+  }
+}
+
 /** Streaming token generator. */
 export async function* generateStream(
   prompt: string,
