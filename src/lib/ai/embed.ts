@@ -1,28 +1,22 @@
 /**
- * Shared embedding helper used by both the entries API routes (fire-and-forget)
+ * Shared embedding helper used by the entries API routes (fire-and-forget)
  * and the POST /api/ai/embed/[id] route.
  *
- * Only runs when OLLAMA_BASE_URL is configured and Ollama responds.
- * All errors are swallowed so callers can fire-and-forget safely.
+ * Silently no-ops if Ollama is unreachable.
  */
 
 import { prisma } from "@/lib/prisma";
 import { isOllamaAvailable, embedText } from "@/lib/ollama";
-import { getAiModels } from "./config";
+import { getOllamaConfig } from "./config";
 
-/**
- * Embed `plainText` and store the vector for the given entry.
- * Silently no-ops if Ollama is unavailable.
- */
 export async function embedEntryText(
   entryId: string,
   plainText: string,
 ): Promise<void> {
-  if (!process.env.OLLAMA_BASE_URL) return;
-  if (!(await isOllamaAvailable())) return;
+  const config = await getOllamaConfig();
+  if (!(await isOllamaAvailable(config.baseUrl))) return;
 
-  const { embedModel } = await getAiModels();
-  const vector = await embedText(plainText, embedModel);
+  const vector = await embedText(plainText, config.embedModel, config.baseUrl);
   const vecLiteral = `[${vector.join(",")}]`;
 
   await prisma.$executeRaw`

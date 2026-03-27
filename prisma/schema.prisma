@@ -96,7 +96,8 @@ model AppSettings {
   // Onboarding
   onboardingDone      Boolean   @default(false)
   journalTypes        String[]  @default([])
-  // AI model preferences (null = fall back to OLLAMA_MODEL / OLLAMA_EMBED_MODEL env vars)
+  // AI configuration (null = fall back to env vars)
+  ollamaBaseUrl       String?   // overrides OLLAMA_BASE_URL; set during onboarding or in Settings
   ollamaModel         String?
   ollamaEmbedModel    String?
 }

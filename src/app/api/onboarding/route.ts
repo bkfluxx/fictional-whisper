@@ -11,7 +11,10 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { journalTypes } = body as { journalTypes: unknown };
+  const { journalTypes, ollamaBaseUrl } = body as {
+    journalTypes: unknown;
+    ollamaBaseUrl?: string;
+  };
 
   if (
     !Array.isArray(journalTypes) ||
@@ -24,10 +27,11 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const aiFields = ollamaBaseUrl ? { ollamaBaseUrl } : {};
   await prisma.appSettings.upsert({
     where: { id: "singleton" },
-    update: { journalTypes, onboardingDone: true },
-    create: { id: "singleton", journalTypes, onboardingDone: true },
+    update: { journalTypes, onboardingDone: true, ...aiFields },
+    create: { id: "singleton", journalTypes, onboardingDone: true, ...aiFields },
   });
 
   return NextResponse.json({ ok: true });

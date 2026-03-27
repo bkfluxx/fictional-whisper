@@ -13,7 +13,7 @@ import { getSessionDEK, isDEKResult } from "@/lib/api-helpers";
 import { prisma } from "@/lib/prisma";
 import { decryptString } from "@/lib/crypto";
 import { isOllamaAvailable, embedText } from "@/lib/ollama";
-import { getAiModels } from "@/lib/ai/config";
+import { getOllamaConfig } from "@/lib/ai/config";
 import type { EntryStub } from "@/types/entry";
 
 interface RawRow {
@@ -36,11 +36,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "q is required" }, { status: 400 });
   }
 
-  if (!(await isOllamaAvailable())) {
-    return NextResponse.json(
-      { error: "Ollama is not available" },
-      { status: 503 },
-    );
+  const { baseUrl, embedModel } = await getOllamaConfig();
+  if (!(await isOllamaAvailable(baseUrl))) {
+    return NextResponse.json({ error: "Ollama is not available" }, { status: 503 });
   }
 
   const limit = Math.min(
@@ -48,8 +46,7 @@ export async function GET(req: NextRequest) {
     20,
   );
 
-  const { embedModel } = await getAiModels();
-  const queryVec = await embedText(q, embedModel);
+  const queryVec = await embedText(q, embedModel, baseUrl);
   const vecLiteral = `[${queryVec.join(",")}]`;
 
   const rows = await prisma.$queryRaw<RawRow[]>`

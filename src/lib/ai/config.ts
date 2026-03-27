@@ -1,23 +1,38 @@
 /**
- * Reads AI model preferences from AppSettings, falling back to env vars.
- * Called by all AI API routes so user-selected models are used consistently.
+ * Reads AI configuration from AppSettings, falling back to env var defaults.
+ * Call getOllamaConfig() in every AI route to pick up user-saved preferences.
  */
 
 import { prisma } from "@/lib/prisma";
-import { DEFAULT_MODEL, DEFAULT_EMBED_MODEL } from "@/lib/ollama";
+import {
+  DEFAULT_BASE_URL,
+  DEFAULT_MODEL,
+  DEFAULT_EMBED_MODEL,
+} from "@/lib/ollama";
 
-export interface AiModels {
+export interface OllamaConfig {
+  baseUrl: string;
   model: string;
   embedModel: string;
 }
 
-export async function getAiModels(): Promise<AiModels> {
+export async function getOllamaConfig(): Promise<OllamaConfig> {
   const settings = await prisma.appSettings.findUnique({
     where: { id: "singleton" },
-    select: { ollamaModel: true, ollamaEmbedModel: true },
+    select: { ollamaBaseUrl: true, ollamaModel: true, ollamaEmbedModel: true },
   });
   return {
+    baseUrl: settings?.ollamaBaseUrl || DEFAULT_BASE_URL(),
     model: settings?.ollamaModel || DEFAULT_MODEL(),
     embedModel: settings?.ollamaEmbedModel || DEFAULT_EMBED_MODEL(),
   };
+}
+
+/** Backward-compatible alias used by routes that only need model names. */
+export async function getAiModels(): Promise<{
+  model: string;
+  embedModel: string;
+}> {
+  const { model, embedModel } = await getOllamaConfig();
+  return { model, embedModel };
 }

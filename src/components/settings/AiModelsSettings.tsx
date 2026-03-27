@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * AiModelsSettings — lets the user view available Ollama models and select
+ * AiModelsSettings — lets the user configure the Ollama base URL and select
  * which model to use for text generation and embeddings.
  *
  * Loaded by the Settings page.
@@ -15,7 +15,8 @@ interface ModelInfo {
   modifiedAt: string;
 }
 
-interface SelectedModels {
+interface SelectedConfig {
+  baseUrl: string;
   model: string;
   embedModel: string;
 }
@@ -31,31 +32,67 @@ function formatBytes(bytes: number): string {
 export default function AiModelsSettings() {
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [models, setModels] = useState<ModelInfo[]>([]);
-  const [selected, setSelected] = useState<SelectedModels>({
+  const [selected, setSelected] = useState<SelectedConfig>({
+    baseUrl: "",
     model: "",
     embedModel: "",
   });
-  const [draft, setDraft] = useState<SelectedModels>({ model: "", embedModel: "" });
+  const [draft, setDraft] = useState<SelectedConfig>({
+    baseUrl: "",
+    model: "",
+    embedModel: "",
+  });
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [testingUrl, setTestingUrl] = useState(false);
+  const [testResult, setTestResult] = useState<"ok" | "fail" | null>(null);
 
   useEffect(() => {
     fetch("/api/ai/models")
       .then((r) => r.json())
       .then((data) => {
+        const cfg: SelectedConfig = {
+          baseUrl: data.selected?.baseUrl ?? "",
+          model: data.selected?.model ?? "",
+          embedModel: data.selected?.embedModel ?? "",
+        };
+        setSelected(cfg);
+        setDraft(cfg);
         if (!data.available) {
           setLoadState("offline");
           return;
         }
         setModels(data.models ?? []);
-        setSelected(data.selected);
-        setDraft(data.selected);
         setLoadState("ready");
       })
       .catch(() => setLoadState("offline"));
   }, []);
 
   const isDirty =
-    draft.model !== selected.model || draft.embedModel !== selected.embedModel;
+    draft.baseUrl !== selected.baseUrl ||
+    draft.model !== selected.model ||
+    draft.embedModel !== selected.embedModel;
+
+  async function testUrl() {
+    if (!draft.baseUrl.trim()) return;
+    setTestingUrl(true);
+    setTestResult(null);
+    try {
+      const params = new URLSearchParams({ url: draft.baseUrl.trim() });
+      const res = await fetch(`/api/ai/models?${params}`);
+      const data = await res.json();
+      if (data.available) {
+        setTestResult("ok");
+        setModels(data.models ?? []);
+        setLoadState("ready");
+      } else {
+        setTestResult("fail");
+      }
+    } catch {
+      setTestResult("fail");
+    } finally {
+      setTestingUrl(false);
+    }
+  }
 
   async function save() {
     setLoadState("saving");
@@ -65,16 +102,22 @@ export default function AiModelsSettings() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          baseUrl: draft.baseUrl || null,
           model: draft.model || null,
           embedModel: draft.embedModel || null,
         }),
       });
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
-      setSelected(data.selected);
-      setDraft(data.selected);
+      const cfg: SelectedConfig = {
+        baseUrl: data.selected?.baseUrl ?? "",
+        model: data.selected?.model ?? "",
+        embedModel: data.selected?.embedModel ?? "",
+      };
+      setSelected(cfg);
+      setDraft(cfg);
       setLoadState("saved");
-      setTimeout(() => setLoadState("ready"), 2000);
+      setTimeout(() => setLoadState(models.length > 0 ? "ready" : "offline"), 2000);
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Save failed");
       setLoadState("error");
@@ -85,29 +128,47 @@ export default function AiModelsSettings() {
     return <p className="text-sm text-neutral-500">Checking Ollama…</p>;
   }
 
-  if (loadState === "offline") {
-    return (
-      <div className="rounded-xl bg-neutral-900 border border-neutral-800 px-4 py-3 text-sm text-neutral-400">
-        Ollama is not reachable. Start the Ollama service and reload this page.
-        <br />
-        <span className="text-neutral-600 text-xs mt-1 block">
-          Expected at{" "}
-          {process.env.NEXT_PUBLIC_OLLAMA_BASE_URL ?? "http://localhost:11434"}
-        </span>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-5">
-      {models.length === 0 ? (
-        <p className="text-sm text-neutral-500">
-          No models found. Pull one with:{" "}
-          <code className="text-neutral-300 bg-neutral-900 px-1.5 py-0.5 rounded text-xs">
-            docker compose exec ollama ollama pull llama3.2
-          </code>
-        </p>
-      ) : (
+    <div className="space-y-6">
+      {/* URL field — always visible */}
+      <div>
+        <label className="block text-xs font-medium text-neutral-400 mb-1.5">
+          Ollama base URL
+        </label>
+        <div className="flex gap-2">
+          <input
+            type="url"
+            value={draft.baseUrl}
+            onChange={(e) => {
+              setDraft((d) => ({ ...d, baseUrl: e.target.value }));
+              setTestResult(null);
+            }}
+            placeholder="http://localhost:11434"
+            className="flex-1 bg-neutral-900 border border-neutral-700 text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 placeholder:text-neutral-600"
+          />
+          <button
+            onClick={testUrl}
+            disabled={testingUrl || !draft.baseUrl.trim()}
+            className="px-3 py-2 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-40 text-white text-sm rounded-lg transition-colors whitespace-nowrap"
+          >
+            {testingUrl ? "Testing…" : "Test"}
+          </button>
+        </div>
+        {testResult === "ok" && (
+          <p className="text-xs text-emerald-400 mt-1.5">Connected — models loaded.</p>
+        )}
+        {testResult === "fail" && (
+          <p className="text-xs text-red-400 mt-1.5">Could not reach Ollama at that URL.</p>
+        )}
+        {loadState === "offline" && testResult === null && (
+          <p className="text-xs text-amber-500 mt-1.5">
+            Ollama is not reachable at the current URL. Update it above and click Test.
+          </p>
+        )}
+      </div>
+
+      {/* Model selectors — only when models are available */}
+      {models.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-2">
           {/* LLM model */}
           <div>
@@ -126,10 +187,7 @@ export default function AiModelsSettings() {
             >
               {models.map((m) => (
                 <option key={m.name} value={m.name}>
-                  {m.name}{" "}
-                  <span className="text-neutral-500">
-                    ({formatBytes(m.size)})
-                  </span>
+                  {m.name} ({formatBytes(m.size)})
                 </option>
               ))}
             </select>
@@ -162,6 +220,15 @@ export default function AiModelsSettings() {
             </p>
           </div>
         </div>
+      )}
+
+      {models.length === 0 && loadState === "ready" && (
+        <p className="text-sm text-neutral-500">
+          No models found. Pull one with:{" "}
+          <code className="text-neutral-300 bg-neutral-900 px-1.5 py-0.5 rounded text-xs">
+            ollama pull llama3.2
+          </code>
+        </p>
       )}
 
       {/* Available models table */}
@@ -216,24 +283,22 @@ export default function AiModelsSettings() {
       )}
 
       {/* Save row */}
-      {models.length > 0 && (
-        <div className="flex items-center gap-3">
-          <button
-            onClick={save}
-            disabled={!isDirty || loadState === "saving"}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition-colors"
-          >
-            {loadState === "saving"
-              ? "Saving…"
-              : loadState === "saved"
-                ? "Saved"
-                : "Save"}
-          </button>
-          {loadState === "error" && errorMsg && (
-            <p className="text-sm text-red-400">{errorMsg}</p>
-          )}
-        </div>
-      )}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={save}
+          disabled={!isDirty || loadState === "saving"}
+          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition-colors"
+        >
+          {loadState === "saving"
+            ? "Saving…"
+            : loadState === "saved"
+              ? "Saved"
+              : "Save"}
+        </button>
+        {loadState === "error" && errorMsg && (
+          <p className="text-sm text-red-400">{errorMsg}</p>
+        )}
+      </div>
     </div>
   );
 }

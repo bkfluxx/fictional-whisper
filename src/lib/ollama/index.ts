@@ -1,31 +1,28 @@
 /**
  * Thin wrapper around the Ollama REST API.
  *
- * Env vars (used as defaults when no model is passed explicitly):
+ * Env var defaults (each function also accepts explicit overrides):
  *   OLLAMA_BASE_URL      default: http://localhost:11434
- *   OLLAMA_MODEL         default: llama3.2   (text generation)
- *   OLLAMA_EMBED_MODEL   default: nomic-embed-text  (768-dim embeddings)
- *
- * All generate/embed functions accept an optional `model` argument that
- * overrides the env-var default — used by the AI routes when the user has
- * selected a preferred model in Settings.
+ *   OLLAMA_MODEL         default: llama3.2
+ *   OLLAMA_EMBED_MODEL   default: nomic-embed-text
  */
 
-const BASE = () => process.env.OLLAMA_BASE_URL ?? "http://localhost:11434";
+export const DEFAULT_BASE_URL = () =>
+  process.env.OLLAMA_BASE_URL ?? "http://localhost:11434";
 export const DEFAULT_MODEL = () => process.env.OLLAMA_MODEL ?? "llama3.2";
 export const DEFAULT_EMBED_MODEL = () =>
   process.env.OLLAMA_EMBED_MODEL ?? "nomic-embed-text";
 
 export interface OllamaModelInfo {
   name: string;
-  size: number; // bytes
+  size: number;
   modifiedAt: string;
 }
 
-/** Returns true if Ollama is reachable. */
-export async function isOllamaAvailable(): Promise<boolean> {
+/** Returns true if Ollama is reachable at `baseUrl`. */
+export async function isOllamaAvailable(baseUrl?: string): Promise<boolean> {
   try {
-    const res = await fetch(`${BASE()}/api/version`, {
+    const res = await fetch(`${baseUrl ?? DEFAULT_BASE_URL()}/api/version`, {
       signal: AbortSignal.timeout(3000),
     });
     return res.ok;
@@ -34,9 +31,9 @@ export async function isOllamaAvailable(): Promise<boolean> {
   }
 }
 
-/** Returns the list of models that have been pulled into this Ollama instance. */
-export async function listModels(): Promise<OllamaModelInfo[]> {
-  const res = await fetch(`${BASE()}/api/tags`, {
+/** Returns the list of models pulled in this Ollama instance. */
+export async function listModels(baseUrl?: string): Promise<OllamaModelInfo[]> {
+  const res = await fetch(`${baseUrl ?? DEFAULT_BASE_URL()}/api/tags`, {
     signal: AbortSignal.timeout(5000),
   });
   if (!res.ok) throw new Error(`Ollama /api/tags failed (${res.status})`);
@@ -50,16 +47,14 @@ export async function listModels(): Promise<OllamaModelInfo[]> {
   }));
 }
 
-/**
- * Generate text from a prompt (non-streaming).
- * @param model  Override the default model (uses OLLAMA_MODEL env var if omitted).
- */
+/** Non-streaming text generation. */
 export async function generateText(
   prompt: string,
   system?: string,
   model?: string,
+  baseUrl?: string,
 ): Promise<string> {
-  const res = await fetch(`${BASE()}/api/generate`, {
+  const res = await fetch(`${baseUrl ?? DEFAULT_BASE_URL()}/api/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -78,14 +73,46 @@ export async function generateText(
 }
 
 /**
- * Generate an embedding vector for `text`.
- * Supports both the newer `/api/embed` (v0.5+) and legacy `/api/embeddings` APIs.
- * @param model  Override the default embed model.
+ * Non-streaming JSON generation.
+ * Uses Ollama's `format:"json"` to guarantee valid JSON output.
  */
-export async function embedText(text: string, model?: string): Promise<number[]> {
+export async function generateJson<T = unknown>(
+  prompt: string,
+  system?: string,
+  model?: string,
+  baseUrl?: string,
+): Promise<T> {
+  const res = await fetch(`${baseUrl ?? DEFAULT_BASE_URL()}/api/generate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: model ?? DEFAULT_MODEL(),
+      prompt,
+      system,
+      stream: false,
+      format: "json",
+    }),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => res.status.toString());
+    throw new Error(`Ollama generate failed (${res.status}): ${text}`);
+  }
+  const data = (await res.json()) as { response: string };
+  return JSON.parse(data.response.trim()) as T;
+}
+
+/**
+ * Embedding. Supports new `/api/embed` (v0.5+) and legacy `/api/embeddings`.
+ */
+export async function embedText(
+  text: string,
+  model?: string,
+  baseUrl?: string,
+): Promise<number[]> {
+  const base = baseUrl ?? DEFAULT_BASE_URL();
   const embedModel = model ?? DEFAULT_EMBED_MODEL();
-  // Try new API first
-  const res = await fetch(`${BASE()}/api/embed`, {
+
+  const res = await fetch(`${base}/api/embed`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ model: embedModel, input: text }),
@@ -100,28 +127,24 @@ export async function embedText(text: string, model?: string): Promise<number[]>
     return vec;
   }
   // Fall back to legacy endpoint
-  const res2 = await fetch(`${BASE()}/api/embeddings`, {
+  const res2 = await fetch(`${base}/api/embeddings`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ model: embedModel, prompt: text }),
   });
-  if (!res2.ok) {
-    throw new Error(`Ollama embed failed (${res2.status})`);
-  }
+  if (!res2.ok) throw new Error(`Ollama embed failed (${res2.status})`);
   const data2 = (await res2.json()) as { embedding: number[] };
   return data2.embedding;
 }
 
-/**
- * Async generator that yields text tokens from a streaming Ollama generate call.
- * @param model  Override the default model.
- */
+/** Streaming token generator. */
 export async function* generateStream(
   prompt: string,
   system?: string,
   model?: string,
+  baseUrl?: string,
 ): AsyncGenerator<string> {
-  const res = await fetch(`${BASE()}/api/generate`, {
+  const res = await fetch(`${baseUrl ?? DEFAULT_BASE_URL()}/api/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

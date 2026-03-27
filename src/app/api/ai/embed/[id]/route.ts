@@ -14,7 +14,7 @@ import { getSessionDEK, isDEKResult } from "@/lib/api-helpers";
 import { prisma } from "@/lib/prisma";
 import { decryptString } from "@/lib/crypto";
 import { isOllamaAvailable, embedText } from "@/lib/ollama";
-import { getAiModels } from "@/lib/ai/config";
+import { getOllamaConfig } from "@/lib/ai/config";
 
 export async function POST(
   _req: NextRequest,
@@ -25,21 +25,16 @@ export async function POST(
   if (!isDEKResult(auth)) return auth;
   const { dek } = auth;
 
-  if (!(await isOllamaAvailable())) {
-    return NextResponse.json(
-      { error: "Ollama is not available" },
-      { status: 503 },
-    );
+  const { baseUrl, embedModel } = await getOllamaConfig();
+  if (!(await isOllamaAvailable(baseUrl))) {
+    return NextResponse.json({ error: "Ollama is not available" }, { status: 503 });
   }
 
   const entry = await prisma.entry.findUnique({ where: { id } });
-  if (!entry) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
+  if (!entry) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const { embedModel } = await getAiModels();
   const plain = decryptString(entry.body, dek);
-  const vector = await embedText(plain, embedModel);
+  const vector = await embedText(plain, embedModel, baseUrl);
 
   // pgvector expects the literal string "[n1,n2,...]"
   const vecLiteral = `[${vector.join(",")}]`;
