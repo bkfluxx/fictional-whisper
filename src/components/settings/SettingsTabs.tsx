@@ -5,13 +5,15 @@ import PasswordChangeForm from "./PasswordChangeForm";
 import ExportSection from "./ExportSection";
 import ImportSection from "./ImportSection";
 import AiModelsSettings from "./AiModelsSettings";
+import TemplatesSettings from "./TemplatesSettings";
 
-type Tab = "security" | "import-export" | "ai";
+type Tab = "security" | "import-export" | "ai" | "templates";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "security", label: "Security" },
   { id: "import-export", label: "Import / Export" },
   { id: "ai", label: "AI settings" },
+  { id: "templates", label: "Templates" },
 ];
 
 export default function SettingsTabs() {
@@ -91,6 +93,19 @@ export default function SettingsTabs() {
             </p>
           </div>
           <AiModelsSettings />
+        </section>
+      )}
+
+      {active === "templates" && (
+        <section>
+          <div className="mb-5">
+            <h2 className="text-base font-medium text-white">Templates</h2>
+            <p className="text-sm text-neutral-500 mt-0.5">
+              Built-in templates are always available. Create your own to save
+              custom prompt structures for any journaling practice.
+            </p>
+          </div>
+          <TemplatesSettings />
         </section>
       )}
     </div>

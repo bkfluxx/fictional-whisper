@@ -16,18 +16,20 @@ type SaveState = "saved" | "saving" | "unsaved" | "error";
 
 interface EntryFormProps {
   initial?: DecryptedEntry;
+  initialBody?: string;
+  initialCategories?: string[];
 }
 
-export default function EntryForm({ initial }: EntryFormProps) {
+export default function EntryForm({ initial, initialBody, initialCategories }: EntryFormProps) {
   const _router = useRouter();
   const [title, setTitle] = useState(initial?.title ?? "");
-  const [body, setBody] = useState(initial?.body ?? "");
+  const [body, setBody] = useState(initial?.body ?? initialBody ?? "");
   const [tags, setTags] = useState(
     initial?.tags.map((t) => t.name).join(", ") ?? "",
   );
   const [mood, setMood] = useState(initial?.mood ?? "");
   const [categories, setCategories] = useState<string[]>(
-    initial?.categories ?? [],
+    initial?.categories ?? initialCategories ?? [],
   );
   const [saveState, setSaveState] = useState<SaveState>(
     initial ? "saved" : "unsaved",
