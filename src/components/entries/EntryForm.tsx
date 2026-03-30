@@ -35,8 +35,10 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
     initial ? "saved" : "unsaved",
   );
   const [aiOpen, setAiOpen] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const entryIdRef = useRef<string | null>(initial?.id ?? null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pickerRef = useRef<HTMLDivElement>(null);
 
   const save = useCallback(
     async (
@@ -101,6 +103,16 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
     setCategories(next);
     scheduleSave(body, title, tags, mood, next);
   }
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+        setPickerOpen(false);
+      }
+    }
+    if (pickerOpen) document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [pickerOpen]);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -196,25 +208,58 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
           </select>
         </div>
 
-        {/* Category pills */}
-        <div className="flex flex-wrap gap-1.5">
-          {JOURNAL_TYPES.map((jt) => {
-            const active = categories.includes(jt.id);
+        {/* Category chips + popover picker */}
+        <div className="relative flex flex-wrap items-center gap-1.5" ref={pickerRef}>
+          {categories.map((id) => {
+            const jt = JOURNAL_TYPES.find((j) => j.id === id);
             return (
-              <button
-                key={jt.id}
-                type="button"
-                onClick={() => toggleCategory(jt.id)}
-                className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                  active
-                    ? "bg-indigo-600 border-indigo-500 text-white"
-                    : "bg-transparent border-neutral-700 text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
-                }`}
+              <span
+                key={id}
+                className="flex items-center gap-1 text-xs px-2 py-0.5 bg-indigo-950 border border-indigo-800 text-indigo-300 rounded-full"
               >
-                {jt.emoji} {jt.name}
-              </button>
+                {jt ? `${jt.emoji} ${jt.name}` : id}
+                <button
+                  type="button"
+                  onClick={() => toggleCategory(id)}
+                  className="ml-0.5 text-indigo-400 hover:text-white transition-colors leading-none"
+                >
+                  ×
+                </button>
+              </span>
             );
           })}
+          <button
+            type="button"
+            onClick={() => setPickerOpen((o) => !o)}
+            className="text-xs px-2 py-0.5 text-neutral-600 hover:text-neutral-300 border border-neutral-800 hover:border-neutral-600 rounded-full transition-colors"
+          >
+            + category
+          </button>
+
+          {pickerOpen && (
+            <div className="absolute top-full left-0 mt-1.5 z-20 bg-neutral-900 border border-neutral-700 rounded-xl p-2 shadow-2xl w-72">
+              <div className="grid grid-cols-2 gap-0.5">
+                {JOURNAL_TYPES.map((jt) => {
+                  const active = categories.includes(jt.id);
+                  return (
+                    <button
+                      key={jt.id}
+                      type="button"
+                      onClick={() => toggleCategory(jt.id)}
+                      className={`flex items-center gap-2 text-xs px-2.5 py-1.5 rounded-lg transition-colors text-left ${
+                        active
+                          ? "bg-indigo-600 text-white"
+                          : "text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
+                      }`}
+                    >
+                      <span className="shrink-0">{jt.emoji}</span>
+                      <span className="truncate">{jt.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Editor */}
