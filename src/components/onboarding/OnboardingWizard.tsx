@@ -50,7 +50,7 @@ export default function OnboardingWizard() {
     if (!ollamaUrl.trim()) return;
     setTestState("testing");
     try {
-      const url = new URL("/api/ai/models", window.location.origin);
+      const url = new URL("/api/ai/ping", window.location.origin);
       url.searchParams.set("url", ollamaUrl.trim());
       const res = await fetch(url.toString());
       const data = await res.json();
