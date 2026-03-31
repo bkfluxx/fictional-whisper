@@ -201,7 +201,7 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
                 <select
                   value={chatModel}
                   onChange={(e) => setChatModel(e.target.value)}
-                  className="w-full bg-base-300 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500"
                 >
                   <option value={DEFAULT_CHAT_MODEL}>{DEFAULT_CHAT_MODEL} (recommended)</option>
                   {models
@@ -218,7 +218,7 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
                     ))}
                 </select>
               ) : (
-                <div className="text-sm text-base-content/40 bg-base-300 rounded-lg px-3 py-1.5">
+                <div className="text-sm text-base-content/40 bg-base-100 rounded-lg px-3 py-1.5">
                   {DEFAULT_CHAT_MODEL} (will be downloaded)
                 </div>
               )}
@@ -251,7 +251,7 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
                 <select
                   value={embedModel}
                   onChange={(e) => setEmbedModel(e.target.value)}
-                  className="w-full bg-base-300 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500"
                 >
                   <option value={DEFAULT_EMBED_MODEL}>{DEFAULT_EMBED_MODEL} (recommended)</option>
                   {models
@@ -268,7 +268,7 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
                     ))}
                 </select>
               ) : (
-                <div className="text-sm text-base-content/40 bg-base-300 rounded-lg px-3 py-1.5">
+                <div className="text-sm text-base-content/40 bg-base-100 rounded-lg px-3 py-1.5">
                   {DEFAULT_EMBED_MODEL} (will be downloaded)
                 </div>
               )}

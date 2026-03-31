@@ -75,8 +75,8 @@ function NavLink({
       href={href}
       className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
         isActive
-          ? "bg-base-300 text-base-content font-medium"
-          : "text-base-content/60 hover:bg-base-200 hover:text-base-content"
+          ? "bg-base-content/10 text-base-content font-medium"
+          : "text-base-content/60 hover:bg-base-content/5 hover:text-base-content"
       }`}
     >
       {icon}

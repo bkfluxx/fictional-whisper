@@ -11,7 +11,7 @@ function TemplateCard({ template }: { template: AnyTemplate }) {
   return (
     <Link
       href={`/journal/new?from=${template.id}`}
-      className="group flex flex-col gap-2 p-4 bg-base-200 border border-base-200 rounded-xl hover:border-base-content/30 hover:bg-base-300/60 transition-all"
+      className="group flex flex-col gap-2 p-4 bg-base-200 border border-base-200 rounded-xl hover:border-base-content/30 hover:bg-base-content/8 transition-all"
     >
       <div className="flex items-center gap-2">
         <span className="text-xl">{template.emoji}</span>

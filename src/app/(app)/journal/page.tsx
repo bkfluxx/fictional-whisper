@@ -110,7 +110,7 @@ export default async function JournalPage({
       ) : (
         <div className="relative">
           {/* Continuous vertical timeline line */}
-          <div className="absolute left-[7.5rem] top-2 bottom-2 w-px bg-base-300" />
+          <div className="absolute left-[8rem] top-2 bottom-2 w-px bg-base-300" />
 
           {days.map((day) => {
             const dayEntries = grouped.get(day)!;
@@ -157,7 +157,7 @@ export default async function JournalPage({
                         <div className="flex-1 ml-4">
                           <Link
                             href={`/journal/${e.id}`}
-                            className="block px-4 py-3 bg-base-200 hover:bg-base-300 rounded-xl transition-colors"
+                            className="block px-4 py-3 bg-base-200 hover:bg-base-content/8 rounded-xl transition-colors"
                           >
                             <div className="flex items-start justify-between gap-3">
                               <span className="text-sm font-bold text-base-content leading-snug tracking-wide uppercase">
@@ -175,7 +175,7 @@ export default async function JournalPage({
                             {(e.categories.length > 0 || e.tags.length > 0 || e.mood) && (
                               <div className="flex gap-1 mt-2 flex-wrap items-center">
                                 {e.mood && (
-                                  <span className="text-xs px-2 py-0.5 bg-base-300 text-base-content/60 rounded-full capitalize">
+                                  <span className="text-xs px-2 py-0.5 bg-base-content/10 text-base-content/60 rounded-full capitalize">
                                     {e.mood}
                                   </span>
                                 )}
@@ -193,7 +193,7 @@ export default async function JournalPage({
                                 {e.tags.map((t) => (
                                   <span
                                     key={t.id}
-                                    className="text-xs px-2 py-0.5 bg-base-300 text-base-content/60 rounded-full"
+                                    className="text-xs px-2 py-0.5 bg-base-content/10 text-base-content/60 rounded-full"
                                   >
                                     #{t.name}
                                   </span>

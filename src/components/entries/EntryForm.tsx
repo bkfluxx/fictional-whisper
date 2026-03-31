@@ -158,7 +158,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
             className={`shrink-0 p-1.5 rounded-lg transition-colors ${
               aiOpen
                 ? "bg-indigo-600 text-white"
-                : "text-base-content/40 hover:text-base-content/80 hover:bg-base-300"
+                : "text-base-content/40 hover:text-base-content/80 hover:bg-base-content/8"
             }`}
           >
             <svg
@@ -249,7 +249,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
                       className={`flex items-center gap-2 text-xs px-2.5 py-1.5 rounded-lg transition-colors text-left ${
                         active
                           ? "bg-indigo-600 text-white"
-                          : "text-base-content/60 hover:bg-base-300 hover:text-base-content"
+                          : "text-base-content/60 hover:bg-base-content/8 hover:text-base-content"
                       }`}
                     >
                       <span className="shrink-0">{jt.emoji}</span>

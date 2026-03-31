@@ -89,7 +89,7 @@ export default function SetupPage() {
               autoFocus
               autoComplete="new-password"
               placeholder="At least 8 characters"
-              className="w-full px-3 py-2 bg-base-300 border border-base-content/20 rounded-lg text-base-content placeholder-base-content/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-base-100 border border-base-content/20 rounded-lg text-base-content placeholder-base-content/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             />
             {weak && (
               <p className="text-xs text-warning mt-1">
@@ -108,7 +108,7 @@ export default function SetupPage() {
               onChange={(e) => setConfirm(e.target.value)}
               autoComplete="new-password"
               placeholder="Re-enter your password"
-              className={`w-full px-3 py-2 bg-base-300 border rounded-lg text-base-content placeholder-base-content/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
+              className={`w-full px-3 py-2 bg-base-100 border rounded-lg text-base-content placeholder-base-content/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
                 mismatch ? "border-error" : "border-base-content/20"
               }`}
             />

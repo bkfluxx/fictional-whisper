@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @plugin "flyonui" {
-  themes: light --default, dark --prefersdark;
+  themes: light --default, dark, corporate, ghibli, gourmet, luxury, mintlify, pastel, soft, black, marshmallow;
 }
 
 @plugin "@tailwindcss/typography";

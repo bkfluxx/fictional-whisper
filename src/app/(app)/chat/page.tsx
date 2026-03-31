@@ -266,8 +266,8 @@ export default function ChatPage() {
                 onClick={() => openSession(s.id)}
                 className={`group flex items-start gap-2 px-3 py-2.5 cursor-pointer rounded-lg mx-1 transition-colors ${
                   activeSessionId === s.id
-                    ? "bg-base-300 text-base-content"
-                    : "text-base-content/60 hover:bg-base-200 hover:text-base-content"
+                    ? "bg-base-content/10 text-base-content"
+                    : "text-base-content/60 hover:bg-base-content/5 hover:text-base-content"
                 }`}
               >
                 <div className="flex-1 min-w-0">
@@ -340,7 +340,7 @@ export default function ChatPage() {
                   <button
                     key={suggestion}
                     onClick={() => setInput(suggestion)}
-                    className="text-xs px-3 py-1.5 bg-base-200 hover:bg-base-300 border border-base-content/20 text-base-content/60 rounded-full transition-colors"
+                    className="text-xs px-3 py-1.5 bg-base-200 hover:bg-base-content/10 border border-base-content/20 text-base-content/60 rounded-full transition-colors"
                   >
                     {suggestion}
                   </button>
@@ -382,12 +382,12 @@ export default function ChatPage() {
                     </p>
                     <div className="flex items-center gap-2 flex-wrap">
                       {msg.entryDraft.categories?.map((c) => (
-                        <span key={c} className="text-xs px-2 py-0.5 rounded-full bg-base-300 text-base-content/60">
+                        <span key={c} className="text-xs px-2 py-0.5 rounded-full bg-base-content/10 text-base-content/60">
                           {c}
                         </span>
                       ))}
                       {msg.entryDraft.mood && (
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-base-300 text-base-content/60">
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-base-content/10 text-base-content/60">
                           {msg.entryDraft.mood}
                         </span>
                       )}

@@ -203,7 +203,7 @@ export default function WhisperChatStep({
               className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                 msg.role === "user"
                   ? "bg-indigo-600 text-white rounded-br-sm"
-                  : "bg-base-300 text-base-content rounded-bl-sm"
+                  : "bg-base-content/10 text-base-content rounded-bl-sm"
               }`}
             >
               {msg.content || (
