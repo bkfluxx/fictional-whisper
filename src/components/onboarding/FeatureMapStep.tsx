@@ -1,0 +1,108 @@
+"use client";
+
+interface Props {
+  userName?: string;
+  aiEnabled: boolean;
+  onContinue: () => void;
+  onBack: () => void;
+}
+
+const FEATURES = [
+  {
+    icon: "📖",
+    name: "Journal",
+    description:
+      "Write entries, set your mood, and categorise your thoughts. Every word is encrypted on your device.",
+  },
+  {
+    icon: "📅",
+    name: "Calendar",
+    description:
+      "Browse your entries by date. See which days you wrote and revisit past moments at a glance.",
+  },
+  {
+    icon: "💬",
+    name: "Chat",
+    description:
+      "Ask Whisper anything about your journal. Semantic search finds entries by meaning, not just keywords.",
+    aiOnly: true,
+  },
+  {
+    icon: "📊",
+    name: "Analytics",
+    description:
+      "Track your streak, mood trends, and writing habits over time with visual charts and a heatmap.",
+  },
+  {
+    icon: "⚙️",
+    name: "Settings",
+    description:
+      "Change your password, configure AI models, manage templates, and import or export your data.",
+  },
+];
+
+export default function FeatureMapStep({
+  userName,
+  aiEnabled,
+  onContinue,
+  onBack,
+}: Props) {
+  const greeting = userName ? `You're all set, ${userName}!` : "You're all set!";
+
+  return (
+    <div className="max-w-lg mx-auto px-6 py-12">
+      <div className="text-center mb-10">
+        <div className="text-5xl mb-4">🎉</div>
+        <h2 className="text-2xl font-semibold text-white mb-2">{greeting}</h2>
+        <p className="text-neutral-400 text-sm">
+          Here&apos;s a quick look at what&apos;s waiting for you.
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        {FEATURES.filter((f) => !f.aiOnly || aiEnabled).map((feature) => (
+          <div
+            key={feature.name}
+            className="flex items-start gap-4 bg-neutral-900 rounded-xl p-4"
+          >
+            <div className="text-2xl shrink-0">{feature.icon}</div>
+            <div>
+              <div className="text-sm font-medium text-white flex items-center gap-2">
+                {feature.name}
+                {feature.aiOnly && (
+                  <span className="text-xs bg-indigo-900 text-indigo-300 px-1.5 py-0.5 rounded-full">
+                    AI
+                  </span>
+                )}
+              </div>
+              <div className="text-xs text-neutral-400 mt-0.5 leading-relaxed">
+                {feature.description}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {!aiEnabled && (
+        <p className="text-xs text-neutral-500 mt-4 text-center">
+          You can enable AI features anytime in Settings → AI settings.
+        </p>
+      )}
+
+      <div className="mt-8 flex items-center justify-between">
+        <button
+          onClick={onBack}
+          className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
+        >
+          ← Back
+        </button>
+        <button
+          onClick={onContinue}
+          className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl transition-colors"
+        >
+          Start journaling →
+        </button>
+      </div>
+    </div>
+  );
+}

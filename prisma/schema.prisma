@@ -125,10 +125,14 @@ model AppSettings {
   lastBackupSuccess   Boolean?
   lastBackupSizeBytes Int?
   // Onboarding
-  onboardingDone      Boolean   @default(false)
+  onboardingDone        Boolean  @default(false)
+  // User profile collected during onboarding
+  userName              String?
+  journalingIntention   String[] @default([]) // e.g. ["self-reflection", "gratitude"]
+  writingStyle          String?              // "prompts" | "blank"
   // AI configuration (null = fall back to env vars)
-  ollamaBaseUrl       String?   // overrides OLLAMA_BASE_URL; set during onboarding or in Settings
-  ollamaModel         String?
-  ollamaEmbedModel    String?
-  chatSystemPrompt    String?   // custom system prompt for RAG chat (null = use hardcoded default)
+  ollamaBaseUrl         String?  // overrides OLLAMA_BASE_URL; set during onboarding or in Settings
+  ollamaModel           String?
+  ollamaEmbedModel      String?
+  chatSystemPrompt      String?  // custom system prompt for RAG chat (null = use hardcoded default)
 }

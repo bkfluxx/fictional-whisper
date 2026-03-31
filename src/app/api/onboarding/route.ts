@@ -10,13 +10,35 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { ollamaBaseUrl } = body as { ollamaBaseUrl?: string };
+  const {
+    ollamaBaseUrl,
+    ollamaModel,
+    ollamaEmbedModel,
+    userName,
+    journalingIntention,
+    writingStyle,
+  } = body as {
+    ollamaBaseUrl?: string;
+    ollamaModel?: string;
+    ollamaEmbedModel?: string;
+    userName?: string;
+    journalingIntention?: string[];
+    writingStyle?: string;
+  };
 
-  const aiFields = ollamaBaseUrl ? { ollamaBaseUrl } : {};
+  const fields = {
+    ...(ollamaBaseUrl !== undefined ? { ollamaBaseUrl } : {}),
+    ...(ollamaModel ? { ollamaModel } : {}),
+    ...(ollamaEmbedModel ? { ollamaEmbedModel } : {}),
+    ...(userName ? { userName } : {}),
+    ...(journalingIntention ? { journalingIntention } : {}),
+    ...(writingStyle ? { writingStyle } : {}),
+  };
+
   await prisma.appSettings.upsert({
     where: { id: "singleton" },
-    update: { onboardingDone: true, ...aiFields },
-    create: { id: "singleton", onboardingDone: true, ...aiFields },
+    update: { onboardingDone: true, ...fields },
+    create: { id: "singleton", onboardingDone: true, ...fields },
   });
 
   return NextResponse.json({ ok: true });
