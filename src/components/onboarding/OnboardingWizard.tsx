@@ -46,7 +46,7 @@ function ProgressBar({ current, aiPath }: { current: Step; aiPath: boolean }) {
   if (idx < 0) return null;
 
   return (
-    <div className="fixed top-0 left-0 right-0 h-0.5 bg-neutral-800 z-50">
+    <div className="fixed top-0 left-0 right-0 h-0.5 bg-base-300 z-50">
       <div
         className="h-full bg-indigo-500 transition-all duration-500"
         style={{ width: `${((idx + 1) / steps.length) * 100}%` }}
@@ -62,7 +62,7 @@ function SkipLink({ onSkip }: { onSkip: () => void }) {
     <div className="fixed top-4 right-6 z-50">
       <button
         onClick={onSkip}
-        className="text-xs text-neutral-600 hover:text-neutral-400 transition-colors"
+        className="text-xs text-base-content/30 hover:text-base-content/60 transition-colors"
       >
         Skip setup →
       </button>
@@ -108,7 +108,8 @@ export default function OnboardingWizard() {
         }),
       });
       if (!res.ok) throw new Error(await res.text());
-      router.push("/journal");
+      // Send user straight to new entry so they start writing immediately
+      router.push("/journal/new");
     } catch {
       setError("Something went wrong. Please try again.");
       setSaving(false);
@@ -152,10 +153,10 @@ export default function OnboardingWizard() {
         <SkipLink onSkip={skipAll} />
         <div className="text-6xl">📖</div>
         <div className="text-center max-w-lg">
-          <h1 className="text-3xl font-semibold text-white mb-3">
+          <h1 className="text-3xl font-semibold text-base-content mb-3">
             Welcome to Fictional Whisper
           </h1>
-          <p className="text-neutral-400 text-lg leading-relaxed">
+          <p className="text-base-content/60 text-lg leading-relaxed">
             Your private, encrypted space for everything that matters. Let&rsquo;s
             get you set up in just a moment.
           </p>
@@ -178,11 +179,11 @@ export default function OnboardingWizard() {
         <SkipLink onSkip={skipAll} />
 
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-white mb-2">
+          <h2 className="text-2xl font-semibold text-base-content mb-2">
             Connect AI assistant{" "}
-            <span className="text-neutral-500 font-normal text-lg">(optional)</span>
+            <span className="text-base-content/40 font-normal text-lg">(optional)</span>
           </h2>
-          <p className="text-neutral-400 text-sm">
+          <p className="text-base-content/60 text-sm">
             Point to your Ollama instance to enable Whisper — your AI journaling companion,
             semantic search, and writing prompts. You can skip this and set it up later in
             Settings.
@@ -190,7 +191,7 @@ export default function OnboardingWizard() {
         </div>
 
         <div className="space-y-3">
-          <label className="block text-sm font-medium text-neutral-300">Ollama URL</label>
+          <label className="block text-sm font-medium text-base-content/80">Ollama URL</label>
           <div className="flex gap-2">
             <input
               type="url"
@@ -200,12 +201,12 @@ export default function OnboardingWizard() {
                 setTestState("idle");
               }}
               placeholder="http://localhost:11434"
-              className="flex-1 bg-neutral-900 border border-neutral-700 text-white text-sm rounded-xl px-4 py-2.5 placeholder-neutral-600 focus:outline-none focus:border-indigo-500"
+              className="flex-1 bg-base-200 border border-base-content/20 text-base-content text-sm rounded-xl px-4 py-2.5 placeholder-base-content/30 focus:outline-none focus:border-indigo-500"
             />
             <button
               onClick={testConnection}
               disabled={!ollamaUrl.trim() || testState === "testing"}
-              className="px-4 py-2.5 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-40 text-neutral-200 text-sm rounded-xl transition-colors"
+              className="px-4 py-2.5 bg-base-300 hover:bg-base-content/20 disabled:opacity-40 text-base-content text-sm rounded-xl transition-colors"
             >
               {testState === "testing" ? "Testing…" : "Test"}
             </button>
@@ -226,7 +227,7 @@ export default function OnboardingWizard() {
         <div className="mt-10 flex items-center justify-between">
           <button
             onClick={() => setStep("welcome")}
-            className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
+            className="text-sm text-base-content/40 hover:text-base-content/80 transition-colors"
           >
             ← Back
           </button>
@@ -237,7 +238,7 @@ export default function OnboardingWizard() {
                 setAiPath(false);
                 setStep("about-you");
               }}
-              className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
+              className="text-sm text-base-content/40 hover:text-base-content/80 transition-colors"
             >
               Skip AI
             </button>
@@ -332,8 +333,8 @@ export default function OnboardingWizard() {
     <div className="flex flex-col items-center justify-center min-h-screen gap-6 px-6">
       <div className="text-5xl">✨</div>
       <div className="text-center max-w-sm">
-        <h2 className="text-2xl font-semibold text-white mb-2">Ready to write</h2>
-        <p className="text-neutral-400 text-sm">
+        <h2 className="text-2xl font-semibold text-base-content mb-2">Ready to write</h2>
+        <p className="text-base-content/60 text-sm">
           {profile.userName
             ? `Your journal is set up, ${profile.userName}. Time to write your first entry.`
             : "Your journal is set up. Time to write your first entry."}
@@ -345,7 +346,7 @@ export default function OnboardingWizard() {
       <div className="flex gap-3">
         <button
           onClick={() => setStep("feature-map")}
-          className="px-5 py-2.5 text-neutral-400 hover:text-neutral-200 transition-colors text-sm"
+          className="px-5 py-2.5 text-base-content/60 hover:text-base-content transition-colors text-sm"
         >
           ← Back
         </button>

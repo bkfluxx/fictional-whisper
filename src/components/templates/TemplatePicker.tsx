@@ -11,21 +11,21 @@ function TemplateCard({ template }: { template: AnyTemplate }) {
   return (
     <Link
       href={`/journal/new?from=${template.id}`}
-      className="group flex flex-col gap-2 p-4 bg-neutral-900 border border-neutral-800 rounded-xl hover:border-neutral-600 hover:bg-neutral-800/60 transition-all"
+      className="group flex flex-col gap-2 p-4 bg-base-200 border border-base-200 rounded-xl hover:border-base-content/30 hover:bg-base-300/60 transition-all"
     >
       <div className="flex items-center gap-2">
         <span className="text-xl">{template.emoji}</span>
-        <span className="text-sm font-medium text-white group-hover:text-indigo-300 transition-colors">
+        <span className="text-sm font-medium text-base-content group-hover:text-indigo-300 transition-colors">
           {template.title}
         </span>
         {!template.isBuiltIn && (
-          <span className="ml-auto text-[10px] text-neutral-600 border border-neutral-700 rounded px-1">
+          <span className="ml-auto text-[10px] text-base-content/30 border border-base-content/20 rounded px-1">
             custom
           </span>
         )}
       </div>
       {template.description && (
-        <p className="text-xs text-neutral-500 leading-relaxed">{template.description}</p>
+        <p className="text-xs text-base-content/40 leading-relaxed">{template.description}</p>
       )}
     </Link>
   );
@@ -47,8 +47,8 @@ export default function TemplatePicker({ userTemplates }: TemplatePickerProps) {
     <div className="max-w-3xl mx-auto px-6 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-xl font-semibold text-white">New entry</h1>
-          <p className="text-sm text-neutral-500 mt-0.5">
+          <h1 className="text-xl font-semibold text-base-content">New entry</h1>
+          <p className="text-sm text-base-content/40 mt-0.5">
             Start from a template or jump straight to a blank page
           </p>
         </div>
@@ -68,7 +68,7 @@ export default function TemplatePicker({ userTemplates }: TemplatePickerProps) {
       {/* User templates */}
       {userMapped.length > 0 && (
         <section className="mb-8">
-          <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-widest mb-3">
+          <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-3">
             My templates
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -84,7 +84,7 @@ export default function TemplatePicker({ userTemplates }: TemplatePickerProps) {
         const groupTemplates = BUILT_IN_TEMPLATES.filter((t) => t.group === group);
         return (
           <section key={group} className="mb-8">
-            <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-widest mb-3">
+            <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-3">
               {group}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

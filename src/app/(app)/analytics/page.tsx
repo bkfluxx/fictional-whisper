@@ -173,10 +173,10 @@ export default async function AnalyticsPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-8">
-      <h1 className="text-xl font-semibold text-white mb-8">Analytics</h1>
+      <h1 className="text-xl font-semibold text-base-content mb-8">Analytics</h1>
 
       {totalEntries === 0 ? (
-        <p className="text-neutral-500">
+        <p className="text-base-content/40">
           No entries yet — start writing and your stats will appear here.
         </p>
       ) : (
@@ -205,7 +205,7 @@ export default async function AnalyticsPage() {
 
           {/* Activity heatmap */}
           <section className="mb-10">
-            <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-widest mb-4">
+            <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-4">
               Activity — last 52 weeks
             </h2>
             <ActivityHeatmap weeks={heatmapWeeks} />
@@ -214,14 +214,14 @@ export default async function AnalyticsPage() {
           {/* Monthly + Day of week */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
             <section>
-              <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-widest mb-4">
+              <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-4">
                 Entries per month
               </h2>
               <MonthlyBars data={monthlyData} />
             </section>
 
             <section>
-              <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-widest mb-4">
+              <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-4">
                 Day of week
               </h2>
               <div>
@@ -241,11 +241,11 @@ export default async function AnalyticsPage() {
           {/* Mood + Categories */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <section>
-              <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-widest mb-4">
+              <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-4">
                 Mood breakdown
               </h2>
               {moodBreakdown.length === 0 ? (
-                <p className="text-sm text-neutral-600">No mood data yet.</p>
+                <p className="text-sm text-base-content/30">No mood data yet.</p>
               ) : (
                 moodBreakdown.map(([mood, count]) => (
                   <HorizontalBar
@@ -260,11 +260,11 @@ export default async function AnalyticsPage() {
             </section>
 
             <section>
-              <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-widest mb-4">
+              <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-4">
                 Top categories
               </h2>
               {categoryBreakdown.length === 0 ? (
-                <p className="text-sm text-neutral-600">No categories used yet.</p>
+                <p className="text-sm text-base-content/30">No categories used yet.</p>
               ) : (
                 categoryBreakdown.map(({ name, count }) => (
                   <HorizontalBar

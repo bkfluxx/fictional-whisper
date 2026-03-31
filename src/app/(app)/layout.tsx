@@ -21,17 +21,17 @@ export default async function AppLayout({
   if (!settings?.onboardingDone) redirect("/onboarding");
 
   return (
-    <div className="flex h-screen bg-neutral-950 text-neutral-100 overflow-hidden">
-      <aside className="w-56 shrink-0 border-r border-neutral-800 flex flex-col py-5 px-3">
+    <div className="flex h-screen bg-base-100 text-base-content overflow-hidden">
+      <aside className="w-56 shrink-0 border-r border-base-200 flex flex-col py-5 px-3">
         <div className="px-3 mb-5">
-          <span className="text-xs font-semibold text-neutral-400 uppercase tracking-widest">
+          <span className="text-xs font-semibold text-base-content/40 uppercase tracking-widest">
             Fictional Whisper
           </span>
         </div>
 
         <SidebarNav />
 
-        <div className="mt-auto pt-4 border-t border-neutral-800">
+        <div className="mt-auto pt-4 border-t border-base-200">
           <SearchBar />
         </div>
       </aside>

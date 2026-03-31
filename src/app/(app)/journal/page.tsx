@@ -46,7 +46,7 @@ export default async function JournalPage({
   return (
     <div className="max-w-3xl mx-auto px-6 py-8">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-xl font-semibold text-white">{heading}</h1>
+        <h1 className="text-xl font-semibold text-base-content">{heading}</h1>
         <Link
           href="/journal/new"
           className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors"
@@ -56,7 +56,7 @@ export default async function JournalPage({
       </div>
 
       {entries.length === 0 ? (
-        <p className="text-neutral-500 text-sm">No entries yet. Start writing!</p>
+        <p className="text-base-content/40 text-sm">No entries yet. Start writing!</p>
       ) : (
         <ul className="space-y-3">
           {entries.map((e) => {
@@ -65,15 +65,15 @@ export default async function JournalPage({
               <li key={e.id}>
                 <Link
                   href={`/journal/${e.id}`}
-                  className="block px-4 py-3 bg-neutral-900 hover:bg-neutral-800 rounded-xl transition-colors"
+                  className="block px-4 py-3 bg-base-200 hover:bg-base-300 rounded-xl transition-colors"
                 >
                   <div className="flex items-baseline justify-between gap-4">
-                    <span className="text-white font-medium truncate">
+                    <span className="text-base-content font-medium truncate">
                       {title ?? (
-                        <span className="text-neutral-500 italic">Untitled</span>
+                        <span className="text-base-content/40 italic">Untitled</span>
                       )}
                     </span>
-                    <span className="text-xs text-neutral-500 shrink-0">
+                    <span className="text-xs text-base-content/40 shrink-0">
                       {new Date(e.entryDate).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
@@ -97,7 +97,7 @@ export default async function JournalPage({
                       {e.tags.map((t) => (
                         <span
                           key={t.id}
-                          className="text-xs px-2 py-0.5 bg-neutral-800 text-neutral-400 rounded-full"
+                          className="text-xs px-2 py-0.5 bg-base-300 text-base-content/60 rounded-full"
                         >
                           {t.name}
                         </span>

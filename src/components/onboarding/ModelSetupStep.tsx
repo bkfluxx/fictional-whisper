@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 
-export const DEFAULT_CHAT_MODEL = "qwen3:5b";
+export const DEFAULT_CHAT_MODEL = "qwen3.5";
 export const DEFAULT_EMBED_MODEL = "qwen3-embedding";
 
 interface ModelInfo {
@@ -106,13 +106,13 @@ function ModelPuller({
   if (state === "pulling") {
     return (
       <div className="flex items-center gap-2 min-w-[140px]">
-        <div className="flex-1 h-1.5 bg-neutral-700 rounded-full overflow-hidden">
+        <div className="flex-1 h-1.5 bg-base-content/20 rounded-full overflow-hidden">
           <div
             className="h-full bg-indigo-500 rounded-full transition-all duration-300"
             style={{ width: `${progress.pct ?? 0}%` }}
           />
         </div>
-        <span className="text-xs text-neutral-400 shrink-0">
+        <span className="text-xs text-base-content/60 shrink-0">
           {progress.pct !== undefined ? `${progress.pct}%` : progress.status ?? "…"}
         </span>
       </div>
@@ -163,23 +163,23 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
   return (
     <div className="max-w-lg mx-auto px-6 py-12">
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold text-white mb-2">Set up AI models</h2>
-        <p className="text-neutral-400 text-sm">
+        <h2 className="text-2xl font-semibold text-base-content mb-2">Set up AI models</h2>
+        <p className="text-base-content/60 text-sm">
           Whisper needs two models — one for conversation and one for semantic search.
           We&apos;ll download them to your Ollama instance if they&apos;re not already there.
         </p>
       </div>
 
       {loading ? (
-        <div className="text-neutral-500 text-sm">Checking installed models…</div>
+        <div className="text-base-content/40 text-sm">Checking installed models…</div>
       ) : (
         <div className="space-y-4">
           {/* Chat model */}
-          <div className="bg-neutral-900 rounded-xl p-4 space-y-3">
+          <div className="bg-base-200 rounded-xl p-4 space-y-3">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="text-sm font-medium text-white">Chat model</div>
-                <div className="text-xs text-neutral-400 mt-0.5">
+                <div className="text-sm font-medium text-base-content">Chat model</div>
+                <div className="text-xs text-base-content/60 mt-0.5">
                   Used for journaling prompts, analysis, and conversations with Whisper
                 </div>
               </div>
@@ -196,12 +196,12 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
 
             {/* Model selector */}
             <div>
-              <label className="text-xs text-neutral-500 mb-1 block">Selected model</label>
+              <label className="text-xs text-base-content/40 mb-1 block">Selected model</label>
               {models.length > 0 ? (
                 <select
                   value={chatModel}
                   onChange={(e) => setChatModel(e.target.value)}
-                  className="w-full bg-neutral-800 border border-neutral-700 text-white text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-base-300 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500"
                 >
                   <option value={DEFAULT_CHAT_MODEL}>{DEFAULT_CHAT_MODEL} (recommended)</option>
                   {models
@@ -218,7 +218,7 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
                     ))}
                 </select>
               ) : (
-                <div className="text-sm text-neutral-500 bg-neutral-800 rounded-lg px-3 py-1.5">
+                <div className="text-sm text-base-content/40 bg-base-300 rounded-lg px-3 py-1.5">
                   {DEFAULT_CHAT_MODEL} (will be downloaded)
                 </div>
               )}
@@ -226,11 +226,11 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
           </div>
 
           {/* Embed model */}
-          <div className="bg-neutral-900 rounded-xl p-4 space-y-3">
+          <div className="bg-base-200 rounded-xl p-4 space-y-3">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="text-sm font-medium text-white">Embedding model</div>
-                <div className="text-xs text-neutral-400 mt-0.5">
+                <div className="text-sm font-medium text-base-content">Embedding model</div>
+                <div className="text-xs text-base-content/60 mt-0.5">
                   Used for semantic search — find entries by meaning, not just keywords
                 </div>
               </div>
@@ -246,12 +246,12 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
             </div>
 
             <div>
-              <label className="text-xs text-neutral-500 mb-1 block">Selected model</label>
+              <label className="text-xs text-base-content/40 mb-1 block">Selected model</label>
               {models.length > 0 ? (
                 <select
                   value={embedModel}
                   onChange={(e) => setEmbedModel(e.target.value)}
-                  className="w-full bg-neutral-800 border border-neutral-700 text-white text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-base-300 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500"
                 >
                   <option value={DEFAULT_EMBED_MODEL}>{DEFAULT_EMBED_MODEL} (recommended)</option>
                   {models
@@ -268,7 +268,7 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
                     ))}
                 </select>
               ) : (
-                <div className="text-sm text-neutral-500 bg-neutral-800 rounded-lg px-3 py-1.5">
+                <div className="text-sm text-base-content/40 bg-base-300 rounded-lg px-3 py-1.5">
                   {DEFAULT_EMBED_MODEL} (will be downloaded)
                 </div>
               )}
@@ -286,7 +286,7 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
       <div className="mt-10 flex items-center justify-between">
         <button
           onClick={onBack}
-          className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
+          className="text-sm text-base-content/40 hover:text-base-content/80 transition-colors"
         >
           ← Back
         </button>

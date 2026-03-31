@@ -185,9 +185,9 @@ export default function WhisperChatStep({
           <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-sm">
             ✦
           </div>
-          <span className="text-white font-medium">Whisper</span>
+          <span className="text-base-content font-medium">Whisper</span>
         </div>
-        <p className="text-xs text-neutral-500 ml-9">
+        <p className="text-xs text-base-content/40 ml-9">
           Have a quick conversation to personalise your experience
         </p>
       </div>
@@ -203,11 +203,11 @@ export default function WhisperChatStep({
               className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                 msg.role === "user"
                   ? "bg-indigo-600 text-white rounded-br-sm"
-                  : "bg-neutral-800 text-neutral-100 rounded-bl-sm"
+                  : "bg-base-300 text-base-content rounded-bl-sm"
               }`}
             >
               {msg.content || (
-                <span className="inline-flex gap-1 text-neutral-500">
+                <span className="inline-flex gap-1 text-base-content/40">
                   <span className="animate-pulse">●</span>
                   <span className="animate-pulse delay-75">●</span>
                   <span className="animate-pulse delay-150">●</span>
@@ -233,7 +233,7 @@ export default function WhisperChatStep({
           onKeyDown={handleKeyDown}
           disabled={streaming}
           placeholder="Type a message…"
-          className="flex-1 bg-neutral-900 border border-neutral-700 text-white text-sm rounded-xl px-4 py-2.5 placeholder-neutral-600 focus:outline-none focus:border-indigo-500 disabled:opacity-50"
+          className="flex-1 bg-base-200 border border-base-content/20 text-base-content text-sm rounded-xl px-4 py-2.5 placeholder-base-content/30 focus:outline-none focus:border-indigo-500 disabled:opacity-50"
           autoFocus
         />
         <button
@@ -248,7 +248,7 @@ export default function WhisperChatStep({
       <div className="mt-6 flex items-center justify-between">
         <button
           onClick={onBack}
-          className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
+          className="text-sm text-base-content/40 hover:text-base-content/80 transition-colors"
         >
           ← Back
         </button>
@@ -259,7 +259,7 @@ export default function WhisperChatStep({
           className={`px-6 py-2.5 rounded-xl font-medium text-sm transition-colors ${
             canFinish
               ? "bg-indigo-600 hover:bg-indigo-500 text-white"
-              : "text-neutral-500 hover:text-neutral-400"
+              : "text-base-content/40 hover:text-base-content/60"
           }`}
         >
           {canFinish ? "I'm ready →" : "Keep chatting to continue"}

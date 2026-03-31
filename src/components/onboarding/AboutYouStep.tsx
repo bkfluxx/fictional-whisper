@@ -37,15 +37,15 @@ export default function AboutYouStep({ onContinue, onBack }: Props) {
   return (
     <div className="max-w-lg mx-auto px-6 py-12 space-y-8">
       <div>
-        <h2 className="text-2xl font-semibold text-white mb-2">Tell us about yourself</h2>
-        <p className="text-neutral-400 text-sm">
+        <h2 className="text-2xl font-semibold text-base-content mb-2">Tell us about yourself</h2>
+        <p className="text-base-content/60 text-sm">
           A couple of quick questions so we can tailor your experience.
         </p>
       </div>
 
       {/* Name */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-neutral-300 block">
+        <label className="text-sm font-medium text-base-content/80 block">
           What should we call you?
         </label>
         <input
@@ -54,14 +54,14 @@ export default function AboutYouStep({ onContinue, onBack }: Props) {
           onChange={(e) => setName(e.target.value)}
           placeholder="Your name or nickname"
           autoFocus
-          className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm rounded-xl px-4 py-2.5 placeholder-neutral-600 focus:outline-none focus:border-indigo-500"
+          className="w-full bg-base-200 border border-base-content/20 text-base-content text-sm rounded-xl px-4 py-2.5 placeholder-base-content/30 focus:outline-none focus:border-indigo-500"
         />
       </div>
 
       {/* Intentions */}
       <div className="space-y-3">
-        <label className="text-sm font-medium text-neutral-300 block">
-          What brings you to journaling? <span className="text-neutral-500">(pick all that apply)</span>
+        <label className="text-sm font-medium text-base-content/80 block">
+          What brings you to journaling? <span className="text-base-content/40">(pick all that apply)</span>
         </label>
         <div className="flex flex-wrap gap-2">
           {INTENTIONS.map((item) => {
@@ -73,7 +73,7 @@ export default function AboutYouStep({ onContinue, onBack }: Props) {
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border transition-colors ${
                   active
                     ? "bg-indigo-600 border-indigo-600 text-white"
-                    : "bg-neutral-900 border-neutral-700 text-neutral-300 hover:border-neutral-500"
+                    : "bg-base-200 border-base-content/20 text-base-content/80 hover:border-base-content/40"
                 }`}
               >
                 <span>{item.emoji}</span>
@@ -86,7 +86,7 @@ export default function AboutYouStep({ onContinue, onBack }: Props) {
 
       {/* Writing style */}
       <div className="space-y-3">
-        <label className="text-sm font-medium text-neutral-300 block">
+        <label className="text-sm font-medium text-base-content/80 block">
           How do you prefer to write?
         </label>
         <div className="grid grid-cols-2 gap-3">
@@ -95,12 +95,12 @@ export default function AboutYouStep({ onContinue, onBack }: Props) {
             className={`p-4 rounded-xl border text-left transition-colors ${
               style === "prompts"
                 ? "bg-indigo-950 border-indigo-600"
-                : "bg-neutral-900 border-neutral-700 hover:border-neutral-500"
+                : "bg-base-200 border-base-content/20 hover:border-base-content/40"
             }`}
           >
             <div className="text-2xl mb-2">💬</div>
-            <div className="text-sm font-medium text-white">Give me prompts</div>
-            <div className="text-xs text-neutral-400 mt-1">
+            <div className="text-sm font-medium text-base-content">Give me prompts</div>
+            <div className="text-xs text-base-content/60 mt-1">
               Guided questions to get me thinking
             </div>
           </button>
@@ -109,12 +109,12 @@ export default function AboutYouStep({ onContinue, onBack }: Props) {
             className={`p-4 rounded-xl border text-left transition-colors ${
               style === "blank"
                 ? "bg-indigo-950 border-indigo-600"
-                : "bg-neutral-900 border-neutral-700 hover:border-neutral-500"
+                : "bg-base-200 border-base-content/20 hover:border-base-content/40"
             }`}
           >
             <div className="text-2xl mb-2">📄</div>
-            <div className="text-sm font-medium text-white">Blank page</div>
-            <div className="text-xs text-neutral-400 mt-1">
+            <div className="text-sm font-medium text-base-content">Blank page</div>
+            <div className="text-xs text-base-content/60 mt-1">
               I&apos;ll write freely without structure
             </div>
           </button>
@@ -124,7 +124,7 @@ export default function AboutYouStep({ onContinue, onBack }: Props) {
       <div className="flex items-center justify-between pt-2">
         <button
           onClick={onBack}
-          className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
+          className="text-sm text-base-content/40 hover:text-base-content/80 transition-colors"
         >
           ← Back
         </button>

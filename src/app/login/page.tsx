@@ -42,18 +42,18 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-neutral-950">
-      <div className="w-full max-w-sm px-8 py-10 bg-neutral-900 rounded-2xl shadow-xl">
-        <h1 className="text-2xl font-semibold text-white mb-1">
+    <main className="min-h-screen flex items-center justify-center bg-base-100 px-4">
+      <div className="w-full max-w-sm px-8 py-10 bg-base-200 rounded-2xl shadow-xl">
+        <h1 className="text-2xl font-semibold text-base-content mb-1">
           Fictional Whisper
         </h1>
-        <p className="text-sm text-neutral-400 mb-8">Your private journal</p>
+        <p className="text-sm text-base-content/50 mb-8">Your private journal</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
               htmlFor="password"
-              className="block text-sm text-neutral-300 mb-1"
+              className="block text-sm text-base-content/70 mb-1"
             >
               Password
             </label>
@@ -64,12 +64,12 @@ export default function LoginPage() {
               required
               autoFocus
               autoComplete="current-password"
-              className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-base-300 border border-base-content/20 rounded-lg text-base-content placeholder-base-content/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             />
           </div>
 
           {error && (
-            <p className="text-sm text-red-400">{error}</p>
+            <p className="text-sm text-error">{error}</p>
           )}
 
           <button

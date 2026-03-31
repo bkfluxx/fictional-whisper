@@ -85,8 +85,8 @@ function NavLink({
       href={href}
       className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
         isActive
-          ? "bg-neutral-800 text-white font-medium"
-          : "text-neutral-400 hover:bg-neutral-800/60 hover:text-neutral-200"
+          ? "bg-base-300 text-base-content font-medium"
+          : "text-base-content/60 hover:bg-base-200 hover:text-base-content"
       }`}
     >
       {icon}
@@ -111,7 +111,7 @@ export default function SidebarNav() {
       })}
 
       {/* Settings — pinned to bottom */}
-      <div className="mt-auto pt-3 border-t border-neutral-800/60">
+      <div className="mt-auto pt-3 border-t border-base-200">
         {BOTTOM_NAV.map((item) => (
           <NavLink
             key={item.href}

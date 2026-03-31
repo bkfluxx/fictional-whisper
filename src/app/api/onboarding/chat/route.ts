@@ -79,6 +79,7 @@ export async function POST(req: NextRequest) {
               ...messages,
             ],
             stream: true,
+            think: false, // disable thinking mode (qwen3/deepseek-r1 series)
           }),
           signal: AbortSignal.timeout(120_000),
         });
@@ -92,6 +93,7 @@ export async function POST(req: NextRequest) {
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let buffer = "";
+        let thinkDepth = 0; // track whether we're inside a <think> block
 
         while (true) {
           const { done, value } = await reader.read();
@@ -108,7 +110,15 @@ export async function POST(req: NextRequest) {
                 done?: boolean;
               };
               if (obj.message?.content) {
-                send({ token: obj.message.content });
+                let token = obj.message.content;
+                // Strip thinking-mode tokens (<think>...</think>) emitted by
+                // qwen3/deepseek-r1 series even when think:false is requested
+                if (token.includes("<think>")) { thinkDepth++; }
+                if (thinkDepth > 0) {
+                  if (token.includes("</think>")) { thinkDepth--; }
+                } else {
+                  if (token) send({ token });
+                }
               }
               if (obj.done) {
                 send({ done: true });

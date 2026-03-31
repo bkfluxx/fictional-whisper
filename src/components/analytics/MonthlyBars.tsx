@@ -14,15 +14,15 @@ export default function MonthlyBars({ data }: MonthlyBarsProps) {
         const label = MONTH_ABBR[parseInt(month.slice(5)) - 1];
         return (
           <div key={month} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
-            <span className="text-[10px] text-neutral-600">{count || ""}</span>
+            <span className="text-[10px] text-base-content/30">{count || ""}</span>
             <div
               title={`${label}: ${count}`}
               className={`w-full rounded-t-sm transition-all ${
-                count > 0 ? "bg-indigo-600" : "bg-neutral-800"
+                count > 0 ? "bg-indigo-600" : "bg-base-300"
               }`}
               style={{ height: `${Math.max(heightPct, count > 0 ? 4 : 2)}%` }}
             />
-            <span className="text-[10px] text-neutral-600">{label}</span>
+            <span className="text-[10px] text-base-content/30">{label}</span>
           </div>
         );
       })}

@@ -140,9 +140,9 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
               setTitle(e.target.value);
               scheduleSave(body, e.target.value, tags, mood, categories);
             }}
-            className="flex-1 bg-transparent text-2xl font-semibold text-white placeholder-neutral-600 focus:outline-none"
+            className="flex-1 bg-transparent text-2xl font-semibold text-base-content placeholder-base-content/30 focus:outline-none"
           />
-          <span className="text-xs text-neutral-500 shrink-0">
+          <span className="text-xs text-base-content/40 shrink-0">
             {saveState === "saving"
               ? "Saving…"
               : saveState === "saved"
@@ -158,7 +158,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
             className={`shrink-0 p-1.5 rounded-lg transition-colors ${
               aiOpen
                 ? "bg-indigo-600 text-white"
-                : "text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800"
+                : "text-base-content/40 hover:text-base-content/80 hover:bg-base-300"
             }`}
           >
             <svg
@@ -178,7 +178,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
         </div>
 
         {/* Metadata row */}
-        <div className="flex flex-wrap gap-3 text-sm text-neutral-400">
+        <div className="flex flex-wrap gap-3 text-sm text-base-content/60">
           <input
             placeholder="Tags (comma-separated)"
             value={tags}
@@ -186,7 +186,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
               setTags(e.target.value);
               scheduleSave(body, title, e.target.value, mood, categories);
             }}
-            className="bg-transparent focus:outline-none flex-1 min-w-[120px] placeholder-neutral-600"
+            className="bg-transparent focus:outline-none flex-1 min-w-[120px] placeholder-base-content/30"
           />
 
           <select
@@ -195,7 +195,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
               setMood(e.target.value);
               scheduleSave(body, title, tags, e.target.value, categories);
             }}
-            className="bg-neutral-900 text-neutral-400 text-sm rounded focus:outline-none"
+            className="bg-base-200 text-base-content/60 text-sm rounded focus:outline-none"
           >
             <option value="">Mood</option>
             <option value="joyful">Joyful</option>
@@ -231,13 +231,13 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
           <button
             type="button"
             onClick={() => setPickerOpen((o) => !o)}
-            className="text-xs px-2 py-0.5 text-neutral-600 hover:text-neutral-300 border border-neutral-800 hover:border-neutral-600 rounded-full transition-colors"
+            className="text-xs px-2 py-0.5 text-base-content/30 hover:text-base-content/80 border border-base-200 hover:border-base-content/30 rounded-full transition-colors"
           >
             + category
           </button>
 
           {pickerOpen && (
-            <div className="absolute top-full left-0 mt-1.5 z-20 bg-neutral-900 border border-neutral-700 rounded-xl p-2 shadow-2xl w-72">
+            <div className="absolute top-full left-0 mt-1.5 z-20 bg-base-200 border border-base-content/20 rounded-xl p-2 shadow-2xl w-72">
               <div className="grid grid-cols-2 gap-0.5">
                 {JOURNAL_TYPES.map((jt) => {
                   const active = categories.includes(jt.id);
@@ -249,7 +249,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
                       className={`flex items-center gap-2 text-xs px-2.5 py-1.5 rounded-lg transition-colors text-left ${
                         active
                           ? "bg-indigo-600 text-white"
-                          : "text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
+                          : "text-base-content/60 hover:bg-base-300 hover:text-base-content"
                       }`}
                     >
                       <span className="shrink-0">{jt.emoji}</span>
@@ -277,7 +277,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
 
       {/* AI sidebar */}
       {aiOpen && (
-        <aside className="w-72 shrink-0 border-l border-neutral-800 px-4 py-4">
+        <aside className="w-72 shrink-0 border-l border-base-200 px-4 py-4">
           <AiPanel
             entryId={entryIdRef.current}
             categories={categories}

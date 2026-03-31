@@ -53,8 +53,8 @@ export default function FeatureMapStep({
     <div className="max-w-lg mx-auto px-6 py-12">
       <div className="text-center mb-10">
         <div className="text-5xl mb-4">🎉</div>
-        <h2 className="text-2xl font-semibold text-white mb-2">{greeting}</h2>
-        <p className="text-neutral-400 text-sm">
+        <h2 className="text-2xl font-semibold text-base-content mb-2">{greeting}</h2>
+        <p className="text-base-content/60 text-sm">
           Here&apos;s a quick look at what&apos;s waiting for you.
         </p>
       </div>
@@ -63,11 +63,11 @@ export default function FeatureMapStep({
         {FEATURES.filter((f) => !f.aiOnly || aiEnabled).map((feature) => (
           <div
             key={feature.name}
-            className="flex items-start gap-4 bg-neutral-900 rounded-xl p-4"
+            className="flex items-start gap-4 bg-base-200 rounded-xl p-4"
           >
             <div className="text-2xl shrink-0">{feature.icon}</div>
             <div>
-              <div className="text-sm font-medium text-white flex items-center gap-2">
+              <div className="text-sm font-medium text-base-content flex items-center gap-2">
                 {feature.name}
                 {feature.aiOnly && (
                   <span className="text-xs bg-indigo-900 text-indigo-300 px-1.5 py-0.5 rounded-full">
@@ -75,7 +75,7 @@ export default function FeatureMapStep({
                   </span>
                 )}
               </div>
-              <div className="text-xs text-neutral-400 mt-0.5 leading-relaxed">
+              <div className="text-xs text-base-content/60 mt-0.5 leading-relaxed">
                 {feature.description}
               </div>
             </div>
@@ -84,7 +84,7 @@ export default function FeatureMapStep({
       </div>
 
       {!aiEnabled && (
-        <p className="text-xs text-neutral-500 mt-4 text-center">
+        <p className="text-xs text-base-content/40 mt-4 text-center">
           You can enable AI features anytime in Settings → AI settings.
         </p>
       )}
@@ -92,7 +92,7 @@ export default function FeatureMapStep({
       <div className="mt-8 flex items-center justify-between">
         <button
           onClick={onBack}
-          className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
+          className="text-sm text-base-content/40 hover:text-base-content/80 transition-colors"
         >
           ← Back
         </button>
