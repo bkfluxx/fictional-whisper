@@ -193,7 +193,7 @@ export default async function JournalPage({
                                 return (
                                   <span
                                     key={c}
-                                    className="text-xs px-2 py-0.5 bg-indigo-950 text-indigo-400 rounded-full"
+                                    className="text-xs px-2 py-0.5 bg-indigo-500/15 text-indigo-500 rounded-full"
                                   >
                                     {catJt ? `${catJt.emoji} ${catJt.name}` : c}
                                   </span>
