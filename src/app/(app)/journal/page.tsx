@@ -112,19 +112,22 @@ export default async function JournalPage({
           </Link>
         </div>
       ) : (
-        <ul className="timeline timeline-vertical timeline-compact">
+        /* Wrap in relative container so we can draw one continuous line
+           behind all items. FlyonUI's <hr> connectors collapse to 0 height
+           for tall cards (auto-sized flex rows), so we draw the line
+           ourselves. Left offset = center of timeline-middle column in
+           compact mode (--timeline-col-start:0, col-2 = auto = 20px wide). */
+        <div className="relative">
+          <div className="absolute left-[0.625rem] top-4 bottom-4 w-px bg-base-content/10" />
+          <ul className="timeline timeline-vertical timeline-compact">
           {days.map((day, dayIdx) => {
             const dayEntries = grouped.get(day)!;
             const { weekday, date } = formatDay(day);
-            const isFirstDay = dayIdx === 0;
-            const isLastDay = dayIdx === days.length - 1;
-
             return [
               // ── Date marker row ──────────────────────────────────────────
               <li key={`date-${day}`}>
-                {!isFirstDay && <hr className="bg-base-content/10" />}
                 <div className="timeline-middle">
-                  <span className="flex size-3 items-center justify-center rounded-full bg-base-content/15">
+                  <span className="flex size-3 items-center justify-center rounded-full bg-base-100 ring-1 ring-base-content/20">
                     <span className="size-1.5 rounded-full bg-base-content/40" />
                   </span>
                 </div>
@@ -134,11 +137,10 @@ export default async function JournalPage({
                   </span>
                   <span className="text-xs text-base-content/30 ml-1">{date}</span>
                 </div>
-                <hr className="bg-base-content/10" />
               </li>,
 
               // ── Entry rows ───────────────────────────────────────────────
-              ...dayEntries.map((e, entryIdx) => {
+              ...dayEntries.map((e) => {
                 const title = e.title ? decryptString(e.title, dek) : null;
                 const body = decryptString(e.body, dek);
                 const preview = textPreview(body);
@@ -151,11 +153,8 @@ export default async function JournalPage({
                     ? "bg-primary"
                     : "bg-base-content/30";
 
-                const isLastEntry = isLastDay && entryIdx === dayEntries.length - 1;
-
                 return (
                   <li key={e.id}>
-                    <hr className="bg-base-content/10" />
                     {/* Dot marker */}
                     <div className="timeline-middle">
                       <span className="bg-base-content/10 flex size-5 items-center justify-center rounded-full">
@@ -223,7 +222,8 @@ export default async function JournalPage({
               }),
             ];
           })}
-        </ul>
+          </ul>
+        </div>
       )}
     </div>
   );
