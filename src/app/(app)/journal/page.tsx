@@ -155,6 +155,7 @@ export default async function JournalPage({
 
                 return (
                   <li key={e.id}>
+                    <hr className="bg-base-content/10" />
                     {/* Dot marker */}
                     <div className="timeline-middle">
                       <span className="bg-base-content/10 flex size-5 items-center justify-center rounded-full">
@@ -217,7 +218,6 @@ export default async function JournalPage({
                       </Link>
                     </div>
 
-                    {!isLastEntry && <hr className="bg-base-content/10" />}
                   </li>
                 );
               }),
