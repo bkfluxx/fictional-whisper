@@ -112,114 +112,116 @@ export default async function JournalPage({
           </Link>
         </div>
       ) : (
-        <ul className="timeline timeline-vertical">
+        <ul className="timeline timeline-vertical timeline-compact">
           {days.map((day, dayIdx) => {
             const dayEntries = grouped.get(day)!;
             const { weekday, date } = formatDay(day);
+            const isFirstDay = dayIdx === 0;
+            const isLastDay = dayIdx === days.length - 1;
 
-            return dayEntries.map((e, entryIdx) => {
-              const title = e.title ? decryptString(e.title, dek) : null;
-              const body = decryptString(e.body, dek);
-              const preview = textPreview(body);
+            return [
+              // ── Date marker row ──────────────────────────────────────────
+              <li key={`date-${day}`}>
+                {!isFirstDay && <hr className="bg-base-content/10" />}
+                <div className="timeline-middle">
+                  <span className="flex size-3 items-center justify-center rounded-full bg-base-content/15">
+                    <span className="size-1.5 rounded-full bg-base-content/40" />
+                  </span>
+                </div>
+                <div className="timeline-end ps-3 py-2">
+                  <span className="text-xs font-semibold text-base-content/50">
+                    {weekday}
+                  </span>
+                  <span className="text-xs text-base-content/30 ml-1">{date}</span>
+                </div>
+                <hr className="bg-base-content/10" />
+              </li>,
 
-              const firstCat = e.categories[0];
-              const jt = firstCat ? getJournalType(firstCat) : null;
-              const dotColor = e.mood
-                ? (MOOD_DOT[e.mood] ?? "bg-primary")
-                : jt
-                  ? "bg-primary"
-                  : "bg-base-content/30";
+              // ── Entry rows ───────────────────────────────────────────────
+              ...dayEntries.map((e, entryIdx) => {
+                const title = e.title ? decryptString(e.title, dek) : null;
+                const body = decryptString(e.body, dek);
+                const preview = textPreview(body);
 
-              const isFirstEntry = dayIdx === 0 && entryIdx === 0;
-              const isLastEntry =
-                dayIdx === days.length - 1 && entryIdx === dayEntries.length - 1;
-              const showDate = entryIdx === 0;
+                const firstCat = e.categories[0];
+                const jt = firstCat ? getJournalType(firstCat) : null;
+                const dotColor = e.mood
+                  ? (MOOD_DOT[e.mood] ?? "bg-primary")
+                  : jt
+                    ? "bg-primary"
+                    : "bg-base-content/30";
 
-              return (
-                <li key={e.id}>
-                  {!isFirstEntry && <hr className="bg-base-content/10" />}
+                const isLastEntry = isLastDay && entryIdx === dayEntries.length - 1;
 
-                  {/* Date label — only shown for first entry of each day */}
-                  <div className="timeline-start me-3 text-right w-20 shrink-0">
-                    {showDate && (
-                      <>
-                        <div className="text-xs font-semibold text-base-content/70 leading-tight">
-                          {weekday}
-                        </div>
-                        <div className="text-xs text-base-content/40">{date}</div>
-                      </>
-                    )}
-                  </div>
+                return (
+                  <li key={e.id}>
+                    {/* Dot marker */}
+                    <div className="timeline-middle">
+                      <span className="bg-base-content/10 flex size-5 items-center justify-center rounded-full">
+                        <span className={`size-2.5 rounded-sm ${dotColor}`} />
+                      </span>
+                    </div>
 
-                  {/* Dot marker */}
-                  <div className="timeline-middle">
-                    <span className="bg-base-content/10 flex size-5 items-center justify-center rounded-full">
-                      <span className={`size-2.5 rounded-sm ${dotColor}`} />
-                    </span>
-                  </div>
-
-                  {/* Entry card */}
-                  <div className="timeline-end timeline-box ms-3 mb-3 w-full border-base-content/10 bg-base-200 hover:bg-base-content/8 transition-colors p-0 overflow-hidden">
-                    <Link href={`/journal/${e.id}`} className="block px-4 py-3">
-                      {/* Title row */}
-                      <div className="flex items-start justify-between gap-3">
-                        <span className="text-sm font-semibold text-base-content leading-snug">
-                          {title ?? (
-                            <span className="text-base-content/40 font-normal italic">
-                              Untitled
-                            </span>
-                          )}
-                        </span>
-                        {jt && (
-                          <span className="text-base shrink-0 leading-none mt-0.5">
-                            {jt.emoji}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Body preview */}
-                      {preview && (
-                        <p className="text-xs text-base-content/50 mt-1 leading-relaxed line-clamp-2">
-                          {preview}
-                        </p>
-                      )}
-
-                      {/* Tags / categories / mood */}
-                      {(e.categories.length > 0 || e.tags.length > 0 || e.mood) && (
-                        <div className="flex gap-1 mt-2 flex-wrap items-center">
-                          {e.mood && (
-                            <span className="text-xs px-2 py-0.5 bg-base-content/10 text-base-content/60 rounded-full capitalize">
-                              {e.mood}
-                            </span>
-                          )}
-                          {e.categories.map((c) => {
-                            const catJt = getJournalType(c);
-                            return (
-                              <span
-                                key={c}
-                                className="text-xs px-2 py-0.5 bg-indigo-950 text-indigo-400 rounded-full"
-                              >
-                                {catJt ? `${catJt.emoji} ${catJt.name}` : c}
+                    {/* Entry card */}
+                    <div className="timeline-end timeline-box ms-3 mb-2 w-full border-base-content/10 bg-base-200 hover:bg-base-content/8 transition-colors p-0 overflow-hidden">
+                      <Link href={`/journal/${e.id}`} className="block px-4 py-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <span className="text-sm font-semibold text-base-content leading-snug">
+                            {title ?? (
+                              <span className="text-base-content/40 font-normal italic">
+                                Untitled
                               </span>
-                            );
-                          })}
-                          {e.tags.map((t) => (
-                            <span
-                              key={t.id}
-                              className="text-xs px-2 py-0.5 bg-base-content/10 text-base-content/60 rounded-full"
-                            >
-                              #{t.name}
+                            )}
+                          </span>
+                          {jt && (
+                            <span className="text-base shrink-0 leading-none mt-0.5">
+                              {jt.emoji}
                             </span>
-                          ))}
+                          )}
                         </div>
-                      )}
-                    </Link>
-                  </div>
 
-                  {!isLastEntry && <hr className="bg-base-content/10" />}
-                </li>
-              );
-            });
+                        {preview && (
+                          <p className="text-xs text-base-content/50 mt-1 leading-relaxed line-clamp-2">
+                            {preview}
+                          </p>
+                        )}
+
+                        {(e.categories.length > 0 || e.tags.length > 0 || e.mood) && (
+                          <div className="flex gap-1 mt-2 flex-wrap items-center">
+                            {e.mood && (
+                              <span className="text-xs px-2 py-0.5 bg-base-content/10 text-base-content/60 rounded-full capitalize">
+                                {e.mood}
+                              </span>
+                            )}
+                            {e.categories.map((c) => {
+                              const catJt = getJournalType(c);
+                              return (
+                                <span
+                                  key={c}
+                                  className="text-xs px-2 py-0.5 bg-indigo-950 text-indigo-400 rounded-full"
+                                >
+                                  {catJt ? `${catJt.emoji} ${catJt.name}` : c}
+                                </span>
+                              );
+                            })}
+                            {e.tags.map((t) => (
+                              <span
+                                key={t.id}
+                                className="text-xs px-2 py-0.5 bg-base-content/10 text-base-content/60 rounded-full"
+                              >
+                                #{t.name}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </Link>
+                    </div>
+
+                    {!isLastEntry && <hr className="bg-base-content/10" />}
+                  </li>
+                );
+              }),
+            ];
           })}
         </ul>
       )}
