@@ -18,12 +18,19 @@ export default async function NewEntryPage({
 
   // No ?from param → show template picker
   if (!from) {
-    const userTemplates = await prisma.journalTemplate.findMany({
-      orderBy: { createdAt: "asc" },
-    });
+    const [userTemplates, settings] = await Promise.all([
+      prisma.journalTemplate.findMany({ orderBy: { createdAt: "asc" } }),
+      prisma.appSettings.findUnique({
+        where: { id: "singleton" },
+        select: { journalingIntention: true },
+      }),
+    ]);
     return (
       <div className="h-full overflow-y-auto">
-        <TemplatePicker userTemplates={userTemplates} />
+        <TemplatePicker
+          userTemplates={userTemplates}
+          journalingIntentions={settings?.journalingIntention ?? []}
+        />
       </div>
     );
   }

@@ -16,7 +16,7 @@ export default async function OnboardingPage() {
   if (settings?.onboardingDone) redirect("/journal");
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100">
+    <div className="min-h-screen bg-base-100 text-base-content">
       <OnboardingWizard />
     </div>
   );

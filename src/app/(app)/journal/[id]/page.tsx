@@ -1,9 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeSanitize from "rehype-sanitize";
 import { authOptions } from "@/lib/auth";
 import { getDEK } from "@/lib/session/dek-store";
 import { prisma } from "@/lib/prisma";
@@ -35,7 +32,7 @@ export default async function EntryViewPage({
   return (
     <div className="max-w-3xl mx-auto px-6 py-8">
       <div className="flex items-center justify-between mb-6">
-        <Link href="/journal" className="text-sm text-neutral-400 hover:text-white transition-colors">
+        <Link href="/journal" className="text-sm text-base-content/40 hover:text-base-content transition-colors">
           ← Journal
         </Link>
         <Link
@@ -46,10 +43,10 @@ export default async function EntryViewPage({
         </Link>
       </div>
 
-      <h1 className="text-2xl font-semibold text-white mb-1">
-        {title ?? <span className="text-neutral-500 italic">Untitled</span>}
+      <h1 className="text-2xl font-semibold text-base-content mb-1">
+        {title ?? <span className="text-base-content/40 italic">Untitled</span>}
       </h1>
-      <p className="text-sm text-neutral-500 mb-4">
+      <p className="text-sm text-base-content/40 mb-4">
         {new Date(entry.entryDate).toLocaleDateString("en-US", {
           weekday: "long",
           year: "numeric",
@@ -75,7 +72,7 @@ export default async function EntryViewPage({
           {entry.tags.map((t) => (
             <span
               key={t.id}
-              className="text-xs px-2 py-0.5 bg-neutral-800 text-neutral-400 rounded-full"
+              className="text-xs px-2 py-0.5 bg-base-content/10 text-base-content/60 rounded-full"
             >
               {t.name}
             </span>
@@ -83,26 +80,10 @@ export default async function EntryViewPage({
         </div>
       )}
 
-      <div className="prose prose-invert prose-neutral max-w-none
-        prose-headings:text-white prose-headings:font-semibold
-        prose-p:text-neutral-300 prose-p:leading-7
-        prose-a:text-indigo-400 prose-a:no-underline hover:prose-a:underline
-        prose-strong:text-white
-        prose-code:text-indigo-300 prose-code:bg-neutral-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
-        prose-pre:bg-neutral-900 prose-pre:border prose-pre:border-neutral-700
-        prose-blockquote:border-l-indigo-500 prose-blockquote:text-neutral-400
-        prose-li:text-neutral-300
-        prose-hr:border-neutral-700
-        prose-table:text-neutral-300
-        prose-th:text-neutral-200 prose-th:border-neutral-700
-        prose-td:border-neutral-700">
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeSanitize]}
-        >
-          {body}
-        </ReactMarkdown>
-      </div>
+      <div
+        className="fw-prose max-w-none"
+        dangerouslySetInnerHTML={{ __html: body }}
+      />
     </div>
   );
 }

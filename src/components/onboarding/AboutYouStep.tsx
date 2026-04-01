@@ -54,7 +54,7 @@ export default function AboutYouStep({ onContinue, onBack }: Props) {
           onChange={(e) => setName(e.target.value)}
           placeholder="Your name or nickname"
           autoFocus
-          className="w-full bg-base-200 border border-base-content/20 text-base-content text-sm rounded-xl px-4 py-2.5 placeholder-base-content/30 focus:outline-none focus:border-indigo-500"
+          className="w-full bg-base-100 border border-base-content/20 text-base-content text-sm rounded-xl px-4 py-2.5 placeholder-base-content/30 focus:outline-none focus:border-indigo-500"
         />
       </div>
 
@@ -94,7 +94,7 @@ export default function AboutYouStep({ onContinue, onBack }: Props) {
             onClick={() => setStyle("prompts")}
             className={`p-4 rounded-xl border text-left transition-colors ${
               style === "prompts"
-                ? "bg-indigo-950 border-indigo-600"
+                ? "bg-indigo-600/15 border-indigo-500 text-base-content"
                 : "bg-base-200 border-base-content/20 hover:border-base-content/40"
             }`}
           >
@@ -108,7 +108,7 @@ export default function AboutYouStep({ onContinue, onBack }: Props) {
             onClick={() => setStyle("blank")}
             className={`p-4 rounded-xl border text-left transition-colors ${
               style === "blank"
-                ? "bg-indigo-950 border-indigo-600"
+                ? "bg-indigo-600/15 border-indigo-500 text-base-content"
                 : "bg-base-200 border-base-content/20 hover:border-base-content/40"
             }`}
           >

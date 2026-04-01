@@ -26,49 +26,6 @@ const INITIAL_MESSAGE: Message = {
     "Hi! I'm Whisper, your personal journaling assistant. I'm here to help you get started. What's your name?",
 };
 
-// Heuristic extraction from conversation — the wizard uses these to pre-populate
-// the profile saved to AppSettings.
-function extractProfile(messages: Message[]): UserProfile {
-  const profile: UserProfile = {};
-
-  // Extract name: look for short user replies early in the conversation
-  const firstUserMsg = messages.find((m) => m.role === "user");
-  if (firstUserMsg && firstUserMsg.content.trim().split(/\s+/).length <= 3) {
-    profile.userName = firstUserMsg.content.trim();
-  }
-
-  // Extract intentions: look for intention keywords in user messages
-  const intentionKeywords: Record<string, string> = {
-    "self-reflect": "self-reflection",
-    reflection: "self-reflection",
-    stress: "stress-relief",
-    anxiet: "stress-relief",
-    creativ: "creative-writing",
-    writing: "creative-writing",
-    gratitude: "gratitude",
-    thankful: "gratitude",
-    habit: "habit-tracking",
-    track: "habit-tracking",
-  };
-
-  const allUserText = messages
-    .filter((m) => m.role === "user")
-    .map((m) => m.content.toLowerCase())
-    .join(" ");
-
-  const found = new Set<string>();
-  for (const [keyword, intention] of Object.entries(intentionKeywords)) {
-    if (allUserText.includes(keyword)) found.add(intention);
-  }
-  if (found.size > 0) profile.journalingIntention = [...found];
-
-  // Extract writing style
-  if (allUserText.match(/blank|free.?writ|open/)) profile.writingStyle = "blank";
-  else if (allUserText.match(/prompt|structur|guided|question/)) profile.writingStyle = "prompts";
-
-  return profile;
-}
-
 export default function WhisperChatStep({
   ollamaUrl,
   chatModel,
@@ -78,6 +35,7 @@ export default function WhisperChatStep({
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
+  const [extracting, setExtracting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [turnCount, setTurnCount] = useState(0);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -160,11 +118,38 @@ export default function WhisperChatStep({
       setError(err instanceof Error ? err.message : "Something went wrong");
       // Remove the empty assistant placeholder on error
       setMessages((prev) =>
-        prev[prev.length - 1].content === "" ? prev.slice(0, -1) : prev
+        prev[prev.length - 1].content === "" ? prev.slice(0, -1) : prev,
       );
     } finally {
       setStreaming(false);
       inputRef.current?.focus();
+    }
+  }
+
+  async function finish() {
+    setExtracting(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/onboarding/extract", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages,
+          ollamaUrl,
+          model: chatModel,
+        }),
+      });
+
+      if (!res.ok) throw new Error(`Extraction failed (${res.status})`);
+
+      const profile = (await res.json()) as UserProfile;
+      onContinue(profile);
+    } catch {
+      // Fall back to empty profile rather than blocking the user
+      onContinue({});
+    } finally {
+      setExtracting(false);
     }
   }
 
@@ -175,8 +160,7 @@ export default function WhisperChatStep({
     }
   }
 
-  // Show "I'm ready" button after at least 3 user turns
-  const canFinish = turnCount >= 3;
+  const canFinish = turnCount >= 3 && !streaming;
 
   return (
     <div className="max-w-lg mx-auto px-6 py-8 flex flex-col" style={{ minHeight: "calc(100vh - 4rem)" }}>
@@ -231,14 +215,14 @@ export default function WhisperChatStep({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          disabled={streaming}
+          disabled={streaming || extracting}
           placeholder="Type a message…"
-          className="flex-1 bg-base-200 border border-base-content/20 text-base-content text-sm rounded-xl px-4 py-2.5 placeholder-base-content/30 focus:outline-none focus:border-indigo-500 disabled:opacity-50"
+          className="flex-1 bg-base-100 border border-base-content/20 text-base-content text-sm rounded-xl px-4 py-2.5 placeholder-base-content/30 focus:outline-none focus:border-indigo-500 disabled:opacity-50"
           autoFocus
         />
         <button
           onClick={send}
-          disabled={!input.trim() || streaming}
+          disabled={!input.trim() || streaming || extracting}
           className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white rounded-xl transition-colors text-sm font-medium"
         >
           Send
@@ -248,21 +232,26 @@ export default function WhisperChatStep({
       <div className="mt-6 flex items-center justify-between">
         <button
           onClick={onBack}
-          className="text-sm text-base-content/40 hover:text-base-content/80 transition-colors"
+          disabled={extracting}
+          className="text-sm text-base-content/40 hover:text-base-content/80 transition-colors disabled:opacity-40"
         >
           ← Back
         </button>
 
         <button
-          onClick={() => onContinue(extractProfile(messages))}
-          disabled={!canFinish}
+          onClick={finish}
+          disabled={!canFinish || extracting}
           className={`px-6 py-2.5 rounded-xl font-medium text-sm transition-colors ${
-            canFinish
+            canFinish && !extracting
               ? "bg-indigo-600 hover:bg-indigo-500 text-white"
               : "text-base-content/40 hover:text-base-content/60"
           }`}
         >
-          {canFinish ? "I'm ready →" : "Keep chatting to continue"}
+          {extracting
+            ? "Personalising…"
+            : canFinish
+              ? "I'm ready →"
+              : "Keep chatting to continue"}
         </button>
       </div>
     </div>

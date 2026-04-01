@@ -4,7 +4,7 @@ export interface BuiltInTemplate {
   description: string;
   emoji: string;
   group: string; // for grouping in the picker
-  body: string; // full markdown prefilled in the editor
+  body: string; // HTML prefilled in the editor
   categories: string[]; // suggested category IDs
   isBuiltIn: true;
 }
@@ -32,22 +32,7 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplate[] = [
     group: "General",
     categories: ["brain-dump"],
     isBuiltIn: true,
-    body: `## Stream of consciousness
-
-<!-- Write without stopping or editing for a few minutes. Let it all out. -->
-
-
-
-## What's on my mind
-
-<!-- Any worries, hopes, or unresolved things surfacing? -->
-
-
-
-## Today's intention
-
-<!-- One thing I want to feel or accomplish today -->
-`,
+    body: `<h2>Stream of consciousness</h2><p></p><h2>What's on my mind</h2><p></p><h2>Today's intention</h2><p></p>`,
   },
   {
     id: "builtin-evening-reflection",
@@ -57,28 +42,7 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplate[] = [
     group: "General",
     categories: [],
     isBuiltIn: true,
-    body: `## Highlight of the day
-
-<!-- The best moment, however small -->
-
-
-
-## A challenge I faced
-
-<!-- What made today hard? -->
-
-
-
-## What it taught me
-
-
-
-## One thing I'd do differently
-
-
-
-## Tomorrow's priority
-`,
+    body: `<h2>Highlight of the day</h2><p></p><h2>A challenge I faced</h2><p></p><h2>What it taught me</h2><p></p><h2>One thing I'd do differently</h2><p></p><h2>Tomorrow's priority</h2><p></p>`,
   },
   {
     id: "builtin-mood-checkin",
@@ -88,24 +52,7 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplate[] = [
     group: "General",
     categories: ["mood"],
     isBuiltIn: true,
-    body: `## How I'm feeling right now
-
-<!-- Name 1–3 emotions and their intensity (0–10), e.g. Anxious 7, Curious 5 -->
-
-
-
-## What's driving this mood
-
-<!-- Situation, thoughts, physical state, recent events -->
-
-
-
-## What would help me right now
-
-
-
-## One kind thing I can do for myself today
-`,
+    body: `<h2>How I'm feeling right now</h2><p></p><h2>What's driving this mood</h2><p></p><h2>What would help me right now</h2><p></p><h2>One kind thing I can do for myself today</h2><p></p>`,
   },
 
   // ── Wellness ───────────────────────────────────────────────────────────────
@@ -117,30 +64,7 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplate[] = [
     group: "Wellness",
     categories: ["gratitude"],
     isBuiltIn: true,
-    body: `## Three things I'm grateful for today
-
-1.
-2.
-3.
-
-## Why one of these matters to me
-
-<!-- Go deeper on one — why does it feel meaningful right now? -->
-
-
-
-## Someone worth appreciating
-
-<!-- Is there a person who made a positive difference recently? -->
-
-
-
-## One good thing about myself today
-
-
-
-## My intention for tomorrow
-`,
+    body: `<h2>Three things I'm grateful for today</h2><ol><li><p></p></li><li><p></p></li><li><p></p></li></ol><h2>Why one of these matters to me</h2><p></p><h2>Someone worth appreciating</h2><p></p><h2>One good thing about myself today</h2><p></p><h2>My intention for tomorrow</h2><p></p>`,
   },
   {
     id: "builtin-sleep-dream",
@@ -150,27 +74,7 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplate[] = [
     group: "Wellness",
     categories: ["sleep"],
     isBuiltIn: true,
-    body: `## Sleep quality
-
-<!-- Hours slept: ___  Rested feeling (1–10): ___ -->
-<!-- Any disturbances, waking up, difficulty falling asleep? -->
-
-
-
-## Dream recall
-
-<!-- What do I remember? Any recurring symbols, emotions, or themes? -->
-
-
-
-## Waking feeling
-
-<!-- How did my body and mind feel when I woke up? -->
-
-
-
-## One thing I want to carry into today
-`,
+    body: `<h2>Sleep quality</h2><p></p><h2>Dream recall</h2><p></p><h2>Waking feeling</h2><p></p><h2>One thing I want to carry into today</h2><p></p>`,
   },
 
   // ── Personal Growth ────────────────────────────────────────────────────────
@@ -182,42 +86,7 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplate[] = [
     group: "Personal Growth",
     categories: ["mindset"],
     isBuiltIn: true,
-    body: `## The situation
-
-<!-- What happened? Where, when, with whom? Be specific and factual. -->
-
-
-
-## My automatic thoughts
-
-<!-- What went through my mind? What does this say about me / others / the future? -->
-
-
-
-## Emotions and intensity
-
-<!-- e.g. Anxious 70%, Sad 40% — list each emotion with a rough intensity -->
-
-
-
-## Evidence that supports the thought
-
-
-
-## Evidence that challenges the thought
-
-
-
-## A more balanced perspective
-
-<!-- What would I tell a friend in this situation? -->
-
-
-
-## How I feel now
-
-<!-- Emotions and intensity after reframing -->
-`,
+    body: `<h2>The situation</h2><p></p><h2>My automatic thoughts</h2><p></p><h2>Emotions and intensity</h2><p></p><h2>Evidence that supports the thought</h2><p></p><h2>Evidence that challenges the thought</h2><p></p><h2>A more balanced perspective</h2><p></p><h2>How I feel now</h2><p></p>`,
   },
   {
     id: "builtin-weekly-review",
@@ -227,26 +96,7 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplate[] = [
     group: "Personal Growth",
     categories: ["productivity"],
     isBuiltIn: true,
-    body: `## Wins this week
-
-1.
-2.
-3.
-
-## Challenges and how I handled them
-
-
-
-## What I learned
-
-
-
-## What I want to do differently next week
-
-
-
-## Next week's top priority
-`,
+    body: `<h2>Wins this week</h2><ol><li><p></p></li><li><p></p></li><li><p></p></li></ol><h2>Challenges and how I handled them</h2><p></p><h2>What I learned</h2><p></p><h2>What I want to do differently next week</h2><p></p><h2>Next week's top priority</h2><p></p>`,
   },
   {
     id: "builtin-goal-setting",
@@ -256,34 +106,7 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplate[] = [
     group: "Personal Growth",
     categories: ["goals"],
     isBuiltIn: true,
-    body: `## The goal
-
-<!-- State it clearly and specifically -->
-
-
-
-## Why it matters to me
-
-<!-- What deeper value or need does this serve? -->
-
-
-
-## My first concrete step
-
-<!-- What's one small action I can take in the next 48 hours? -->
-
-
-
-## Potential obstacles
-
-
-
-## How I'll handle them
-
-
-
-## How I'll know I've succeeded
-`,
+    body: `<h2>The goal</h2><p></p><h2>Why it matters to me</h2><p></p><h2>My first concrete step</h2><p></p><h2>Potential obstacles</h2><p></p><h2>How I'll handle them</h2><p></p><h2>How I'll know I've succeeded</h2><p></p>`,
   },
 ];
 
