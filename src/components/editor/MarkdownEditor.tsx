@@ -177,6 +177,7 @@ export default function MarkdownEditor({
   );
 
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit,
       Placeholder.configure({

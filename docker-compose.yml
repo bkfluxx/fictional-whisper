@@ -7,6 +7,9 @@ services:
       - "3000:3000"
     env_file:
       - .env
+    environment:
+      CRON_SECRET: ${CRON_SECRET:-fw-cron-xK9mP2qR7vLt4nWs8jYd3hBm}
+      BACKUP_SECRET: ${BACKUP_SECRET:-fw-backup-pQ6nF1rZ5cEa2wVi9kTm4jXo}
     volumes:
       - attachments:/app/attachments
       - backups:/app/backups

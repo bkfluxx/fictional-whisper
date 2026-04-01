@@ -72,10 +72,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { messages, ollamaUrl, model } = (await req.json()) as {
+  const { messages, ollamaUrl, model, step } = (await req.json()) as {
     messages: Message[];
     ollamaUrl: string;
     model: string;
+    /** "profile" = step 1 only; "template" = step 2 only; omit = both */
+    step?: "profile" | "template";
   };
 
   if (!ollamaUrl || !model || !messages?.length) {
@@ -90,6 +92,44 @@ export async function POST(req: NextRequest) {
     .join("\n");
 
   try {
+    // ── Step 2 only: generate custom template ───────────────────────────────
+    if (step === "template") {
+      const generated = await ollamaJson(
+        ollamaUrl,
+        model,
+        `You are a journaling template designer. Based on the following conversation, design a simple journaling template tailored to the user's specific needs.
+
+CONVERSATION:
+${transcript}
+
+Return ONLY a JSON object with these fields:
+- "title": string — a short, descriptive template name (e.g. "Recipe Log", "Bookmark & Notes")
+- "emoji": string — a single relevant emoji
+- "sections": array of strings — 3 to 5 section heading names that make sense for this template (e.g. ["Recipe name", "Ingredients", "Method", "Notes"])
+
+Respond with ONLY valid JSON. No explanation, no markdown, no code fences. Example:
+{"title":"Recipe Log","emoji":"🍳","sections":["Recipe name","Why I love it","Key ingredients","Tips & variations"]}`,
+      );
+
+      const title =
+        typeof generated.title === "string" && generated.title.trim()
+          ? generated.title.trim()
+          : "My Custom Template";
+      const emoji =
+        typeof generated.emoji === "string" && generated.emoji.trim()
+          ? generated.emoji.trim()
+          : "📝";
+      const rawSections = Array.isArray(generated.sections) ? generated.sections : [];
+      const sections = rawSections
+        .filter((s): s is string => typeof s === "string" && s.trim().length > 0)
+        .slice(0, 6);
+      const body = sections.length > 0 ? sections.map((s) => `<h2>${s}</h2><p></p>`).join("") : "";
+
+      return NextResponse.json({
+        customTemplate: sections.length > 0 ? { title, emoji, body } : null,
+      });
+    }
+
     // ── Step 1: Extract structured profile ──────────────────────────────────
     const extracted = await ollamaJson(
       ollamaUrl,
@@ -128,8 +168,17 @@ Respond with ONLY valid JSON. No explanation, no markdown, no code fences. Examp
       profile.writingStyle = extracted.writingStyle;
     }
 
-    // ── Step 2: Generate custom template if no standard category matched ────
-    if (!profile.journalingIntention || profile.journalingIntention.length === 0) {
+    const needsTemplate =
+      !profile.journalingIntention || profile.journalingIntention.length === 0;
+
+    // When called as step 1, return profile + whether a template step is needed.
+    // When called without a step (legacy / fallback), run step 2 inline.
+    if (step === "profile") {
+      return NextResponse.json({ ...profile, needsTemplate });
+    }
+
+    // ── Legacy: both steps in one call ──────────────────────────────────────
+    if (needsTemplate) {
       const generated = await ollamaJson(
         ollamaUrl,
         model,
@@ -151,23 +200,20 @@ Respond with ONLY valid JSON. No explanation, no markdown, no code fences. Examp
         typeof generated.title === "string" && generated.title.trim()
           ? generated.title.trim()
           : "My Custom Template";
-
       const emoji =
         typeof generated.emoji === "string" && generated.emoji.trim()
           ? generated.emoji.trim()
           : "📝";
-
       const rawSections = Array.isArray(generated.sections) ? generated.sections : [];
       const sections = rawSections
         .filter((s): s is string => typeof s === "string" && s.trim().length > 0)
         .slice(0, 6);
-
       if (sections.length > 0) {
-        const body = sections
-          .map((s) => `<h2>${s}</h2><p></p>`)
-          .join("");
-
-        profile.customTemplate = { title, emoji, body };
+        profile.customTemplate = {
+          title,
+          emoji,
+          body: sections.map((s) => `<h2>${s}</h2><p></p>`).join(""),
+        };
       }
     }
 

@@ -1,2 +1,5 @@
 # Nightly backup at 2 AM
 0 2 * * * node /app/scripts/backup-cron.js
+
+# Weekly AI digest every Sunday at 8 PM UTC
+0 20 * * 0 node /app/scripts/digest-cron.js

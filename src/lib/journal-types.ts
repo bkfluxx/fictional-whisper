@@ -12,7 +12,8 @@ export type JournalTypeId =
   | "sleep"
   | "habits"
   | "fitness"
-  | "spiritual";
+  | "spiritual"
+  | "recipes";
 
 export interface JournalType {
   id: JournalTypeId;
@@ -116,6 +117,14 @@ export const JOURNAL_TYPES: JournalType[] = [
     category: "Wellness",
     description: "Log workouts, nutrition, and body metrics",
     emoji: "💪",
+  },
+  // Lifestyle
+  {
+    id: "recipes",
+    name: "Recipes",
+    category: "Lifestyle",
+    description: "Log recipes, cooking notes, and meal inspiration",
+    emoji: "🍳",
   },
   // Spiritual
   {
