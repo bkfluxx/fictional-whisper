@@ -78,9 +78,18 @@ export default function WhisperChatStep({
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
+      let receivedContent = false;
 
+      // eslint-disable-next-line no-constant-condition
       while (true) {
-        const { done, value } = await reader.read();
+        let done: boolean;
+        let value: Uint8Array | undefined;
+        try {
+          ({ done, value } = await reader.read());
+        } catch {
+          // Safari throws instead of returning done:true when the stream ends
+          break;
+        }
         if (done) break;
         buffer += decoder.decode(value, { stream: true });
         const chunks = buffer.split("\n\n");
@@ -96,6 +105,7 @@ export default function WhisperChatStep({
               error?: string;
             };
             if (obj.token) {
+              receivedContent = true;
               setMessages((prev) => {
                 const updated = [...prev];
                 updated[updated.length - 1] = {
@@ -113,7 +123,8 @@ export default function WhisperChatStep({
         }
       }
 
-      setTurnCount((n) => n + 1);
+      // Only count as a completed turn if we received content
+      if (receivedContent) setTurnCount((n) => n + 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       // Remove the empty assistant placeholder on error

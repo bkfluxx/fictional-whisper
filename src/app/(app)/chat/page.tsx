@@ -169,8 +169,16 @@ export default function ChatPage() {
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
 
+      // eslint-disable-next-line no-constant-condition
       while (true) {
-        const { done, value } = await reader.read();
+        let done: boolean;
+        let value: Uint8Array | undefined;
+        try {
+          ({ done, value } = await reader.read());
+        } catch {
+          // Safari throws instead of returning done:true when the stream ends
+          break;
+        }
         if (done) break;
         const chunk = decoder.decode(value, { stream: true });
         setMessages((prev) => {
