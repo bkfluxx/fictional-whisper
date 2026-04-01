@@ -7,7 +7,6 @@ import { getDEK } from "@/lib/session/dek-store";
 import { decryptString } from "@/lib/crypto";
 import { getJournalType } from "@/lib/journal-types";
 
-// Mood → dot color
 const MOOD_DOT: Record<string, string> = {
   great: "bg-emerald-500",
   good: "bg-indigo-500",
@@ -36,6 +35,13 @@ function formatDay(dateStr: string): { weekday: string; date: string } {
     weekday: d.toLocaleDateString("en-US", { weekday: "short" }),
     date: datePart,
   };
+}
+
+// Strip HTML tags and collapse whitespace for body previews
+function textPreview(html: string, maxLen = 140): string {
+  const text = html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  if (text.length <= maxLen) return text;
+  return text.slice(0, maxLen).replace(/\s+\S*$/, "") + "…";
 }
 
 export default async function JournalPage({
@@ -79,12 +85,10 @@ export default async function JournalPage({
   }
   const days = [...grouped.keys()];
 
-  const heading = categoryDef
-    ? `${categoryDef.emoji} ${categoryDef.name}`
-    : "Journal";
+  const heading = categoryDef ? `${categoryDef.emoji} ${categoryDef.name}` : "Journal";
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-8">
+    <div className="px-6 py-8 max-w-3xl">
       {/* Header */}
       <div className="flex items-center justify-between mb-10">
         <h1 className="text-xl font-semibold text-base-content">{heading}</h1>
@@ -115,6 +119,9 @@ export default async function JournalPage({
 
             return dayEntries.map((e, entryIdx) => {
               const title = e.title ? decryptString(e.title, dek) : null;
+              const body = decryptString(e.body, dek);
+              const preview = textPreview(body);
+
               const firstCat = e.categories[0];
               const jt = firstCat ? getJournalType(firstCat) : null;
               const dotColor = e.mood
@@ -125,8 +132,7 @@ export default async function JournalPage({
 
               const isFirstEntry = dayIdx === 0 && entryIdx === 0;
               const isLastEntry =
-                dayIdx === days.length - 1 &&
-                entryIdx === dayEntries.length - 1;
+                dayIdx === days.length - 1 && entryIdx === dayEntries.length - 1;
               const showDate = entryIdx === 0;
 
               return (
@@ -134,7 +140,7 @@ export default async function JournalPage({
                   {!isFirstEntry && <hr className="bg-base-content/10" />}
 
                   {/* Date label — only shown for first entry of each day */}
-                  <div className="timeline-start me-4 text-right min-w-[5.5rem]">
+                  <div className="timeline-start me-3 text-right w-20 shrink-0">
                     {showDate && (
                       <>
                         <div className="text-xs font-semibold text-base-content/70 leading-tight">
@@ -153,15 +159,13 @@ export default async function JournalPage({
                   </div>
 
                   {/* Entry card */}
-                  <div className="timeline-end timeline-box ms-4 mb-3 w-full border-base-content/10 bg-base-200 hover:bg-base-content/8 transition-colors p-0 overflow-hidden">
-                    <Link
-                      href={`/journal/${e.id}`}
-                      className="block px-4 py-3"
-                    >
+                  <div className="timeline-end timeline-box ms-3 mb-3 w-full border-base-content/10 bg-base-200 hover:bg-base-content/8 transition-colors p-0 overflow-hidden">
+                    <Link href={`/journal/${e.id}`} className="block px-4 py-3">
+                      {/* Title row */}
                       <div className="flex items-start justify-between gap-3">
-                        <span className="text-sm font-bold text-base-content leading-snug tracking-wide uppercase">
+                        <span className="text-sm font-semibold text-base-content leading-snug">
                           {title ?? (
-                            <span className="text-base-content/40 normal-case font-medium tracking-normal">
+                            <span className="text-base-content/40 font-normal italic">
                               Untitled
                             </span>
                           )}
@@ -173,6 +177,14 @@ export default async function JournalPage({
                         )}
                       </div>
 
+                      {/* Body preview */}
+                      {preview && (
+                        <p className="text-xs text-base-content/50 mt-1 leading-relaxed line-clamp-2">
+                          {preview}
+                        </p>
+                      )}
+
+                      {/* Tags / categories / mood */}
                       {(e.categories.length > 0 || e.tags.length > 0 || e.mood) && (
                         <div className="flex gap-1 mt-2 flex-wrap items-center">
                           {e.mood && (
