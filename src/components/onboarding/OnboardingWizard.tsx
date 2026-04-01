@@ -43,9 +43,8 @@ const AI_STEPS: Step[] = [
   "ai-connect",
   "model-setup",
   "whisper-chat",
-  "feature-map",
 ];
-const NO_AI_STEPS: Step[] = ["welcome", "ai-connect", "about-you", "feature-map"];
+const NO_AI_STEPS: Step[] = ["welcome", "ai-connect", "about-you"];
 
 function ProgressBar({ current, aiPath }: { current: Step; aiPath: boolean }) {
   const steps = aiPath ? AI_STEPS : NO_AI_STEPS;
@@ -153,28 +152,17 @@ export default function OnboardingWizard() {
     }
   }
 
-  // ── Step: Welcome ─────────────────────────────────────────────────────────
+  // ── Step: Welcome (feature overview intro) ───────────────────────────────
   if (step === "welcome") {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-8 px-6">
+      <>
         <SkipLink onSkip={skipAll} />
-        <div className="text-6xl">📖</div>
-        <div className="text-center max-w-lg">
-          <h1 className="text-3xl font-semibold text-base-content mb-3">
-            Welcome to Fictional Whisper
-          </h1>
-          <p className="text-base-content/60 text-lg leading-relaxed">
-            Your private, encrypted space for everything that matters. Let&rsquo;s
-            get you set up in just a moment.
-          </p>
-        </div>
-        <button
-          onClick={() => setStep("ai-connect")}
-          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl transition-colors"
-        >
-          Get started →
-        </button>
-      </div>
+        <FeatureMapStep
+          aiEnabled={true}
+          introMode={true}
+          onContinue={() => setStep("ai-connect")}
+        />
+      </>
     );
   }
 
@@ -295,7 +283,7 @@ export default function OnboardingWizard() {
           chatModel={chatModel}
           onContinue={(extracted) => {
             setProfile(extracted);
-            setStep("feature-map");
+            setStep("done");
           }}
           onBack={() => setStep("model-setup")}
         />
@@ -312,24 +300,9 @@ export default function OnboardingWizard() {
         <AboutYouStep
           onContinue={(p) => {
             setProfile(p);
-            setStep("feature-map");
+            setStep("done");
           }}
           onBack={() => setStep("ai-connect")}
-        />
-      </>
-    );
-  }
-
-  // ── Step: Feature Map (both paths) ───────────────────────────────────────
-  if (step === "feature-map") {
-    return (
-      <>
-        <ProgressBar current={step} aiPath={aiPath} />
-        <FeatureMapStep
-          userName={profile.userName}
-          aiEnabled={aiPath}
-          onContinue={() => setStep("done")}
-          onBack={() => setStep(aiPath ? "whisper-chat" : "about-you")}
         />
       </>
     );
@@ -352,7 +325,7 @@ export default function OnboardingWizard() {
 
       <div className="flex gap-3">
         <button
-          onClick={() => setStep("feature-map")}
+          onClick={() => setStep(aiPath ? "whisper-chat" : "about-you")}
           className="px-5 py-2.5 text-base-content/60 hover:text-base-content transition-colors text-sm"
         >
           ← Back
