@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
     userName,
     journalingIntention,
     writingStyle,
+    customTemplate,
   } = body as {
     ollamaBaseUrl?: string;
     ollamaModel?: string;
@@ -24,6 +25,7 @@ export async function POST(req: NextRequest) {
     userName?: string;
     journalingIntention?: string[];
     writingStyle?: string;
+    customTemplate?: { title: string; emoji: string; body: string };
   };
 
   const fields = {
@@ -40,6 +42,19 @@ export async function POST(req: NextRequest) {
     update: { onboardingDone: true, ...fields },
     create: { id: "singleton", onboardingDone: true, ...fields },
   });
+
+  // Save AI-generated custom template if one was produced
+  if (customTemplate?.title && customTemplate?.body) {
+    await prisma.journalTemplate.create({
+      data: {
+        title: customTemplate.title,
+        emoji: customTemplate.emoji ?? "📝",
+        body: customTemplate.body,
+        description: "Created for you during setup",
+        categories: [],
+      },
+    });
+  }
 
   return NextResponse.json({ ok: true });
 }

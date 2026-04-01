@@ -23,10 +23,17 @@ type Step =
 
 type TestState = "idle" | "testing" | "ok" | "fail";
 
+interface CustomTemplate {
+  title: string;
+  emoji: string;
+  body: string;
+}
+
 interface UserProfile {
   userName?: string;
   journalingIntention?: string[];
   writingStyle?: string;
+  customTemplate?: CustomTemplate;
 }
 
 // ─── Progress indicator ───────────────────────────────────────────────────────

@@ -7,10 +7,17 @@ interface Message {
   content: string;
 }
 
+interface CustomTemplate {
+  title: string;
+  emoji: string;
+  body: string;
+}
+
 interface UserProfile {
   userName?: string;
   journalingIntention?: string[];
   writingStyle?: string;
+  customTemplate?: CustomTemplate;
 }
 
 interface Props {

@@ -5,8 +5,11 @@
  * onboarding conversation into a typed profile. Used by WhisperChatStep
  * instead of the heuristic keyword extractor.
  *
+ * When the user's stated purpose doesn't match any predefined journaling
+ * category, a second AI call generates a custom template from the conversation.
+ *
  * Body: { messages: Message[], ollamaUrl: string, model: string }
- * Response: { userName?, journalingIntention?, writingStyle? }
+ * Response: { userName?, journalingIntention?, writingStyle?, customTemplate? }
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -28,10 +31,39 @@ interface Message {
   content: string;
 }
 
-interface ExtractedProfile {
+export interface CustomTemplate {
+  title: string;
+  emoji: string;
+  body: string; // HTML
+}
+
+export interface ExtractedProfile {
   userName?: string;
   journalingIntention?: string[];
   writingStyle?: string;
+  customTemplate?: CustomTemplate;
+}
+
+async function ollamaJson(
+  ollamaUrl: string,
+  model: string,
+  prompt: string,
+): Promise<Record<string, unknown>> {
+  const res = await fetch(`${ollamaUrl}/api/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model,
+      messages: [{ role: "user", content: prompt }],
+      stream: false,
+      think: false,
+      format: "json",
+    }),
+    signal: AbortSignal.timeout(30_000),
+  });
+  if (!res.ok) throw new Error(`Ollama failed (${res.status})`);
+  const data = (await res.json()) as { message?: { content?: string } };
+  return JSON.parse(data.message?.content ?? "{}");
 }
 
 export async function POST(req: NextRequest) {
@@ -53,69 +85,90 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Build a plain-text transcript for the extraction prompt
   const transcript = messages
     .map((m) => `${m.role === "user" ? "User" : "Whisper"}: ${m.content}`)
     .join("\n");
 
-  const extractionPrompt = `You are a data extraction assistant. Read the following onboarding conversation between a user and Whisper (a journaling app assistant), then extract structured information about the user.
+  try {
+    // ── Step 1: Extract structured profile ──────────────────────────────────
+    const extracted = await ollamaJson(
+      ollamaUrl,
+      model,
+      `You are a data extraction assistant. Read the following onboarding conversation between a user and Whisper (a journaling app assistant), then extract structured information about the user.
 
 CONVERSATION:
 ${transcript}
 
 Extract and return ONLY a JSON object with these fields (omit any field you cannot confidently determine):
 - "userName": string — the name or nickname the user gave
-- "journalingIntention": array of strings — pick ONLY from these exact values that genuinely match what the user said they want to use the journal for: ${VALID_INTENTIONS.join(", ")}. If the user's stated purpose does not match any of these (e.g. storing recipes, work tasks), return an empty array.
+- "journalingIntention": array of strings — pick ONLY from these exact values that genuinely match what the user said they want to use the journal for: ${VALID_INTENTIONS.join(", ")}. If the user's stated purpose does not match any of these (e.g. storing recipes, collecting bookmarks, work tasks), return an empty array.
 - "writingStyle": string — either "prompts" (user wants guided prompts/templates) or "blank" (user prefers free writing), or omit if unclear
 
 Respond with ONLY valid JSON. No explanation, no markdown, no code fences. Example:
-{"userName":"Alice","journalingIntention":["self-reflection","gratitude"],"writingStyle":"prompts"}`;
-
-  try {
-    const res = await fetch(`${ollamaUrl}/api/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model,
-        messages: [{ role: "user", content: extractionPrompt }],
-        stream: false,
-        think: false,
-        format: "json",
-      }),
-      signal: AbortSignal.timeout(30_000),
-    });
-
-    if (!res.ok) {
-      return NextResponse.json({ error: `Ollama failed (${res.status})` }, { status: 502 });
-    }
-
-    const data = (await res.json()) as { message?: { content?: string } };
-    const raw = data.message?.content ?? "";
-
-    let parsed: Record<string, unknown>;
-    try {
-      parsed = JSON.parse(raw);
-    } catch {
-      return NextResponse.json({ error: "Model returned invalid JSON" }, { status: 502 });
-    }
+{"userName":"Alice","journalingIntention":["self-reflection","gratitude"],"writingStyle":"prompts"}`,
+    );
 
     const profile: ExtractedProfile = {};
 
-    if (typeof parsed.userName === "string" && parsed.userName.trim()) {
-      profile.userName = parsed.userName.trim();
+    if (typeof extracted.userName === "string" && extracted.userName.trim()) {
+      profile.userName = extracted.userName.trim();
     }
 
-    if (Array.isArray(parsed.journalingIntention)) {
-      const valid = (parsed.journalingIntention as unknown[])
-        .filter((v): v is string => typeof v === "string" && VALID_INTENTIONS.includes(v));
+    if (Array.isArray(extracted.journalingIntention)) {
+      const valid = (extracted.journalingIntention as unknown[]).filter(
+        (v): v is string => typeof v === "string" && VALID_INTENTIONS.includes(v),
+      );
       if (valid.length > 0) profile.journalingIntention = valid;
     }
 
     if (
-      typeof parsed.writingStyle === "string" &&
-      VALID_STYLES.includes(parsed.writingStyle)
+      typeof extracted.writingStyle === "string" &&
+      VALID_STYLES.includes(extracted.writingStyle)
     ) {
-      profile.writingStyle = parsed.writingStyle;
+      profile.writingStyle = extracted.writingStyle;
+    }
+
+    // ── Step 2: Generate custom template if no standard category matched ────
+    if (!profile.journalingIntention || profile.journalingIntention.length === 0) {
+      const generated = await ollamaJson(
+        ollamaUrl,
+        model,
+        `You are a journaling template designer. Based on the following conversation, design a simple journaling template tailored to the user's specific needs.
+
+CONVERSATION:
+${transcript}
+
+Return ONLY a JSON object with these fields:
+- "title": string — a short, descriptive template name (e.g. "Recipe Log", "Bookmark & Notes")
+- "emoji": string — a single relevant emoji
+- "sections": array of strings — 3 to 5 section heading names that make sense for this template (e.g. ["Recipe name", "Ingredients", "Method", "Notes"])
+
+Respond with ONLY valid JSON. No explanation, no markdown, no code fences. Example:
+{"title":"Recipe Log","emoji":"🍳","sections":["Recipe name","Why I love it","Key ingredients","Tips & variations"]}`,
+      );
+
+      const title =
+        typeof generated.title === "string" && generated.title.trim()
+          ? generated.title.trim()
+          : "My Custom Template";
+
+      const emoji =
+        typeof generated.emoji === "string" && generated.emoji.trim()
+          ? generated.emoji.trim()
+          : "📝";
+
+      const rawSections = Array.isArray(generated.sections) ? generated.sections : [];
+      const sections = rawSections
+        .filter((s): s is string => typeof s === "string" && s.trim().length > 0)
+        .slice(0, 6);
+
+      if (sections.length > 0) {
+        const body = sections
+          .map((s) => `<h2>${s}</h2><p></p>`)
+          .join("");
+
+        profile.customTemplate = { title, emoji, body };
+      }
     }
 
     return NextResponse.json(profile);
