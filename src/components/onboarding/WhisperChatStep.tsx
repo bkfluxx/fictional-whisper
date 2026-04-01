@@ -43,6 +43,7 @@ export default function WhisperChatStep({
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [extracting, setExtracting] = useState(false);
+  const [progress, setProgress] = useState<{ label: string; pct: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [turnCount, setTurnCount] = useState(0);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -147,27 +148,47 @@ export default function WhisperChatStep({
   async function finish() {
     setExtracting(true);
     setError(null);
+    setProgress({ label: "Analysing your conversation…", pct: 0 });
 
     try {
-      const res = await fetch("/api/onboarding/extract", {
+      // Step 1: extract profile
+      const res1 = await fetch("/api/onboarding/extract", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages,
-          ollamaUrl,
-          model: chatModel,
-        }),
+        body: JSON.stringify({ messages, ollamaUrl, model: chatModel, step: "profile" }),
       });
+      if (!res1.ok) throw new Error(`Extraction failed (${res1.status})`);
 
-      if (!res.ok) throw new Error(`Extraction failed (${res.status})`);
+      const { needsTemplate, ...profile } = (await res1.json()) as UserProfile & {
+        needsTemplate?: boolean;
+      };
 
-      const profile = (await res.json()) as UserProfile;
+      if (needsTemplate) {
+        // Step 2: generate custom template
+        setProgress({ label: "Creating your custom template…", pct: 50 });
+
+        const res2 = await fetch("/api/onboarding/extract", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages, ollamaUrl, model: chatModel, step: "template" }),
+        });
+
+        if (res2.ok) {
+          const { customTemplate } = (await res2.json()) as { customTemplate?: UserProfile["customTemplate"] };
+          if (customTemplate) profile.customTemplate = customTemplate;
+        }
+      }
+
+      setProgress({ label: "All done!", pct: 100 });
+      // Brief pause so the user sees 100% before moving on
+      await new Promise((r) => setTimeout(r, 400));
       onContinue(profile);
     } catch {
       // Fall back to empty profile rather than blocking the user
       onContinue({});
     } finally {
       setExtracting(false);
+      setProgress(null);
     }
   }
 
@@ -247,6 +268,21 @@ export default function WhisperChatStep({
         </button>
       </div>
 
+      {progress && (
+        <div className="mt-4 space-y-1.5">
+          <div className="flex items-center justify-between text-xs text-base-content/50">
+            <span>{progress.label}</span>
+            <span>{progress.pct}%</span>
+          </div>
+          <div className="h-1.5 w-full bg-base-content/10 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-indigo-500 rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${progress.pct === 0 ? 8 : progress.pct}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="mt-6 flex items-center justify-between">
         <button
           onClick={onBack}
@@ -266,7 +302,7 @@ export default function WhisperChatStep({
           }`}
         >
           {extracting
-            ? "Personalising…"
+            ? "Working…"
             : canFinish
               ? "I'm ready →"
               : "Keep chatting to continue"}

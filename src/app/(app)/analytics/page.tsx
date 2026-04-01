@@ -1,12 +1,15 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
+import { getDEK } from "@/lib/session/dek-store";
 import { prisma } from "@/lib/prisma";
+import { decryptString } from "@/lib/crypto";
 import { JOURNAL_TYPES } from "@/lib/journal-types";
 import StatCard from "@/components/analytics/StatCard";
 import HorizontalBar from "@/components/analytics/HorizontalBar";
 import MonthlyBars from "@/components/analytics/MonthlyBars";
 import ActivityHeatmap from "@/components/analytics/ActivityHeatmap";
+import DigestSection from "@/components/analytics/DigestSection";
 
 // ─── Data helpers ─────────────────────────────────────────────────────────────
 
@@ -116,7 +119,24 @@ const MOOD_COLOR: Record<string, string> = {
 
 export default async function AnalyticsPage() {
   const session = await getServerSession(authOptions);
-  if (!session) redirect("/login");
+  if (!session?.jti) redirect("/login");
+
+  const dek = getDEK(session.jti);
+  if (!dek) redirect("/login");
+
+  // Fetch digests for the DigestSection
+  const digestRows = await prisma.weeklyDigest.findMany({
+    orderBy: { weekStart: "desc" },
+    take: 8,
+  });
+  const digests = digestRows.map((r) => ({
+    id: r.id,
+    weekStart: r.weekStart.toISOString(),
+    content: decryptString(r.content, dek),
+    entryCount: r.entryCount,
+    createdAt: r.createdAt.toISOString(),
+  }));
+  const latestDigest = digests[0] ?? null;
 
   const entries = await prisma.entry.findMany({
     select: { entryDate: true, mood: true, categories: true },
@@ -174,6 +194,9 @@ export default async function AnalyticsPage() {
   return (
     <div className="max-w-4xl mx-auto px-6 py-8">
       <h1 className="text-xl font-semibold text-base-content mb-8">Analytics</h1>
+
+      {/* Weekly digest — shown even when entry count is zero */}
+      <DigestSection initial={latestDigest} all={digests} />
 
       {totalEntries === 0 ? (
         <p className="text-base-content/40">

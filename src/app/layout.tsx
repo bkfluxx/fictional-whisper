@@ -28,6 +28,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-base-100 text-base-content">
         {/* Apply saved theme before first paint to avoid flash */}

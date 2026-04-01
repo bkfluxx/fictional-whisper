@@ -117,6 +117,16 @@ model JournalTemplate {
   updatedAt   DateTime @updatedAt
 }
 
+model WeeklyDigest {
+  id         String   @id @default(cuid())
+  weekStart  DateTime // Monday 00:00 UTC of the week the entries cover
+  content    String   // AES-256-GCM encrypted markdown digest
+  entryCount Int      // how many entries were included
+  createdAt  DateTime @default(now())
+
+  @@index([weekStart])
+}
+
 model AppSettings {
   id                  String    @id @default("singleton")
   backupPath          String    @default("/app/backups")
