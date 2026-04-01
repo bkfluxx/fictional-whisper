@@ -140,14 +140,14 @@ export default function AiModelsSettings() {
   }
 
   if (loadState === "loading") {
-    return <p className="text-sm text-neutral-500">Checking Ollama…</p>;
+    return <p className="text-sm text-base-content/50">Checking Ollama…</p>;
   }
 
   return (
     <div className="space-y-6">
       {/* URL field — always visible */}
       <div>
-        <label className="block text-xs font-medium text-neutral-400 mb-1.5">
+        <label className="block text-xs font-medium text-base-content/60 mb-1.5">
           Ollama base URL
         </label>
         <div className="flex gap-2">
@@ -159,21 +159,21 @@ export default function AiModelsSettings() {
               setTestResult(null);
             }}
             placeholder="http://localhost:11434"
-            className="flex-1 bg-neutral-900 border border-neutral-700 text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 placeholder:text-neutral-600"
+            className="flex-1 bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 placeholder:text-base-content/30"
           />
           <button
             onClick={testUrl}
             disabled={testingUrl || !draft.baseUrl.trim()}
-            className="px-3 py-2 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-40 text-white text-sm rounded-lg transition-colors whitespace-nowrap"
+            className="px-3 py-2 bg-base-content/10 hover:bg-base-content/20 disabled:opacity-40 text-base-content text-sm rounded-lg transition-colors whitespace-nowrap"
           >
             {testingUrl ? "Testing…" : "Test"}
           </button>
         </div>
         {testResult === "ok" && (
-          <p className="text-xs text-emerald-400 mt-1.5">Connected — models loaded.</p>
+          <p className="text-xs text-emerald-500 mt-1.5">Connected — models loaded.</p>
         )}
         {testResult === "fail" && (
-          <p className="text-xs text-red-400 mt-1.5">Could not reach Ollama at that URL.</p>
+          <p className="text-xs text-red-500 mt-1.5">Could not reach Ollama at that URL.</p>
         )}
         {loadState === "offline" && testResult === null && (
           <p className="text-xs text-amber-500 mt-1.5">
@@ -187,9 +187,9 @@ export default function AiModelsSettings() {
         <div className="grid gap-4 sm:grid-cols-2">
           {/* LLM model */}
           <div>
-            <label className="block text-xs font-medium text-neutral-400 mb-1.5">
+            <label className="block text-xs font-medium text-base-content/60 mb-1.5">
               Text model
-              <span className="text-neutral-600 font-normal ml-1">
+              <span className="text-base-content/40 font-normal ml-1">
                 (analysis, chat, prompts)
               </span>
             </label>
@@ -198,7 +198,7 @@ export default function AiModelsSettings() {
               onChange={(e) =>
                 setDraft((d) => ({ ...d, model: e.target.value }))
               }
-              className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500"
             >
               {models.map((m) => (
                 <option key={m.name} value={m.name}>
@@ -210,9 +210,9 @@ export default function AiModelsSettings() {
 
           {/* Embed model */}
           <div>
-            <label className="block text-xs font-medium text-neutral-400 mb-1.5">
+            <label className="block text-xs font-medium text-base-content/60 mb-1.5">
               Embedding model
-              <span className="text-neutral-600 font-normal ml-1">
+              <span className="text-base-content/40 font-normal ml-1">
                 (semantic search, chat context)
               </span>
             </label>
@@ -221,7 +221,7 @@ export default function AiModelsSettings() {
               onChange={(e) =>
                 setDraft((d) => ({ ...d, embedModel: e.target.value }))
               }
-              className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500"
             >
               {models.map((m) => (
                 <option key={m.name} value={m.name}>
@@ -229,7 +229,7 @@ export default function AiModelsSettings() {
                 </option>
               ))}
             </select>
-            <p className="text-xs text-neutral-600 mt-1">
+            <p className="text-xs text-base-content/40 mt-1">
               Changing this model requires re-embedding entries for semantic
               search to work correctly.
             </p>
@@ -238,9 +238,9 @@ export default function AiModelsSettings() {
       )}
 
       {models.length === 0 && loadState === "ready" && (
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-base-content/50">
           No models found. Pull one with:{" "}
-          <code className="text-neutral-300 bg-neutral-900 px-1.5 py-0.5 rounded text-xs">
+          <code className="text-base-content/80 bg-base-200 px-1.5 py-0.5 rounded text-xs">
             ollama pull llama3.2
           </code>
         </p>
@@ -249,17 +249,17 @@ export default function AiModelsSettings() {
       {/* Available models table */}
       {models.length > 0 && (
         <div>
-          <p className="text-xs font-medium text-neutral-500 mb-2 uppercase tracking-widest">
+          <p className="text-xs font-medium text-base-content/40 mb-2 uppercase tracking-widest">
             Pulled models
           </p>
-          <div className="rounded-xl border border-neutral-800 overflow-hidden">
+          <div className="rounded-xl border border-base-content/10 overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-neutral-800">
-                  <th className="text-left px-4 py-2 text-xs text-neutral-500 font-medium">
+                <tr className="border-b border-base-content/10">
+                  <th className="text-left px-4 py-2 text-xs text-base-content/50 font-medium">
                     Model
                   </th>
-                  <th className="text-right px-4 py-2 text-xs text-neutral-500 font-medium">
+                  <th className="text-right px-4 py-2 text-xs text-base-content/50 font-medium">
                     Size
                   </th>
                 </tr>
@@ -269,14 +269,14 @@ export default function AiModelsSettings() {
                   <tr
                     key={m.name}
                     className={
-                      i < models.length - 1 ? "border-b border-neutral-800" : ""
+                      i < models.length - 1 ? "border-b border-base-content/10" : ""
                     }
                   >
-                    <td className="px-4 py-2.5 text-neutral-200 font-mono text-xs">
+                    <td className="px-4 py-2.5 text-base-content font-mono text-xs">
                       {m.name}
                       {(m.name === selected.model ||
                         m.name === selected.embedModel) && (
-                        <span className="ml-2 text-indigo-400 font-sans font-normal">
+                        <span className="ml-2 text-indigo-500 font-sans font-normal">
                           {m.name === selected.model &&
                           m.name === selected.embedModel
                             ? "text + embed"
@@ -286,7 +286,7 @@ export default function AiModelsSettings() {
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-2.5 text-neutral-500 text-right">
+                    <td className="px-4 py-2.5 text-base-content/50 text-right">
                       {formatBytes(m.size)}
                     </td>
                   </tr>
@@ -300,16 +300,16 @@ export default function AiModelsSettings() {
       {/* System prompt */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label className="text-xs font-medium text-neutral-400">
+          <label className="text-xs font-medium text-base-content/60">
             Chat system prompt
-            <span className="text-neutral-600 font-normal ml-1">
+            <span className="text-base-content/40 font-normal ml-1">
               (instructs the AI how to respond)
             </span>
           </label>
           <button
             onClick={resetPrompt}
             disabled={draft.systemPrompt.trim() === DEFAULT_SYSTEM_PROMPT.trim()}
-            className="text-xs text-neutral-500 hover:text-white disabled:opacity-30 transition-colors"
+            className="text-xs text-base-content/50 hover:text-base-content disabled:opacity-30 transition-colors"
           >
             Reset to default
           </button>
@@ -320,9 +320,9 @@ export default function AiModelsSettings() {
             setDraft((d) => ({ ...d, systemPrompt: e.target.value }))
           }
           rows={5}
-          className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 placeholder:text-neutral-600 resize-y font-mono leading-relaxed"
+          className="w-full bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 placeholder:text-base-content/30 resize-y font-mono leading-relaxed"
         />
-        <p className="text-xs text-neutral-600 mt-1">
+        <p className="text-xs text-base-content/40 mt-1">
           {draft.systemPrompt.length} chars · Changes take effect on the next
           chat message.
         </p>
@@ -342,7 +342,7 @@ export default function AiModelsSettings() {
               : "Save"}
         </button>
         {loadState === "error" && errorMsg && (
-          <p className="text-sm text-red-400">{errorMsg}</p>
+          <p className="text-sm text-error">{errorMsg}</p>
         )}
       </div>
     </div>

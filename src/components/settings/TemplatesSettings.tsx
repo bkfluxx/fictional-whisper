@@ -71,29 +71,29 @@ export default function TemplatesSettings() {
     <div className="space-y-8">
       {/* Built-in templates (read-only) */}
       <div>
-        <h3 className="text-sm font-medium text-neutral-300 mb-3">Built-in templates</h3>
+        <h3 className="text-sm font-medium text-base-content/70 mb-3">Built-in templates</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {BUILT_IN_TEMPLATES.map((t) => (
             <div
               key={t.id}
-              className="flex items-center gap-2 px-3 py-2.5 bg-neutral-900 border border-neutral-800 rounded-lg"
+              className="flex items-center gap-2 px-3 py-2.5 bg-base-200 border border-base-content/10 rounded-lg"
             >
               <span>{t.emoji}</span>
               <div className="min-w-0">
-                <p className="text-sm text-neutral-300 truncate">{t.title}</p>
-                <p className="text-xs text-neutral-600 truncate">{t.group}</p>
+                <p className="text-sm text-base-content truncate">{t.title}</p>
+                <p className="text-xs text-base-content/40 truncate">{t.group}</p>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="border-t border-neutral-800" />
+      <div className="border-t border-base-content/10" />
 
       {/* User templates */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-medium text-neutral-300">My templates</h3>
+          <h3 className="text-sm font-medium text-base-content/70">My templates</h3>
           {!creating && (
             <button
               onClick={() => setCreating(true)}
@@ -105,10 +105,10 @@ export default function TemplatesSettings() {
         </div>
 
         {loading && (
-          <p className="text-sm text-neutral-600">Loading…</p>
+          <p className="text-sm text-base-content/40">Loading…</p>
         )}
         {!loading && templates.length === 0 && !creating && (
-          <p className="text-sm text-neutral-600">No custom templates yet.</p>
+          <p className="text-sm text-base-content/40">No custom templates yet.</p>
         )}
 
         {/* Existing user templates */}
@@ -116,19 +116,19 @@ export default function TemplatesSettings() {
           {templates.map((t) => (
             <div
               key={t.id}
-              className="flex items-center gap-3 px-3 py-2.5 bg-neutral-900 border border-neutral-800 rounded-lg"
+              className="flex items-center gap-3 px-3 py-2.5 bg-base-200 border border-base-content/10 rounded-lg"
             >
               <span>{t.emoji}</span>
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-neutral-300 truncate">{t.title}</p>
+                <p className="text-sm text-base-content truncate">{t.title}</p>
                 {t.description && (
-                  <p className="text-xs text-neutral-600 truncate">{t.description}</p>
+                  <p className="text-xs text-base-content/40 truncate">{t.description}</p>
                 )}
               </div>
               <button
                 onClick={() => remove(t.id)}
                 disabled={deleteId === t.id}
-                className="text-xs text-neutral-600 hover:text-red-400 transition-colors disabled:opacity-40"
+                className="text-xs text-base-content/40 hover:text-red-500 transition-colors disabled:opacity-40"
               >
                 {deleteId === t.id ? "Deleting…" : "Delete"}
               </button>
@@ -138,35 +138,35 @@ export default function TemplatesSettings() {
 
         {/* Create form */}
         {creating && (
-          <div className="border border-neutral-700 rounded-xl p-4 space-y-3">
-            <h4 className="text-sm font-medium text-white">New template</h4>
+          <div className="border border-base-content/15 rounded-xl p-4 space-y-3">
+            <h4 className="text-sm font-medium text-base-content">New template</h4>
             <div className="flex gap-2">
               <input
                 value={emoji}
                 onChange={(e) => setEmoji(e.target.value)}
                 placeholder="📝"
                 maxLength={4}
-                className="w-14 bg-neutral-800 border border-neutral-700 text-white text-center rounded-lg px-2 py-2 text-lg focus:outline-none focus:border-indigo-500"
+                className="w-14 bg-base-100 border border-base-content/20 text-base-content text-center rounded-lg px-2 py-2 text-lg focus:outline-none focus:border-indigo-500"
               />
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Template name"
-                className="flex-1 bg-neutral-800 border border-neutral-700 text-white text-sm rounded-lg px-3 py-2 placeholder-neutral-600 focus:outline-none focus:border-indigo-500"
+                className="flex-1 bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-2 placeholder:text-base-content/30 focus:outline-none focus:border-indigo-500"
               />
             </div>
             <input
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Short description (optional)"
-              className="w-full bg-neutral-800 border border-neutral-700 text-white text-sm rounded-lg px-3 py-2 placeholder-neutral-600 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-2 placeholder:text-base-content/30 focus:outline-none focus:border-indigo-500"
             />
             <textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
-              placeholder="Template body in Markdown — use ## headings for sections and <!-- hints --> for guidance"
+              placeholder="Template body in Markdown — use ## headings for sections"
               rows={8}
-              className="w-full bg-neutral-800 border border-neutral-700 text-white text-sm rounded-lg px-3 py-2 placeholder-neutral-600 focus:outline-none focus:border-indigo-500 font-mono resize-y"
+              className="w-full bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-2 placeholder:text-base-content/30 focus:outline-none focus:border-indigo-500 font-mono resize-y"
             />
             <div className="flex items-center gap-3">
               <button
@@ -181,12 +181,12 @@ export default function TemplatesSettings() {
                   setCreating(false);
                   setSaveState("idle");
                 }}
-                className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
+                className="text-sm text-base-content/50 hover:text-base-content transition-colors"
               >
                 Cancel
               </button>
               {saveState === "error" && (
-                <span className="text-xs text-red-400">Something went wrong</span>
+                <span className="text-xs text-error">Something went wrong</span>
               )}
             </div>
           </div>

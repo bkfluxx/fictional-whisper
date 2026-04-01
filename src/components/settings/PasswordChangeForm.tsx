@@ -46,46 +46,46 @@ export default function PasswordChangeForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-sm">
       <div>
-        <label className="block text-sm text-neutral-400 mb-1.5">Current password</label>
+        <label className="block text-sm text-base-content/60 mb-1.5">Current password</label>
         <input
           type="password"
           value={current}
           onChange={(e) => setCurrent(e.target.value)}
           autoComplete="current-password"
-          className="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-lg text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-indigo-500 transition-colors"
+          className="w-full px-3 py-2 bg-base-100 border border-base-content/20 rounded-lg text-sm text-base-content placeholder-base-content/30 focus:outline-none focus:border-indigo-500 transition-colors"
         />
       </div>
 
       <div>
-        <label className="block text-sm text-neutral-400 mb-1.5">New password</label>
+        <label className="block text-sm text-base-content/60 mb-1.5">New password</label>
         <input
           type="password"
           value={next}
           onChange={(e) => setNext(e.target.value)}
           autoComplete="new-password"
-          className="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-lg text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-indigo-500 transition-colors"
+          className="w-full px-3 py-2 bg-base-100 border border-base-content/20 rounded-lg text-sm text-base-content placeholder-base-content/30 focus:outline-none focus:border-indigo-500 transition-colors"
         />
         {next.length > 0 && next.length < 8 && (
-          <p className="text-xs text-amber-500 mt-1">Minimum 8 characters</p>
+          <p className="text-xs text-warning mt-1">Minimum 8 characters</p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm text-neutral-400 mb-1.5">Confirm new password</label>
+        <label className="block text-sm text-base-content/60 mb-1.5">Confirm new password</label>
         <input
           type="password"
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
           autoComplete="new-password"
-          className={`w-full px-3 py-2 bg-neutral-900 border rounded-lg text-sm text-white placeholder-neutral-600 focus:outline-none transition-colors ${
-            mismatch ? "border-red-500 focus:border-red-500" : "border-neutral-700 focus:border-indigo-500"
+          className={`w-full px-3 py-2 bg-base-100 border rounded-lg text-sm text-base-content placeholder-base-content/30 focus:outline-none transition-colors ${
+            mismatch ? "border-error focus:border-error" : "border-base-content/20 focus:border-indigo-500"
           }`}
         />
-        {mismatch && <p className="text-xs text-red-400 mt-1">Passwords don&apos;t match</p>}
+        {mismatch && <p className="text-xs text-error mt-1">Passwords don&apos;t match</p>}
       </div>
 
       {message && (
-        <p className={`text-sm ${status === "success" ? "text-emerald-400" : "text-red-400"}`}>
+        <p className={`text-sm ${status === "success" ? "text-emerald-500" : "text-error"}`}>
           {message}
         </p>
       )}

@@ -31,7 +31,7 @@ export default function ExportSection() {
       <button
         onClick={() => download("json")}
         disabled={!!downloading}
-        className="flex items-center gap-2 px-4 py-2.5 bg-neutral-900 hover:bg-neutral-800 disabled:opacity-50 border border-neutral-700 text-sm text-neutral-200 rounded-lg transition-colors"
+        className="flex items-center gap-2 px-4 py-2.5 bg-base-200 hover:bg-base-content/10 disabled:opacity-50 border border-base-content/15 text-sm text-base-content rounded-lg transition-colors"
       >
         <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -42,7 +42,7 @@ export default function ExportSection() {
       <button
         onClick={() => download("markdown")}
         disabled={!!downloading}
-        className="flex items-center gap-2 px-4 py-2.5 bg-neutral-900 hover:bg-neutral-800 disabled:opacity-50 border border-neutral-700 text-sm text-neutral-200 rounded-lg transition-colors"
+        className="flex items-center gap-2 px-4 py-2.5 bg-base-200 hover:bg-base-content/10 disabled:opacity-50 border border-base-content/15 text-sm text-base-content rounded-lg transition-colors"
       >
         <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -50,7 +50,7 @@ export default function ExportSection() {
         {downloading === "markdown" ? "Exporting…" : "Export Markdown (.zip)"}
       </button>
 
-      <p className="text-xs text-neutral-600 self-center sm:ml-1">
+      <p className="text-xs text-base-content/40 self-center sm:ml-1">
         JSON re-imports here · Markdown imports into Obsidian
       </p>
     </div>

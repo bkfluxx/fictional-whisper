@@ -58,18 +58,18 @@ export default function ImportSection() {
         onClick={() => inputRef.current?.click()}
         className={`flex flex-col items-center justify-center gap-2 px-6 py-8 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${
           dragging
-            ? "border-indigo-500 bg-indigo-950/20"
-            : "border-neutral-700 hover:border-neutral-500 bg-neutral-900/40"
+            ? "border-indigo-500 bg-indigo-500/10"
+            : "border-base-content/20 hover:border-base-content/40 bg-base-200/50"
         }`}
       >
-        <svg className="w-8 h-8 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <svg className="w-8 h-8 text-base-content/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
         </svg>
         <div className="text-center">
-          <p className="text-sm text-neutral-300">
+          <p className="text-sm text-base-content/70">
             {status === "uploading" ? "Importing…" : "Drop file or click to browse"}
           </p>
-          <p className="text-xs text-neutral-600 mt-0.5">
+          <p className="text-xs text-base-content/40 mt-0.5">
             .json (Fictional Whisper or Day One) · .md · .zip (Obsidian vault)
           </p>
         </div>
@@ -84,13 +84,13 @@ export default function ImportSection() {
 
       {/* Result */}
       {status === "done" && result && (
-        <p className="text-sm text-emerald-400">
+        <p className="text-sm text-emerald-500">
           ✓ Imported {result.imported} {result.imported === 1 ? "entry" : "entries"}
           {result.skipped > 0 && ` · ${result.skipped} skipped (empty)`}
         </p>
       )}
       {status === "error" && error && (
-        <p className="text-sm text-red-400">{error}</p>
+        <p className="text-sm text-error">{error}</p>
       )}
     </div>
   );
