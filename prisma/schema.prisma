@@ -127,6 +127,19 @@ model WeeklyDigest {
   @@index([weekStart])
 }
 
+// User-defined categories and built-in overrides.
+// builtinId links to a JOURNAL_TYPES id — null means user-defined.
+// hidden = true removes the category from the picker (soft-delete for built-ins).
+model UserCategory {
+  id          String   @id @default(cuid())
+  name        String
+  emoji       String   @default("📝")
+  description String?
+  builtinId   String?  @unique  // e.g. "brain-dump"; null = user-defined
+  hidden      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
 model AppSettings {
   id                  String    @id @default("singleton")
   backupPath          String    @default("/app/backups")
