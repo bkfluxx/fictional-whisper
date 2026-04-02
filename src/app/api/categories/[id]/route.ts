@@ -11,10 +11,11 @@ export async function PATCH(
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const { name, emoji, description } = (await req.json()) as {
+  const { name, emoji, description, hidden } = (await req.json()) as {
     name?: string;
     emoji?: string;
     description?: string;
+    hidden?: boolean;
   };
 
   const category = await prisma.userCategory.update({
@@ -23,6 +24,7 @@ export async function PATCH(
       ...(name !== undefined ? { name: name.trim() } : {}),
       ...(emoji !== undefined ? { emoji: emoji.trim() || "📝" } : {}),
       ...(description !== undefined ? { description: description?.trim() || null } : {}),
+      ...(hidden !== undefined ? { hidden } : {}),
     },
   });
   return NextResponse.json(category);

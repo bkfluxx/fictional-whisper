@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 
 export const DEFAULT_CHAT_MODEL = "qwen3.5";
-export const DEFAULT_EMBED_MODEL = "qwen3-embedding";
+export const DEFAULT_EMBED_MODEL = "nomic-embed-text";
 
 interface ModelInfo {
   name: string;
@@ -34,14 +34,21 @@ function ModelPuller({
   url,
   model,
   onDone,
+  autoStart = false,
 }: {
   url: string;
   model: string;
   onDone: () => void;
+  autoStart?: boolean;
 }) {
   const [state, setState] = useState<PullState>("idle");
   const [progress, setProgress] = useState<PullStatus>({});
   const pullingRef = useRef(false);
+
+  useEffect(() => {
+    if (autoStart) pull();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function pull() {
     if (pullingRef.current) return;
@@ -133,7 +140,6 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
   const [models, setModels] = useState<ModelInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [chatModel, setChatModel] = useState(DEFAULT_CHAT_MODEL);
-  const [embedModel, setEmbedModel] = useState(DEFAULT_EMBED_MODEL);
 
   useEffect(() => {
     (async () => {
@@ -156,7 +162,7 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
 
   const modelNames = models.map((m) => m.name);
   const hasChatModel = modelNames.some((n) => n === chatModel || n.startsWith(chatModel + ":"));
-  const hasEmbedModel = modelNames.some((n) => n === embedModel || n.startsWith(embedModel + ":"));
+  const hasEmbedModel = modelNames.some((n) => n === DEFAULT_EMBED_MODEL || n.startsWith(DEFAULT_EMBED_MODEL + ":"));
 
   const canContinue = hasChatModel && hasEmbedModel;
 
@@ -239,39 +245,16 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
               ) : (
                 <ModelPuller
                   url={ollamaUrl}
-                  model={embedModel}
-                  onDone={() => setModels((prev) => [...prev, { name: embedModel, size: 0 }])}
+                  model={DEFAULT_EMBED_MODEL}
+                  onDone={() => setModels((prev) => [...prev, { name: DEFAULT_EMBED_MODEL, size: 0 }])}
+                  autoStart={true}
                 />
               )}
             </div>
 
-            <div>
-              <label className="text-xs text-base-content/40 mb-1 block">Selected model</label>
-              {models.length > 0 ? (
-                <select
-                  value={embedModel}
-                  onChange={(e) => setEmbedModel(e.target.value)}
-                  className="w-full bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500"
-                >
-                  <option value={DEFAULT_EMBED_MODEL}>{DEFAULT_EMBED_MODEL} (recommended)</option>
-                  {models
-                    .filter(
-                      (m) =>
-                        m.name.includes("embed") &&
-                        m.name !== DEFAULT_EMBED_MODEL &&
-                        !m.name.startsWith(DEFAULT_EMBED_MODEL + ":")
-                    )
-                    .map((m) => (
-                      <option key={m.name} value={m.name}>
-                        {m.name} ({humanSize(m.size)})
-                      </option>
-                    ))}
-                </select>
-              ) : (
-                <div className="text-sm text-base-content/40 bg-base-100 rounded-lg px-3 py-1.5">
-                  {DEFAULT_EMBED_MODEL} (will be downloaded)
-                </div>
-              )}
+            <div className="flex items-center justify-between bg-base-100 rounded-lg px-3 py-1.5">
+              <span className="text-sm font-mono text-base-content/70">{DEFAULT_EMBED_MODEL}</span>
+              <span className="text-xs text-base-content/30">fixed</span>
             </div>
           </div>
 
@@ -295,7 +278,7 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
           ← Back
         </button>
         <button
-          onClick={() => onContinue(chatModel, embedModel)}
+          onClick={() => onContinue(chatModel, DEFAULT_EMBED_MODEL)}
           disabled={!canContinue}
           className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white font-medium rounded-xl transition-colors"
         >

@@ -11,6 +11,8 @@ interface UserCategory {
   id: string;
   name: string;
   emoji: string;
+  builtinId: string | null;
+  hidden: boolean;
 }
 
 const MarkdownEditor = dynamic(
@@ -140,6 +142,14 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [save, body, title, tags, mood, categories]);
 
+  const overridesByBuiltinId = new Map(
+    userCategories.filter((uc) => uc.builtinId).map((uc) => [uc.builtinId!, uc]),
+  );
+  const customCategories = userCategories.filter((uc) => !uc.builtinId);
+  const visibleBuiltins = JOURNAL_TYPES.filter(
+    (jt) => !overridesByBuiltinId.get(jt.id)?.hidden,
+  );
+
   return (
     <div className="flex h-full">
       {/* Main editor column */}
@@ -226,9 +236,10 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
         <div className="relative flex flex-wrap items-center gap-1.5" ref={pickerRef}>
           {categories.map((id) => {
             const jt = JOURNAL_TYPES.find((j) => j.id === id);
+            const override = jt ? overridesByBuiltinId.get(id) : null;
             const uc = !jt ? userCategories.find((c) => c.id === id) : null;
             const label = jt
-              ? `${jt.emoji} ${jt.name}`
+              ? `${override?.emoji ?? jt.emoji} ${override?.name ?? jt.name}`
               : uc
                 ? `${uc.emoji} ${uc.name}`
                 : id;
@@ -258,11 +269,11 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
 
           {pickerOpen && (
             <div className="absolute top-full left-0 mt-1.5 z-20 bg-base-200 border border-base-content/20 rounded-xl p-2 shadow-2xl w-72 max-h-72 overflow-y-auto">
-              {userCategories.length > 0 && (
+              {customCategories.length > 0 && (
                 <>
                   <p className="text-xs text-base-content/40 px-2 pt-1 pb-0.5 uppercase tracking-wider font-medium">My categories</p>
                   <div className="grid grid-cols-2 gap-0.5 mb-1">
-                    {userCategories.map((uc) => {
+                    {customCategories.map((uc) => {
                       const active = categories.includes(uc.id);
                       return (
                         <button
@@ -284,27 +295,32 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
                   <div className="border-t border-base-content/10 mb-1" />
                 </>
               )}
-              <p className="text-xs text-base-content/40 px-2 pt-1 pb-0.5 uppercase tracking-wider font-medium">Built-in</p>
-              <div className="grid grid-cols-2 gap-0.5">
-                {JOURNAL_TYPES.map((jt) => {
-                  const active = categories.includes(jt.id);
-                  return (
-                    <button
-                      key={jt.id}
-                      type="button"
-                      onClick={() => toggleCategory(jt.id)}
-                      className={`flex items-center gap-2 text-xs px-2.5 py-1.5 rounded-lg transition-colors text-left ${
-                        active
-                          ? "bg-indigo-600 text-white"
-                          : "text-base-content/60 hover:bg-base-content/8 hover:text-base-content"
-                      }`}
-                    >
-                      <span className="shrink-0">{jt.emoji}</span>
-                      <span className="truncate">{jt.name}</span>
-                    </button>
-                  );
-                })}
-              </div>
+              {visibleBuiltins.length > 0 && (
+                <>
+                  <p className="text-xs text-base-content/40 px-2 pt-1 pb-0.5 uppercase tracking-wider font-medium">Built-in</p>
+                  <div className="grid grid-cols-2 gap-0.5">
+                    {visibleBuiltins.map((jt) => {
+                      const override = overridesByBuiltinId.get(jt.id);
+                      const active = categories.includes(jt.id);
+                      return (
+                        <button
+                          key={jt.id}
+                          type="button"
+                          onClick={() => toggleCategory(jt.id)}
+                          className={`flex items-center gap-2 text-xs px-2.5 py-1.5 rounded-lg transition-colors text-left ${
+                            active
+                              ? "bg-indigo-600 text-white"
+                              : "text-base-content/60 hover:bg-base-content/8 hover:text-base-content"
+                          }`}
+                        >
+                          <span className="shrink-0">{override?.emoji ?? jt.emoji}</span>
+                          <span className="truncate">{override?.name ?? jt.name}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>

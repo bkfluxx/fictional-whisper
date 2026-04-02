@@ -75,7 +75,6 @@ export default function AiModelsSettings() {
   const isDirty =
     draft.baseUrl !== selected.baseUrl ||
     draft.model !== selected.model ||
-    draft.embedModel !== selected.embedModel ||
     draft.systemPrompt !== selected.systemPrompt;
 
   const resetPrompt = useCallback(() => {
@@ -114,7 +113,7 @@ export default function AiModelsSettings() {
         body: JSON.stringify({
           baseUrl: draft.baseUrl || null,
           model: draft.model || null,
-          embedModel: draft.embedModel || null,
+          embedModel: "nomic-embed-text",
           systemPrompt:
             draft.systemPrompt.trim() === DEFAULT_SYSTEM_PROMPT.trim()
               ? null
@@ -208,7 +207,7 @@ export default function AiModelsSettings() {
             </select>
           </div>
 
-          {/* Embed model */}
+          {/* Embed model — fixed */}
           <div>
             <label className="block text-xs font-medium text-base-content/60 mb-1.5">
               Embedding model
@@ -216,22 +215,12 @@ export default function AiModelsSettings() {
                 (semantic search, chat context)
               </span>
             </label>
-            <select
-              value={draft.embedModel}
-              onChange={(e) =>
-                setDraft((d) => ({ ...d, embedModel: e.target.value }))
-              }
-              className="w-full bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500"
-            >
-              {models.map((m) => (
-                <option key={m.name} value={m.name}>
-                  {m.name} ({formatBytes(m.size)})
-                </option>
-              ))}
-            </select>
+            <div className="w-full bg-base-100 border border-base-content/20 text-sm rounded-lg px-3 py-2 flex items-center justify-between">
+              <span className="font-mono text-base-content/70">nomic-embed-text</span>
+              <span className="text-xs text-base-content/30">fixed</span>
+            </div>
             <p className="text-xs text-base-content/40 mt-1">
-              Changing this model requires re-embedding entries for semantic
-              search to work correctly.
+              Fixed to <span className="font-mono">nomic-embed-text</span> (768-dim) to match the search index.
             </p>
           </div>
         </div>
