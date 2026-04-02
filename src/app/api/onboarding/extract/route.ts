@@ -15,6 +15,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 const VALID_INTENTIONS = [
   "self-reflection",
@@ -125,8 +126,17 @@ Respond with ONLY valid JSON. No explanation, no markdown, no code fences. Examp
         .slice(0, 6);
       const body = sections.length > 0 ? sections.map((s) => `<h2>${s}</h2><p></p>`).join("") : "";
 
+      if (sections.length === 0) {
+        return NextResponse.json({ customTemplate: null });
+      }
+
+      const category = await prisma.userCategory.create({
+        data: { name: title, emoji },
+      });
+
       return NextResponse.json({
-        customTemplate: sections.length > 0 ? { title, emoji, body } : null,
+        customTemplate: { title, emoji, body },
+        categoryId: category.id,
       });
     }
 
@@ -209,11 +219,15 @@ Respond with ONLY valid JSON. No explanation, no markdown, no code fences. Examp
         .filter((s): s is string => typeof s === "string" && s.trim().length > 0)
         .slice(0, 6);
       if (sections.length > 0) {
+        const category = await prisma.userCategory.create({
+          data: { name: title, emoji },
+        });
         profile.customTemplate = {
           title,
           emoji,
           body: sections.map((s) => `<h2>${s}</h2><p></p>`).join(""),
         };
+        (profile as Record<string, unknown>).categoryId = category.id;
       }
     }
 

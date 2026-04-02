@@ -17,9 +17,9 @@ const FEATURES = [
   },
   {
     icon: "📅",
-    name: "Calendar",
+    name: "Timeline",
     description:
-      "Browse your entries by date. See which days you wrote and revisit past moments at a glance.",
+      "Browse your entries chronologically. See the full arc of your journaling journey and revisit past moments with ease.",
   },
   {
     icon: "💬",
