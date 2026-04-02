@@ -237,6 +237,12 @@ export default function AiModelsSettings() {
         </div>
       )}
 
+      {models.length > 0 && (
+        <p className="text-xs text-base-content/40 border border-base-content/10 rounded-lg px-3 py-2 leading-relaxed">
+          <span className="text-base-content/60 font-medium">Model tip:</span> Fictional Whisper works best with thinking-enabled models (e.g. <span className="font-mono text-base-content/60">qwen3</span>, <span className="font-mono text-base-content/60">deepseek-r2</span>). Thinking models reason through prompts before responding, which significantly improves journaling insights and chat quality.
+        </p>
+      )}
+
       {models.length === 0 && loadState === "ready" && (
         <p className="text-sm text-base-content/50">
           No models found. Pull one with:{" "}

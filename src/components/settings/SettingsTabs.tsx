@@ -7,8 +7,9 @@ import ImportSection from "./ImportSection";
 import AiModelsSettings from "./AiModelsSettings";
 import TemplatesSettings from "./TemplatesSettings";
 import ThemeSettings from "./ThemeSettings";
+import CategoriesSettings from "./CategoriesSettings";
 
-type Tab = "appearance" | "security" | "import-export" | "ai" | "templates";
+type Tab = "appearance" | "security" | "import-export" | "ai" | "templates" | "categories";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "appearance", label: "Appearance" },
@@ -16,6 +17,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "import-export", label: "Import / Export" },
   { id: "ai", label: "AI settings" },
   { id: "templates", label: "Templates" },
+  { id: "categories", label: "Categories" },
 ];
 
 export default function SettingsTabs() {
@@ -120,6 +122,18 @@ export default function SettingsTabs() {
             </p>
           </div>
           <TemplatesSettings />
+        </section>
+      )}
+
+      {active === "categories" && (
+        <section>
+          <div className="mb-5">
+            <h2 className="text-base font-medium text-base-content">Categories</h2>
+            <p className="text-sm text-base-content/40 mt-0.5">
+              Manage your personal categories. These appear alongside built-in categories when tagging journal entries.
+            </p>
+          </div>
+          <CategoriesSettings />
         </section>
       )}
     </div>

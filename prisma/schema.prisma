@@ -127,6 +127,16 @@ model WeeklyDigest {
   @@index([weekStart])
 }
 
+// User-defined categories created during onboarding or in Settings → Categories.
+// Built-in categories are defined in src/lib/journal-types.ts and never stored here.
+model UserCategory {
+  id          String   @id @default(cuid())
+  name        String
+  emoji       String   @default("📝")
+  description String?
+  createdAt   DateTime @default(now())
+}
+
 model AppSettings {
   id                  String    @id @default("singleton")
   backupPath          String    @default("/app/backups")
