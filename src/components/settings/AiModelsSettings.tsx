@@ -8,7 +8,7 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
-import { DEFAULT_SYSTEM_PROMPT } from "@/lib/ai/config";
+import { DEFAULT_SYSTEM_PROMPT } from "@/lib/ai/prompts";
 
 interface ModelInfo {
   name: string;
