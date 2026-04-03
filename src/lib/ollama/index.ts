@@ -53,6 +53,7 @@ export async function generateText(
   system?: string,
   model?: string,
   baseUrl?: string,
+  signal?: AbortSignal,
 ): Promise<string> {
   const res = await fetch(`${baseUrl ?? DEFAULT_BASE_URL()}/api/generate`, {
     method: "POST",
@@ -63,6 +64,7 @@ export async function generateText(
       system,
       stream: false,
     }),
+    signal,
   });
   if (!res.ok) {
     const text = await res.text().catch(() => res.status.toString());

@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   const auth = await getSessionDEK();
   if (!isDEKResult(auth)) return auth;
 
-  const { baseUrl, model } = await getOllamaConfig();
+  const { baseUrl, model, systemPrompt } = await getOllamaConfig();
   if (!(await isOllamaAvailable(baseUrl))) {
     return NextResponse.json({ error: "Ollama is not available" }, { status: 503 });
   }
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     `Give me exactly 3 short journaling prompts for a ${typeLabel}. ` +
       `Return only the 3 prompts as a numbered list (1. ... 2. ... 3. ...). ` +
       `No intro, no outro, no extra text.`,
-    "You are a thoughtful journaling coach. Keep prompts concise and personal.",
+    systemPrompt,
     model,
     baseUrl,
   );

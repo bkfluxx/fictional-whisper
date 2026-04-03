@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import EntryForm from "@/components/entries/EntryForm";
 import TemplatePicker from "@/components/templates/TemplatePicker";
 import { findBuiltIn } from "@/lib/templates";
+import type { JournalTemplate } from "@prisma/client";
 
 export default async function NewEntryPage({
   searchParams,
@@ -18,17 +19,23 @@ export default async function NewEntryPage({
 
   // No ?from param → show template picker
   if (!from) {
-    const [userTemplates, settings] = await Promise.all([
+    const [dbTemplates, settings] = await Promise.all([
       prisma.journalTemplate.findMany({ orderBy: { createdAt: "asc" } }),
       prisma.appSettings.findUnique({
         where: { id: "singleton" },
         select: { journalingIntention: true },
       }),
     ]);
+    const userTemplates = dbTemplates.filter((t) => !t.builtinId);
+    const overrideRows = dbTemplates.filter((t) => t.builtinId !== null);
+    const overrides: Record<string, JournalTemplate> = {};
+    for (const row of overrideRows) overrides[row.builtinId!] = row;
+
     return (
       <div className="h-full overflow-y-auto">
         <TemplatePicker
           userTemplates={userTemplates}
+          overrides={overrides}
           journalingIntentions={settings?.journalingIntention ?? []}
         />
       </div>
@@ -47,9 +54,18 @@ export default async function NewEntryPage({
   // ?from=[id] → look up template (built-in first, then DB)
   const builtIn = findBuiltIn(from);
   if (builtIn) {
+    // Check if there's a DB override with a different body
+    const override = await prisma.journalTemplate.findUnique({
+      where: { builtinId: from },
+    });
+    // If hidden via override, fall back to blank
+    if (override?.hidden) redirect("/journal/new?from=blank");
     return (
       <div className="h-full flex flex-col">
-        <EntryForm initialBody={builtIn.body} initialCategories={builtIn.categories} />
+        <EntryForm
+          initialBody={override?.body ?? builtIn.body}
+          initialCategories={override?.categories ?? builtIn.categories}
+        />
       </div>
     );
   }

@@ -113,6 +113,9 @@ model JournalTemplate {
   emoji       String   @default("📝")
   body        String   // full markdown body prefilled in the editor
   categories  String[] @default([]) // suggested categories to pre-select
+  // Built-in override support (mirrors UserCategory pattern)
+  builtinId   String?  @unique  // links to a BUILT_IN_TEMPLATES id; null = user-created
+  hidden      Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -158,4 +161,17 @@ model AppSettings {
   ollamaModel           String?
   ollamaEmbedModel      String?
   chatSystemPrompt      String?  // custom system prompt for RAG chat (null = use hardcoded default)
+  // Personas
+  personasEnabled     Boolean  @default(false)
+  activePersonaId     String?  // "builtin:<id>" for built-ins, or a Persona.id cuid for custom
+}
+
+// User-created AI personas. Built-in personas are defined in src/lib/personas.ts (not stored here).
+model Persona {
+  id           String   @id @default(cuid())
+  name         String
+  description  String?
+  systemPrompt String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }

@@ -8,14 +8,16 @@ import AiModelsSettings from "./AiModelsSettings";
 import TemplatesSettings from "./TemplatesSettings";
 import ThemeSettings from "./ThemeSettings";
 import CategoriesSettings from "./CategoriesSettings";
+import PersonasSettings from "./PersonasSettings";
 
-type Tab = "appearance" | "security" | "import-export" | "ai" | "templates" | "categories";
+type Tab = "appearance" | "security" | "import-export" | "ai" | "personas" | "templates" | "categories";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "appearance", label: "Appearance" },
   { id: "security", label: "Security" },
   { id: "import-export", label: "Import / Export" },
   { id: "ai", label: "AI settings" },
+  { id: "personas", label: "Personas" },
   { id: "templates", label: "Templates" },
   { id: "categories", label: "Categories" },
 ];
@@ -109,6 +111,19 @@ export default function SettingsTabs() {
             </p>
           </div>
           <AiModelsSettings />
+        </section>
+      )}
+
+      {active === "personas" && (
+        <section>
+          <div className="mb-5">
+            <h2 className="text-base font-medium text-base-content">Personas</h2>
+            <p className="text-sm text-base-content/40 mt-0.5">
+              Choose an AI persona to shape the tone of chat, mood analysis, and writing prompts.
+              Pick from built-in personas or create your own with a custom system prompt.
+            </p>
+          </div>
+          <PersonasSettings />
         </section>
       )}
 

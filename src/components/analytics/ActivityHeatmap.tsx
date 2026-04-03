@@ -12,11 +12,19 @@ interface ActivityHeatmapProps {
 
 function cellColor(count: number): string {
   if (count === 0) return "bg-base-300";
-  if (count === 1) return "bg-indigo-900";
-  if (count === 2) return "bg-indigo-700";
-  if (count <= 4) return "bg-indigo-500";
-  return "bg-indigo-400";
+  if (count === 1) return "bg-indigo-200 dark:bg-indigo-900";
+  if (count === 2) return "bg-indigo-400 dark:bg-indigo-700";
+  if (count <= 4) return "bg-indigo-600 dark:bg-indigo-500";
+  return "bg-indigo-800 dark:bg-indigo-400";
 }
+
+const LEGEND_COLORS = [
+  "bg-base-300",
+  "bg-indigo-200 dark:bg-indigo-900",
+  "bg-indigo-400 dark:bg-indigo-700",
+  "bg-indigo-600 dark:bg-indigo-500",
+  "bg-indigo-800 dark:bg-indigo-400",
+];
 
 /** Returns the month label to show above a given week column (only for the first week in that month). */
 function monthLabel(weeks: Day[][], wi: number): string | null {
@@ -77,8 +85,8 @@ export default function ActivityHeatmap({ weeks }: ActivityHeatmapProps) {
       {/* Legend */}
       <div className="flex items-center gap-1.5 mt-3">
         <span className="text-[10px] text-base-content/30">Less</span>
-        {["bg-base-300","bg-indigo-900","bg-indigo-700","bg-indigo-500","bg-indigo-400"].map((c) => (
-          <div key={c} className={`w-3 h-3 rounded-sm ${c}`} />
+        {LEGEND_COLORS.map((c, i) => (
+          <div key={i} className={`w-3 h-3 rounded-sm ${c}`} />
         ))}
         <span className="text-[10px] text-base-content/30">More</span>
       </div>

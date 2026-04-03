@@ -12,24 +12,38 @@ const INTENTION_TEMPLATE_MAP: Record<string, string[]> = {
   "habit-tracking":  ["builtin-weekly-review", "builtin-goal-setting"],
 };
 
-function getRecommended(intentions: string[]): BuiltInTemplate[] {
+function getRecommended(
+  intentions: string[],
+  overrides: Record<string, JournalTemplate>,
+): BuiltInTemplate[] {
   if (intentions.length === 0) return [];
   const seen = new Set<string>();
   const results: BuiltInTemplate[] = [];
   for (const intention of intentions) {
     for (const id of INTENTION_TEMPLATE_MAP[intention] ?? []) {
-      if (!seen.has(id)) {
-        seen.add(id);
-        const t = BUILT_IN_TEMPLATES.find((bt) => bt.id === id);
-        if (t) results.push(t);
-      }
+      if (seen.has(id)) continue;
+      seen.add(id);
+      if (overrides[id]?.hidden) continue;
+      const t = BUILT_IN_TEMPLATES.find((bt) => bt.id === id);
+      if (t) results.push(applyOverride(t, overrides[id]));
     }
   }
   return results;
 }
 
+function applyOverride(t: BuiltInTemplate, override?: JournalTemplate): BuiltInTemplate {
+  if (!override) return t;
+  return {
+    ...t,
+    title: override.title ?? t.title,
+    description: override.description ?? t.description,
+    emoji: override.emoji ?? t.emoji,
+  };
+}
+
 interface TemplatePickerProps {
   userTemplates: JournalTemplate[];
+  overrides: Record<string, JournalTemplate>;
   journalingIntentions: string[];
 }
 
@@ -57,7 +71,11 @@ function TemplateCard({ template }: { template: AnyTemplate }) {
   );
 }
 
-export default function TemplatePicker({ userTemplates, journalingIntentions }: TemplatePickerProps) {
+export default function TemplatePicker({
+  userTemplates,
+  overrides,
+  journalingIntentions,
+}: TemplatePickerProps) {
   const userMapped: AnyTemplate[] = userTemplates.map((t) => ({
     id: t.id,
     title: t.title,
@@ -69,8 +87,7 @@ export default function TemplatePicker({ userTemplates, journalingIntentions }: 
     isBuiltIn: false as const,
   }));
 
-  const recommended = getRecommended(journalingIntentions);
-  // IDs to skip in the grouped section so they don't appear twice
+  const recommended = getRecommended(journalingIntentions, overrides);
   const recommendedIds = new Set(recommended.map((t) => t.id));
 
   return (
@@ -123,11 +140,11 @@ export default function TemplatePicker({ userTemplates, journalingIntentions }: 
         </section>
       )}
 
-      {/* Built-in templates grouped — skip ones already shown in recommended */}
+      {/* Built-in templates grouped — skip hidden and ones already in recommended */}
       {BUILT_IN_TEMPLATE_GROUPS.map((group) => {
-        const groupTemplates = BUILT_IN_TEMPLATES.filter(
-          (t) => t.group === group && !recommendedIds.has(t.id),
-        );
+        const groupTemplates = BUILT_IN_TEMPLATES
+          .filter((t) => t.group === group && !recommendedIds.has(t.id) && !overrides[t.id]?.hidden)
+          .map((t) => applyOverride(t, overrides[t.id]));
         if (groupTemplates.length === 0) return null;
         return (
           <section key={group} className="mb-8">

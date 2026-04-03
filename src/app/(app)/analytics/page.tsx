@@ -112,7 +112,7 @@ const MOOD_COLOR: Record<string, string> = {
   reflective: "bg-blue-500",
   anxious: "bg-orange-400",
   frustrated: "bg-red-500",
-  sad: "bg-blue-800",
+  sad: "bg-blue-600",
 };
 
 // ─── Page ─────────────────────────────────────────────────────────────────────

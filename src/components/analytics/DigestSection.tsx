@@ -119,14 +119,14 @@ export default function DigestSection({ initial, all }: DigestSectionProps) {
         <button
           onClick={generate}
           disabled={generating}
-          className="text-xs px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="text-xs px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {generating ? "Generating…" : hasThisWeek ? "Regenerate" : "Generate this week"}
         </button>
       </div>
 
       {error && (
-        <p className="text-sm text-red-400 mb-3">{error}</p>
+        <p className="text-sm text-red-600 dark:text-red-400 mb-3">{error}</p>
       )}
 
       {latest && hasThisWeek ? (

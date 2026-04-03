@@ -15,6 +15,9 @@
 
 import crypto from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
+
+// Allow up to 5 minutes for digest generation (Ollama can be slow with many entries)
+export const maxDuration = 300;
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getDEK } from "@/lib/session/dek-store";
@@ -164,6 +167,7 @@ export async function POST(req: NextRequest) {
     DIGEST_SYSTEM,
     model,
     baseUrl,
+    AbortSignal.timeout(4 * 60 * 1000),
   );
   const content = raw.trim();
 
