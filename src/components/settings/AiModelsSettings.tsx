@@ -184,11 +184,14 @@ export default function AiModelsSettings() {
               }
               className="w-full bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500"
             >
-              {models.map((m) => (
-                <option key={m.name} value={m.name}>
-                  {m.name} ({formatBytes(m.size)})
-                </option>
-              ))}
+              <option value="" disabled>Select a model…</option>
+              {models
+                .filter((m) => !m.name.startsWith("nomic-embed") && !m.name.startsWith("qwen3-embedding") && !m.name.includes("embed"))
+                .map((m) => (
+                  <option key={m.name} value={m.name}>
+                    {m.name} ({formatBytes(m.size)})
+                  </option>
+                ))}
             </select>
           </div>
 
