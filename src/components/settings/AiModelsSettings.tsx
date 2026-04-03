@@ -251,57 +251,6 @@ export default function AiModelsSettings() {
         </p>
       )}
 
-      {/* Available models table */}
-      {models.length > 0 && (
-        <div>
-          <p className="text-xs font-medium text-base-content/40 mb-2 uppercase tracking-widest">
-            Pulled models
-          </p>
-          <div className="rounded-xl border border-base-content/10 overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-base-content/10">
-                  <th className="text-left px-4 py-2 text-xs text-base-content/50 font-medium">
-                    Model
-                  </th>
-                  <th className="text-right px-4 py-2 text-xs text-base-content/50 font-medium">
-                    Size
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {models.map((m, i) => (
-                  <tr
-                    key={m.name}
-                    className={
-                      i < models.length - 1 ? "border-b border-base-content/10" : ""
-                    }
-                  >
-                    <td className="px-4 py-2.5 text-base-content font-mono text-xs">
-                      {m.name}
-                      {(m.name === selected.model ||
-                        m.name === selected.embedModel) && (
-                        <span className="ml-2 text-indigo-500 font-sans font-normal">
-                          {m.name === selected.model &&
-                          m.name === selected.embedModel
-                            ? "text + embed"
-                            : m.name === selected.model
-                              ? "text"
-                              : "embed"}
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-2.5 text-base-content/50 text-right">
-                      {formatBytes(m.size)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
       {/* Save row */}
       <div className="flex items-center gap-3">
         <button
