@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { BUILT_IN_PERSONAS } from "@/lib/personas";
+import { DEFAULT_SYSTEM_PROMPT } from "@/lib/ai/prompts";
 
 interface CustomPersona {
   id: string;
@@ -25,6 +26,12 @@ export default function PersonasSettings() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // System prompt (fallback when personas are off, or base when none active)
+  const [systemPrompt, setSystemPrompt] = useState(DEFAULT_SYSTEM_PROMPT);
+  const [savedSystemPrompt, setSavedSystemPrompt] = useState(DEFAULT_SYSTEM_PROMPT);
+  const [promptSaving, setPromptSaving] = useState(false);
+  const [promptSaved, setPromptSaved] = useState(false);
+
   // Edit / create form state
   const [editingId, setEditingId] = useState<string | null>(null); // null = new
   const [showForm, setShowForm] = useState(false);
@@ -36,11 +43,15 @@ export default function PersonasSettings() {
     Promise.all([
       fetch("/api/settings/personas").then((r) => r.json()),
       fetch("/api/personas").then((r) => r.json()),
+      fetch("/api/ai/models").then((r) => r.json()),
     ])
-      .then(([settings, personas]) => {
+      .then(([settings, personas, models]) => {
         setEnabled(settings.personasEnabled ?? false);
         setActiveId(settings.activePersonaId ?? null);
         setCustom(personas.custom ?? []);
+        const sp = models.selected?.systemPrompt ?? DEFAULT_SYSTEM_PROMPT;
+        setSystemPrompt(sp);
+        setSavedSystemPrompt(sp);
       })
       .catch(() => setError("Failed to load personas settings."))
       .finally(() => setLoading(false));
@@ -136,6 +147,32 @@ export default function PersonasSettings() {
       if (activeId === id) setActiveId(null);
     } catch {
       setError("Failed to delete persona.");
+    }
+  }
+
+  const resetPrompt = useCallback(() => setSystemPrompt(DEFAULT_SYSTEM_PROMPT), []);
+
+  async function saveSystemPrompt() {
+    setPromptSaving(true);
+    try {
+      const res = await fetch("/api/ai/models", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemPrompt:
+            systemPrompt.trim() === DEFAULT_SYSTEM_PROMPT.trim()
+              ? null
+              : systemPrompt || null,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      setSavedSystemPrompt(systemPrompt);
+      setPromptSaved(true);
+      setTimeout(() => setPromptSaved(false), 2000);
+    } catch {
+      setError("Failed to save system prompt.");
+    } finally {
+      setPromptSaving(false);
     }
   }
 
@@ -311,6 +348,38 @@ export default function PersonasSettings() {
             </div>
           </div>
         )}
+      </div>
+      {/* System prompt fallback */}
+      <div className="border-t border-base-content/10 pt-6 space-y-3">
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-sm font-medium text-base-content">Custom system prompt</p>
+            <button
+              onClick={resetPrompt}
+              disabled={systemPrompt.trim() === DEFAULT_SYSTEM_PROMPT.trim()}
+              className="text-xs text-base-content/50 hover:text-base-content disabled:opacity-30 transition-colors"
+            >
+              Reset to default
+            </button>
+          </div>
+          <p className="text-xs text-base-content/40 mb-2">
+            Used when personas are off. When personas are on and none is active, this is the fallback.
+          </p>
+          <textarea
+            rows={5}
+            value={systemPrompt}
+            onChange={(e) => setSystemPrompt(e.target.value)}
+            className="w-full bg-base-200 border border-base-content/10 rounded-lg px-3 py-2 text-sm text-base-content font-mono resize-y focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          />
+          <p className="text-xs text-base-content/30 mt-1">{systemPrompt.length} chars</p>
+        </div>
+        <button
+          onClick={saveSystemPrompt}
+          disabled={promptSaving || systemPrompt === savedSystemPrompt}
+          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition-colors"
+        >
+          {promptSaving ? "Saving…" : promptSaved ? "Saved" : "Save prompt"}
+        </button>
       </div>
     </div>
   );

@@ -13,17 +13,17 @@ import PersonasSettings from "./PersonasSettings";
 type Tab = "appearance" | "security" | "import-export" | "ai" | "personas" | "templates" | "categories";
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: "appearance", label: "Appearance" },
-  { id: "security", label: "Security" },
-  { id: "import-export", label: "Import / Export" },
   { id: "ai", label: "AI settings" },
   { id: "personas", label: "Personas" },
+  { id: "appearance", label: "Appearance" },
+  { id: "security", label: "Security" },
   { id: "templates", label: "Templates" },
   { id: "categories", label: "Categories" },
+  { id: "import-export", label: "Import / Export" },
 ];
 
 export default function SettingsTabs() {
-  const [active, setActive] = useState<Tab>("appearance");
+  const [active, setActive] = useState<Tab>("ai");
 
   return (
     <div>
