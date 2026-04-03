@@ -112,7 +112,7 @@ export const JOURNAL_TYPES: JournalType[] = [
   },
   {
     id: "fitness",
-    name: "Weight & Fitness",
+    name: "Health & Fitness",
     category: "Wellness",
     description: "Log workouts, nutrition, and body metrics",
     emoji: "💪",
