@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import Image from "next/image";
 import SearchBar from "@/components/search/SearchBar";
 import SidebarNav from "@/components/layout/SidebarNav";
 import OllamaWarmup from "@/components/layout/OllamaWarmup";
@@ -25,9 +26,7 @@ export default async function AppLayout({
     <div className="flex h-screen bg-base-100 text-base-content overflow-hidden">
       <aside className="w-56 shrink-0 border-r border-base-200 flex flex-col py-5 px-3">
         <div className="px-3 mb-5">
-          <span className="text-xs font-semibold text-base-content/40 uppercase tracking-widest">
-            Aura
-          </span>
+          <Image src="/logo.jpg" alt="Aura" width={80} height={80} className="rounded-xl" priority />
         </div>
 
         <SidebarNav />

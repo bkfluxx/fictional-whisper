@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, FormEvent, useEffect } from "react";
+import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -63,7 +64,9 @@ export default function SetupPage() {
     <main className="min-h-screen flex items-center justify-center bg-base-100 px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="text-5xl mb-4">📖</div>
+          <div className="flex justify-center mb-4">
+            <Image src="/logo.jpg" alt="Aura" width={96} height={96} className="rounded-2xl" priority />
+          </div>
           <h1 className="text-2xl font-semibold text-base-content mb-2">
             Welcome to Aura
           </h1>

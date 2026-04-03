@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, FormEvent } from "react";
+import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -44,10 +45,10 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-base-100 px-4">
       <div className="w-full max-w-sm px-8 py-10 bg-base-200 rounded-2xl shadow-xl">
-        <h1 className="text-2xl font-semibold text-base-content mb-1">
-          Aura
-        </h1>
-        <p className="text-sm text-base-content/50 mb-8">Your private journal</p>
+        <div className="flex justify-center mb-4">
+          <Image src="/logo.jpg" alt="Aura" width={96} height={96} className="rounded-2xl" priority />
+        </div>
+        <p className="text-sm text-center text-base-content/50 mb-8">Your private journal</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
