@@ -5,11 +5,7 @@ import { getDEK } from "@/lib/session/dek-store";
 import { prisma } from "@/lib/prisma";
 import { decryptString } from "@/lib/crypto";
 import { JOURNAL_TYPES } from "@/lib/journal-types";
-import StatCard from "@/components/analytics/StatCard";
-import HorizontalBar from "@/components/analytics/HorizontalBar";
-import MonthlyBars from "@/components/analytics/MonthlyBars";
-import ActivityHeatmap from "@/components/analytics/ActivityHeatmap";
-import DigestSection from "@/components/analytics/DigestSection";
+import AnalyticsTabs from "@/components/analytics/AnalyticsTabs";
 
 // ─── Data helpers ─────────────────────────────────────────────────────────────
 
@@ -22,7 +18,6 @@ function computeStreaks(dates: Date[]): {
   const days = [...daySet].sort();
   if (days.length === 0) return { current: 0, longest: 0, uniqueDays: 0 };
 
-  // Longest consecutive streak
   let longest = 1;
   let run = 1;
   for (let i = 1; i < days.length; i++) {
@@ -38,7 +33,6 @@ function computeStreaks(dates: Date[]): {
     }
   }
 
-  // Current streak (anchor to today or yesterday)
   const todayStr = new Date().toISOString().slice(0, 10);
   const yesterdayStr = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
   const anchor = daySet.has(todayStr)
@@ -73,11 +67,10 @@ function buildHeatmapWeeks(
     counts[key] = (counts[key] ?? 0) + 1;
   }
 
-  // Align start to Sunday, 52 weeks back
   const today = new Date();
   today.setUTCHours(0, 0, 0, 0);
   const start = new Date(today.getTime() - 52 * 7 * 86400000);
-  start.setUTCDate(start.getUTCDate() - start.getUTCDay()); // snap to Sunday
+  start.setUTCDate(start.getUTCDate() - start.getUTCDay());
 
   const weeks: { date: string; count: number }[][] = [];
   const cur = new Date(start);
@@ -93,28 +86,6 @@ function buildHeatmapWeeks(
   return weeks;
 }
 
-// ─── Mood colours ─────────────────────────────────────────────────────────────
-
-const MOOD_EMOJI: Record<string, string> = {
-  joyful: "😄",
-  content: "😌",
-  neutral: "😐",
-  reflective: "🤔",
-  anxious: "😰",
-  frustrated: "😤",
-  sad: "😢",
-};
-
-const MOOD_COLOR: Record<string, string> = {
-  joyful: "bg-yellow-400",
-  content: "bg-emerald-500",
-  neutral: "bg-neutral-500",
-  reflective: "bg-blue-500",
-  anxious: "bg-orange-400",
-  frustrated: "bg-red-500",
-  sad: "bg-blue-600",
-};
-
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function AnalyticsPage() {
@@ -124,11 +95,16 @@ export default async function AnalyticsPage() {
   const dek = getDEK(session.jti);
   if (!dek) redirect("/login");
 
-  // Fetch digests for the DigestSection
-  const digestRows = await prisma.weeklyDigest.findMany({
-    orderBy: { weekStart: "desc" },
-    take: 8,
-  });
+  // Fetch all data in parallel
+  const [digestRows, insightRow, entries] = await Promise.all([
+    prisma.weeklyDigest.findMany({ orderBy: { weekStart: "desc" }, take: 8 }),
+    prisma.aiInsight.findUnique({ where: { id: "singleton" } }),
+    prisma.entry.findMany({
+      select: { entryDate: true, mood: true, categories: true },
+      orderBy: { entryDate: "asc" },
+    }),
+  ]);
+
   const digests = digestRows.map((r) => ({
     id: r.id,
     weekStart: r.weekStart.toISOString(),
@@ -136,12 +112,16 @@ export default async function AnalyticsPage() {
     entryCount: r.entryCount,
     createdAt: r.createdAt.toISOString(),
   }));
-  const latestDigest = digests[0] ?? null;
 
-  const entries = await prisma.entry.findMany({
-    select: { entryDate: true, mood: true, categories: true },
-    orderBy: { entryDate: "asc" },
-  });
+  const latestInsight = insightRow
+    ? {
+        content: decryptString(insightRow.content, dek),
+        entryCount: insightRow.entryCount,
+        rangeFrom: insightRow.rangeFrom.toISOString(),
+        rangeTo: insightRow.rangeTo.toISOString(),
+        generatedAt: insightRow.generatedAt.toISOString(),
+      }
+    : null;
 
   const totalEntries = entries.length;
   const { current: currentStreak, longest: longestStreak, uniqueDays } =
@@ -152,7 +132,9 @@ export default async function AnalyticsPage() {
   for (const e of entries) {
     if (e.mood) moodCounts[e.mood] = (moodCounts[e.mood] ?? 0) + 1;
   }
-  const moodBreakdown = Object.entries(moodCounts).sort((a, b) => b[1] - a[1]);
+  const moodBreakdown = Object.entries(moodCounts).sort(
+    (a, b) => b[1] - a[1],
+  ) as [string, number][];
 
   // Category breakdown
   const catCounts: Record<string, number> = {};
@@ -180,129 +162,33 @@ export default async function AnalyticsPage() {
     const key = e.entryDate.toISOString().slice(0, 7);
     if (key in byMonth) byMonth[key]++;
   }
-  const monthlyData = Object.entries(byMonth).map(([month, count]) => ({ month, count }));
+  const monthlyData = Object.entries(byMonth).map(([month, count]) => ({
+    month,
+    count,
+  }));
 
   // Day of week
-  const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const dowCounts = [0, 0, 0, 0, 0, 0, 0];
   for (const e of entries) dowCounts[e.entryDate.getDay()]++;
-  const dowMax = Math.max(...dowCounts, 1);
 
-  // Heatmap
   const heatmapWeeks = buildHeatmapWeeks(entries.map((e) => e.entryDate));
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-8">
       <h1 className="text-xl font-semibold text-base-content mb-8">Analytics</h1>
-
-      {/* Weekly digest — shown even when entry count is zero */}
-      <DigestSection initial={latestDigest} all={digests} />
-
-      {totalEntries === 0 ? (
-        <p className="text-base-content/40">
-          No entries yet — start writing and your stats will appear here.
-        </p>
-      ) : (
-        <>
-          {/* Stat cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
-            <StatCard label="Total entries" value={totalEntries} />
-            <StatCard
-              label="Current streak"
-              value={currentStreak > 0 ? `${currentStreak}d` : "—"}
-            />
-            <StatCard
-              label="Longest streak"
-              value={longestStreak > 0 ? `${longestStreak}d` : "—"}
-            />
-            <StatCard
-              label="Days written"
-              value={uniqueDays}
-              sub={
-                totalEntries > uniqueDays
-                  ? `${totalEntries - uniqueDays} days with multiple`
-                  : undefined
-              }
-            />
-          </div>
-
-          {/* Activity heatmap */}
-          <section className="mb-10">
-            <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-4">
-              Activity — last 52 weeks
-            </h2>
-            <ActivityHeatmap weeks={heatmapWeeks} />
-          </section>
-
-          {/* Monthly + Day of week */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-            <section>
-              <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-4">
-                Entries per month
-              </h2>
-              <MonthlyBars data={monthlyData} />
-            </section>
-
-            <section>
-              <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-4">
-                Day of week
-              </h2>
-              <div>
-                {DOW.map((day, i) => (
-                  <HorizontalBar
-                    key={day}
-                    label={day}
-                    count={dowCounts[i]}
-                    max={dowMax}
-                    color="bg-indigo-500"
-                  />
-                ))}
-              </div>
-            </section>
-          </div>
-
-          {/* Mood + Categories */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <section>
-              <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-4">
-                Mood breakdown
-              </h2>
-              {moodBreakdown.length === 0 ? (
-                <p className="text-sm text-base-content/30">No mood data yet.</p>
-              ) : (
-                moodBreakdown.map(([mood, count]) => (
-                  <HorizontalBar
-                    key={mood}
-                    label={`${MOOD_EMOJI[mood] ?? "•"} ${mood}`}
-                    count={count}
-                    max={moodBreakdown[0][1]}
-                    color={MOOD_COLOR[mood] ?? "bg-neutral-500"}
-                  />
-                ))
-              )}
-            </section>
-
-            <section>
-              <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-4">
-                Top categories
-              </h2>
-              {categoryBreakdown.length === 0 ? (
-                <p className="text-sm text-base-content/30">No categories used yet.</p>
-              ) : (
-                categoryBreakdown.map(({ name, count }) => (
-                  <HorizontalBar
-                    key={name}
-                    label={name}
-                    count={count}
-                    max={categoryBreakdown[0].count}
-                    color="bg-violet-500"
-                  />
-                ))
-              )}
-            </section>
-          </div>
-        </>
-      )}
+      <AnalyticsTabs
+        totalEntries={totalEntries}
+        currentStreak={currentStreak}
+        longestStreak={longestStreak}
+        uniqueDays={uniqueDays}
+        heatmapWeeks={heatmapWeeks}
+        monthlyData={monthlyData}
+        dowCounts={dowCounts}
+        moodBreakdown={moodBreakdown}
+        categoryBreakdown={categoryBreakdown}
+        digests={digests}
+        latestInsight={latestInsight}
+      />
     </div>
   );
 }

@@ -166,6 +166,16 @@ model AppSettings {
   activePersonaId     String?  // "builtin:<id>" for built-ins, or a Persona.id cuid for custom
 }
 
+// Stores the last AI-generated longitudinal insight. Single row (singleton id).
+model AiInsight {
+  id          String   @id @default("singleton")
+  content     String   // AES-256-GCM encrypted
+  entryCount  Int
+  rangeFrom   DateTime // inclusive start of the analysed date range
+  rangeTo     DateTime // inclusive end of the analysed date range
+  generatedAt DateTime @default(now()) @updatedAt
+}
+
 // User-created AI personas. Built-in personas are defined in src/lib/personas.ts (not stored here).
 model Persona {
   id           String   @id @default(cuid())
