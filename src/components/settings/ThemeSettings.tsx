@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-export const THEME_KEY = "fw-theme";
+export const THEME_KEY = "aura-theme";
 
 type ThemeId =
   | "system"

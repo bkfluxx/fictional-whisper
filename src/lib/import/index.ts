@@ -12,12 +12,12 @@ export interface ImportEntry {
   tags: string[];
 }
 
-// ── Fictional Whisper JSON ──────────────────────────────────────────────────
+// ── Aura JSON ───────────────────────────────────────────────────────────────
 
 export function parseFWJson(raw: string): ImportEntry[] {
   const data = JSON.parse(raw) as FWExport;
   if (data.version !== 1 || !Array.isArray(data.entries)) {
-    throw new Error("Not a valid Fictional Whisper export file");
+    throw new Error("Not a valid Aura export file");
   }
   return data.entries.map(entryFromExport);
 }

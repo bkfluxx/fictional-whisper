@@ -23,14 +23,14 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: fictional_whisper
+      POSTGRES_DB: aura
       POSTGRES_USER: fw
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U fw -d fictional_whisper"]
+      test: ["CMD-SHELL", "pg_isready -U fw -d aura"]
       interval: 5s
       timeout: 5s
       retries: 10

@@ -50,7 +50,7 @@ export default function FeatureMapStep({
   onBack,
 }: Props) {
   const heading = introMode
-    ? "Welcome to Fictional Whisper"
+    ? "Welcome to Aura"
     : userName
       ? `You're all set, ${userName}!`
       : "You're all set!";

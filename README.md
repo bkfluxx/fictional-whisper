@@ -1,4 +1,4 @@
-# Fictional Whisper
+# Aura
 
 A self-hosted, privacy-first personal journal. All data stays on your machine â€” AI runs locally via Ollama, everything is encrypted at rest, and there is no cloud dependency of any kind.
 
@@ -37,8 +37,8 @@ A self-hosted, privacy-first personal journal. All data stays on your machine â€
 ### 1. Clone and configure
 
 ```bash
-git clone https://github.com/bkfluxx/fictional-whisper.git
-cd fictional-whisper
+git clone https://github.com/bkfluxx/aura.git
+cd aura
 cp .env.example .env
 ```
 

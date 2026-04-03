@@ -70,7 +70,7 @@ export default function ImportSection() {
             {status === "uploading" ? "Importing…" : "Drop file or click to browse"}
           </p>
           <p className="text-xs text-base-content/40 mt-0.5">
-            .json (Fictional Whisper or Day One) · .md · .zip (Obsidian vault)
+            .json (Aura or Day One) · .md · .zip (Obsidian vault)
           </p>
         </div>
         <input

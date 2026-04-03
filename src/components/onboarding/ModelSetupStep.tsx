@@ -265,7 +265,7 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
           )}
 
           <p className="text-xs text-base-content/40 border border-base-content/10 rounded-lg px-3 py-2 leading-relaxed">
-            <span className="text-base-content/60 font-medium">Model tip:</span> Fictional Whisper works best with thinking-enabled models (e.g. <span className="font-mono">qwen3</span>, <span className="font-mono">deepseek-r2</span>). Thinking models reason through prompts before responding, which significantly improves journaling insights and template generation.
+            <span className="text-base-content/60 font-medium">Model tip:</span> Aura works best with thinking-enabled models (e.g. <span className="font-mono">qwen3</span>, <span className="font-mono">deepseek-r2</span>). Thinking models reason through prompts before responding, which significantly improves journaling insights and template generation.
           </p>
         </div>
       )}

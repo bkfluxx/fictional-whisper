@@ -45,7 +45,7 @@ export default function LoginPage() {
     <main className="min-h-screen flex items-center justify-center bg-base-100 px-4">
       <div className="w-full max-w-sm px-8 py-10 bg-base-200 rounded-2xl shadow-xl">
         <h1 className="text-2xl font-semibold text-base-content mb-1">
-          Fictional Whisper
+          Aura
         </h1>
         <p className="text-sm text-base-content/50 mb-8">Your private journal</p>
 

@@ -65,7 +65,7 @@ export default function SetupPage() {
         <div className="text-center mb-8">
           <div className="text-5xl mb-4">📖</div>
           <h1 className="text-2xl font-semibold text-base-content mb-2">
-            Welcome to Fictional Whisper
+            Welcome to Aura
           </h1>
           <p className="text-sm text-base-content/50">
             Set a master password to get started. This password encrypts all

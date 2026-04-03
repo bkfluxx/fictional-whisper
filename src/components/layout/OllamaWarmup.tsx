@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-const SESSION_KEY = "fw-ollama-warmed";
+const SESSION_KEY = "aura-ollama-warmed";
 
 /**
  * Invisible component that fires a single warm-up request to pre-load

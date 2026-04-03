@@ -90,7 +90,7 @@ export default function SettingsTabs() {
             <div className="mb-5">
               <h2 className="text-base font-medium text-base-content">Import</h2>
               <p className="text-sm text-base-content/40 mt-0.5">
-                Import from a Fictional Whisper JSON export, a Day One JSON
+                Import from an Aura JSON export, a Day One JSON
                 export, a single Markdown file, or a zip of Markdown files
                 (Obsidian vault).
               </p>

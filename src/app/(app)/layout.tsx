@@ -26,7 +26,7 @@ export default async function AppLayout({
       <aside className="w-56 shrink-0 border-r border-base-200 flex flex-col py-5 px-3">
         <div className="px-3 mb-5">
           <span className="text-xs font-semibold text-base-content/40 uppercase tracking-widest">
-            Fictional Whisper
+            Aura
           </span>
         </div>
 

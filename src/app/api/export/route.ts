@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
       status: 200,
       headers: {
         "Content-Type": "application/zip",
-        "Content-Disposition": `attachment; filename="fictional-whisper-${timestamp}.zip"`,
+        "Content-Disposition": `attachment; filename="aura-${timestamp}.zip"`,
         "Content-Length": String(buffer.length),
       },
     });
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     status: 200,
     headers: {
       "Content-Type": "application/json",
-      "Content-Disposition": `attachment; filename="fictional-whisper-${timestamp}.json"`,
+      "Content-Disposition": `attachment; filename="aura-${timestamp}.json"`,
       "Content-Length": String(buffer.length),
     },
   });
