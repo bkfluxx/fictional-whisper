@@ -46,7 +46,7 @@ export default function LoginPage() {
     <main className="min-h-screen flex items-center justify-center bg-base-100 px-4">
       <div className="w-full max-w-sm px-8 py-10 bg-base-200 rounded-2xl shadow-xl">
         <div className="flex justify-center mb-4">
-          <Image src="/logo.jpg" alt="Aura" width={96} height={96} className="rounded-2xl" priority />
+          <Image src="/logo.jpg" alt="Aura" width={96} height={96} className="rounded-2xl" priority unoptimized />
         </div>
         <p className="text-sm text-center text-base-content/50 mb-8">Your private journal</p>
 

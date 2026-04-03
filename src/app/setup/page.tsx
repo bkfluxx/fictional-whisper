@@ -65,7 +65,7 @@ export default function SetupPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <Image src="/logo.jpg" alt="Aura" width={96} height={96} className="rounded-2xl" priority />
+            <Image src="/logo.jpg" alt="Aura" width={96} height={96} className="rounded-2xl" priority unoptimized />
           </div>
           <h1 className="text-2xl font-semibold text-base-content mb-2">
             Welcome to Aura

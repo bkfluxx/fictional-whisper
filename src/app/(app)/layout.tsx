@@ -26,7 +26,7 @@ export default async function AppLayout({
     <div className="flex h-screen bg-base-100 text-base-content overflow-hidden">
       <aside className="w-56 shrink-0 border-r border-base-200 flex flex-col py-5 px-3">
         <div className="px-3 mb-5">
-          <Image src="/logo.jpg" alt="Aura" width={80} height={80} className="rounded-xl" priority />
+          <Image src="/logo.jpg" alt="Aura" width={80} height={80} className="rounded-xl" priority unoptimized />
         </div>
 
         <SidebarNav />
