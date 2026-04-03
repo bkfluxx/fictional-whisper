@@ -152,6 +152,7 @@ export async function* chatStream(
   messages: ChatMessage[],
   model?: string,
   baseUrl?: string,
+  signal?: AbortSignal,
 ): AsyncGenerator<string> {
   const res = await fetch(`${baseUrl ?? DEFAULT_BASE_URL()}/api/chat`, {
     method: "POST",
@@ -161,6 +162,7 @@ export async function* chatStream(
       messages,
       stream: true,
     }),
+    signal,
   });
   if (!res.ok || !res.body) {
     throw new Error(`Ollama chat failed (${res.status})`);

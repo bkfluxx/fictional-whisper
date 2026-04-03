@@ -174,7 +174,7 @@ export default async function AnalyticsPage() {
   const heatmapWeeks = buildHeatmapWeeks(entries.map((e) => e.entryDate));
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-8">
+    <div className="max-w-[900px] mx-auto px-6 py-8">
       <h1 className="text-xl font-semibold text-base-content mb-8">Analytics</h1>
       <AnalyticsTabs
         totalEntries={totalEntries}

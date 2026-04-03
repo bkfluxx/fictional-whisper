@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import SearchBar from "@/components/search/SearchBar";
 import SidebarNav from "@/components/layout/SidebarNav";
+import OllamaWarmup from "@/components/layout/OllamaWarmup";
 
 export default async function AppLayout({
   children,
@@ -37,6 +38,7 @@ export default async function AppLayout({
       </aside>
 
       <main className="flex-1 overflow-y-auto min-h-0">{children}</main>
+      <OllamaWarmup />
     </div>
   );
 }

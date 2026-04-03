@@ -18,7 +18,7 @@ export default function MonthlyBars({ data }: MonthlyBarsProps) {
             <div
               title={`${label}: ${count}`}
               className={`w-full rounded-t-sm transition-all ${
-                count > 0 ? "bg-indigo-600" : "bg-base-300"
+                count > 0 ? "bg-primary" : "bg-base-200"
               }`}
               style={{ height: `${Math.max(heightPct, count > 0 ? 4 : 2)}%` }}
             />

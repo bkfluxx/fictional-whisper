@@ -11,19 +11,19 @@ interface ActivityHeatmapProps {
 }
 
 function cellColor(count: number): string {
-  if (count === 0) return "bg-base-300";
-  if (count === 1) return "bg-indigo-200 dark:bg-indigo-900";
-  if (count === 2) return "bg-indigo-400 dark:bg-indigo-700";
-  if (count <= 4) return "bg-indigo-600 dark:bg-indigo-500";
-  return "bg-indigo-800 dark:bg-indigo-400";
+  if (count === 0) return "bg-base-200";
+  if (count === 1) return "bg-primary/20";
+  if (count === 2) return "bg-primary/40";
+  if (count <= 4) return "bg-primary/70";
+  return "bg-primary/90";
 }
 
 const LEGEND_COLORS = [
-  "bg-base-300",
-  "bg-indigo-200 dark:bg-indigo-900",
-  "bg-indigo-400 dark:bg-indigo-700",
-  "bg-indigo-600 dark:bg-indigo-500",
-  "bg-indigo-800 dark:bg-indigo-400",
+  "bg-base-200",
+  "bg-primary/20",
+  "bg-primary/40",
+  "bg-primary/70",
+  "bg-primary/90",
 ];
 
 /** Returns the month label to show above a given week column (only for the first week in that month). */

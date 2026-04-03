@@ -172,7 +172,7 @@ export default function AnalyticsTabs({
                         label={day}
                         count={dowCounts[i]}
                         max={dowMax}
-                        color="bg-indigo-500"
+                        color="bg-primary"
                       />
                     ))}
                   </div>
@@ -212,7 +212,7 @@ export default function AnalyticsTabs({
                         label={name}
                         count={count}
                         max={categoryBreakdown[0].count}
-                        color="bg-violet-500"
+                        color="bg-secondary"
                       />
                     ))
                   )}

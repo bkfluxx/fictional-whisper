@@ -209,10 +209,17 @@ export default function PersonasSettings() {
         </button>
       </div>
 
+      {/* Status note when personas are off */}
+      {!enabled && (
+        <p className="text-xs text-base-content/50 bg-base-200 rounded-lg px-3 py-2">
+          Personas are off — the default system prompt is active.
+        </p>
+      )}
+
       <div className={`space-y-3 transition-opacity ${enabled ? "opacity-100" : "opacity-40 pointer-events-none"}`}>
         {/* Persona list */}
         {allPersonas.map((p) => {
-          const isActive = activeId === p.id;
+          const isActive = enabled && activeId === p.id;
           return (
             <div
               key={p.id}
@@ -227,12 +234,12 @@ export default function PersonasSettings() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm font-medium text-base-content">{p.name}</span>
                     {p.isBuiltIn && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-base-300 text-base-content/50 uppercase tracking-wide">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-base-content/10 text-base-content/40 uppercase tracking-wide">
                         built-in
                       </span>
                     )}
                     {isActive && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/15 text-primary uppercase tracking-wide">
                         active
                       </span>
                     )}
@@ -353,7 +360,7 @@ export default function PersonasSettings() {
       <div className="border-t border-base-content/10 pt-6 space-y-3">
         <div>
           <div className="flex items-center justify-between mb-1">
-            <p className="text-sm font-medium text-base-content">Custom system prompt</p>
+            <p className="text-sm font-medium text-base-content">Default AI voice</p>
             <button
               onClick={resetPrompt}
               disabled={systemPrompt.trim() === DEFAULT_SYSTEM_PROMPT.trim()}
@@ -378,7 +385,7 @@ export default function PersonasSettings() {
           disabled={promptSaving || systemPrompt === savedSystemPrompt}
           className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition-colors"
         >
-          {promptSaving ? "Saving…" : promptSaved ? "Saved" : "Save prompt"}
+          {promptSaving ? "Saving…" : promptSaved ? "Saved" : "Save voice"}
         </button>
       </div>
     </div>

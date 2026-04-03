@@ -19,6 +19,8 @@
  *   X-Entry-Draft  — base64(JSON) entry draft, only present in entry-creation mode
  */
 
+export const maxDuration = 300;
+
 import { NextRequest } from "next/server";
 import { getSessionDEK, isDEKResult } from "@/lib/api-helpers";
 import { prisma } from "@/lib/prisma";
@@ -228,7 +230,7 @@ export async function POST(req: NextRequest) {
     async start(controller) {
       const encoder = new TextEncoder();
       try {
-        for await (const token of chatStream(messages, model, baseUrl)) {
+        for await (const token of chatStream(messages, model, baseUrl, AbortSignal.timeout(3 * 60 * 1000))) {
           fullResponse += token;
           controller.enqueue(encoder.encode(token));
         }
