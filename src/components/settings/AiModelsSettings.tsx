@@ -50,9 +50,23 @@ export default function AiModelsSettings() {
     fetch("/api/ai/models")
       .then((r) => r.json())
       .then((data) => {
+        const modelList: ModelInfo[] = data.models ?? [];
+        const savedModel: string = data.selected?.model ?? "";
+
+        // Resolve saved model name against actual Ollama names — Ollama may
+        // return "qwen3.5:latest" while the saved value is "qwen3.5" (bare).
+        const resolveModel = (saved: string) => {
+          if (!saved) return "";
+          if (modelList.some((m) => m.name === saved)) return saved;
+          const match = modelList.find(
+            (m) => m.name.startsWith(saved + ":") || saved.startsWith(m.name + ":"),
+          );
+          return match ? match.name : saved;
+        };
+
         const cfg: SelectedConfig = {
           baseUrl: data.selected?.baseUrl ?? "",
-          model: data.selected?.model ?? "",
+          model: resolveModel(savedModel),
           embedModel: data.selected?.embedModel ?? "",
         };
         setSelected(cfg);
@@ -61,7 +75,7 @@ export default function AiModelsSettings() {
           setLoadState("offline");
           return;
         }
-        setModels(data.models ?? []);
+        setModels(modelList);
         setLoadState("ready");
       })
       .catch(() => setLoadState("offline"));
@@ -81,7 +95,15 @@ export default function AiModelsSettings() {
       const data = await res.json();
       if (data.available) {
         setTestResult("ok");
-        setModels(data.models ?? []);
+        const modelList: ModelInfo[] = data.models ?? [];
+        setModels(modelList);
+        // Re-resolve current draft model against the refreshed list
+        setDraft((d) => {
+          const match = modelList.find(
+            (m) => m.name.startsWith(d.model + ":") || d.model.startsWith(m.name + ":"),
+          );
+          return match && d.model !== match.name ? { ...d, model: match.name } : d;
+        });
         setLoadState("ready");
       } else {
         setTestResult("fail");
