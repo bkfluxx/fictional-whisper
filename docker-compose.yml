@@ -1,9 +1,6 @@
 services:
   app:
     image: ghcr.io/bkfluxx/fictional-whisper:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     env_file:
