@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-# Use Docker service name for db host (DATABASE_URL from .env.local uses localhost for dev)
-export DATABASE_URL="postgresql://fw:${POSTGRES_PASSWORD}@db:5432/fictional_whisper"
+# Build DATABASE_URL from components so it works regardless of what's in .env
+export DATABASE_URL="postgresql://fw:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-aura}"
 
 # Run Prisma migrations on startup
 node node_modules/prisma/build/index.js migrate deploy

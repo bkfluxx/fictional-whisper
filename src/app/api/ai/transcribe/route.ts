@@ -22,7 +22,10 @@ export async function POST(req: NextRequest) {
     select: { whisperBaseUrl: true },
   });
 
-  const whisperBaseUrl = settings?.whisperBaseUrl?.replace(/\/$/, "");
+  const whisperBaseUrl = (
+    settings?.whisperBaseUrl || process.env.WHISPER_BASE_URL || ""
+  ).replace(/\/$/, "");
+
   if (!whisperBaseUrl) {
     return NextResponse.json(
       { error: "Whisper URL not configured. Set it in Settings → AI Settings." },
