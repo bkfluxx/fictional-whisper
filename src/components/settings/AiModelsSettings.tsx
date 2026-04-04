@@ -19,6 +19,7 @@ interface SelectedConfig {
   baseUrl: string;
   model: string;
   embedModel: string;
+  whisperBaseUrl: string;
 }
 
 type LoadState = "loading" | "offline" | "ready" | "saving" | "saved" | "error";
@@ -36,11 +37,13 @@ export default function AiModelsSettings() {
     baseUrl: "",
     model: "",
     embedModel: "",
+    whisperBaseUrl: "",
   });
   const [draft, setDraft] = useState<SelectedConfig>({
     baseUrl: "",
     model: "",
     embedModel: "",
+    whisperBaseUrl: "",
   });
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [testingUrl, setTestingUrl] = useState(false);
@@ -68,6 +71,7 @@ export default function AiModelsSettings() {
           baseUrl: data.selected?.baseUrl ?? "",
           model: resolveModel(savedModel),
           embedModel: data.selected?.embedModel ?? "",
+          whisperBaseUrl: data.selected?.whisperBaseUrl ?? "",
         };
         setSelected(cfg);
         setDraft(cfg);
@@ -83,7 +87,8 @@ export default function AiModelsSettings() {
 
   const isDirty =
     draft.baseUrl !== selected.baseUrl ||
-    draft.model !== selected.model;
+    draft.model !== selected.model ||
+    draft.whisperBaseUrl !== selected.whisperBaseUrl;
 
   async function testUrl() {
     if (!draft.baseUrl.trim()) return;
@@ -126,6 +131,7 @@ export default function AiModelsSettings() {
           baseUrl: draft.baseUrl || null,
           model: draft.model || null,
           embedModel: "nomic-embed-text",
+          whisperBaseUrl: draft.whisperBaseUrl || null,
         }),
       });
       if (!res.ok) throw new Error(await res.text());
@@ -134,6 +140,7 @@ export default function AiModelsSettings() {
         baseUrl: data.selected?.baseUrl ?? "",
         model: data.selected?.model ?? "",
         embedModel: data.selected?.embedModel ?? "",
+        whisperBaseUrl: data.selected?.whisperBaseUrl ?? "",
       };
       setSelected(cfg);
       setDraft(cfg);
@@ -186,6 +193,26 @@ export default function AiModelsSettings() {
             Ollama is not reachable at the current URL. Update it above and click Test.
           </p>
         )}
+      </div>
+
+      {/* Whisper URL */}
+      <div>
+        <label className="block text-xs font-medium text-base-content/60 mb-1.5">
+          Whisper base URL
+          <span className="text-base-content/40 font-normal ml-1">(voice transcription)</span>
+        </label>
+        <input
+          type="url"
+          value={draft.whisperBaseUrl}
+          onChange={(e) => setDraft((d) => ({ ...d, whisperBaseUrl: e.target.value }))}
+          placeholder="http://localhost:8080"
+          className="w-full bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 placeholder:text-base-content/30"
+        />
+        <p className="text-xs text-base-content/40 mt-1">
+          URL of a local Whisper-compatible server (e.g.{" "}
+          <span className="font-mono">faster-whisper-server</span>,{" "}
+          <span className="font-mono">whisper.cpp</span>). Leave blank to disable voice input.
+        </p>
       </div>
 
       {/* Model selectors — only when models are available */}

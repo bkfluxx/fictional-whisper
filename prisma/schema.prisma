@@ -165,6 +165,8 @@ model AppSettings {
   // Personas
   personasEnabled     Boolean  @default(false)
   activePersonaId     String?  // "builtin:<id>" for built-ins, or a Persona.id cuid for custom
+  // Voice transcription
+  whisperBaseUrl      String?  // base URL for Whisper-compatible transcription API (e.g. http://localhost:8080)
 }
 
 // Stores the last AI-generated longitudinal insight. Single row (singleton id).

@@ -1,0 +1,1 @@
+ALTER TABLE "AppSettings" ADD COLUMN IF NOT EXISTS "whisperBaseUrl" TEXT;

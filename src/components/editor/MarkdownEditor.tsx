@@ -5,6 +5,7 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import type { Editor } from "@tiptap/react";
+import VoiceMicButton from "./VoiceMicButton";
 
 interface MarkdownEditorProps {
   value: string;
@@ -50,6 +51,14 @@ function Divider() {
 
 function Toolbar({ editor }: { editor: Editor | null }) {
   if (!editor) return null;
+
+  function handleTranscript(text: string) {
+    editor!
+      .chain()
+      .focus()
+      .insertContent({ type: "paragraph", content: [{ type: "text", text }] })
+      .run();
+  }
 
   return (
     <div className="flex items-center gap-0.5 flex-wrap px-3 py-2 border-b border-base-content/10 bg-base-200/50">
@@ -156,6 +165,9 @@ function Toolbar({ editor }: { editor: Editor | null }) {
           <path strokeLinecap="round" strokeLinejoin="round" d="M4 12h16" />
         </svg>
       </ToolbarButton>
+
+      <Divider />
+      <VoiceMicButton onTranscript={handleTranscript} />
     </div>
   );
 }

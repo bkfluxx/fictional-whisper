@@ -29,6 +29,11 @@ export async function GET(req: NextRequest) {
   const available = await isOllamaAvailable(resolvedUrl);
   const models = available ? await listModels(resolvedUrl).catch(() => []) : [];
 
+  const settings = await prisma.appSettings.findUnique({
+    where: { id: "singleton" },
+    select: { whisperBaseUrl: true },
+  });
+
   return NextResponse.json({
     available,
     models,
@@ -37,6 +42,7 @@ export async function GET(req: NextRequest) {
       model: config.model,
       embedModel: config.embedModel,
       systemPrompt: config.systemPrompt,
+      whisperBaseUrl: settings?.whisperBaseUrl ?? "",
     },
   });
 }
@@ -50,6 +56,7 @@ export async function PATCH(req: NextRequest) {
     model?: string | null;
     embedModel?: string | null;
     systemPrompt?: string | null;
+    whisperBaseUrl?: string | null;
   };
 
   await prisma.appSettings.upsert({
@@ -60,6 +67,7 @@ export async function PATCH(req: NextRequest) {
       ollamaModel: body.model || null,
       ollamaEmbedModel: body.embedModel || null,
       chatSystemPrompt: body.systemPrompt || null,
+      whisperBaseUrl: body.whisperBaseUrl || null,
     },
     update: {
       ...(body.baseUrl !== undefined
@@ -71,6 +79,9 @@ export async function PATCH(req: NextRequest) {
         : {}),
       ...(body.systemPrompt !== undefined
         ? { chatSystemPrompt: body.systemPrompt || null }
+        : {}),
+      ...(body.whisperBaseUrl !== undefined
+        ? { whisperBaseUrl: body.whisperBaseUrl || null }
         : {}),
     },
   });
