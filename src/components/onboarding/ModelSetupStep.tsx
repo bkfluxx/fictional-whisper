@@ -171,7 +171,7 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
       <div className="mb-8">
         <h2 className="text-2xl font-semibold text-base-content mb-2">Set up AI models</h2>
         <p className="text-base-content/60 text-sm">
-          Whisper needs two models — one for conversation and one for semantic search.
+          Aura needs two models — one for conversation and one for semantic search.
           We&apos;ll download them to your Ollama instance if they&apos;re not already there.
         </p>
       </div>
@@ -186,7 +186,7 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
               <div>
                 <div className="text-sm font-medium text-base-content">Chat model</div>
                 <div className="text-xs text-base-content/60 mt-0.5">
-                  Used for journaling prompts, analysis, and conversations with Whisper
+                  Used for journaling prompts, analysis, and conversations with Aura
                 </div>
               </div>
               {hasChatModel ? (

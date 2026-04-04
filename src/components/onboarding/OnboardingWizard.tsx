@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ModelSetupStep from "./ModelSetupStep";
-import WhisperChatStep from "./WhisperChatStep";
+import AuraChatStep from "./AuraChatStep";
 import AboutYouStep from "./AboutYouStep";
 import FeatureMapStep from "./FeatureMapStep";
 
@@ -16,7 +16,7 @@ type Step =
   | "welcome"
   | "ai-connect"
   | "model-setup"
-  | "whisper-chat"
+  | "aura-chat"
   | "about-you"
   | "feature-map"
   | "done";
@@ -42,7 +42,7 @@ const AI_STEPS: Step[] = [
   "welcome",
   "ai-connect",
   "model-setup",
-  "whisper-chat",
+  "aura-chat",
 ];
 const NO_AI_STEPS: Step[] = ["welcome", "ai-connect", "about-you"];
 
@@ -179,7 +179,7 @@ export default function OnboardingWizard() {
             <span className="text-base-content/40 font-normal text-lg">(optional)</span>
           </h2>
           <p className="text-base-content/60 text-sm">
-            Point to your Ollama instance to enable Whisper — your AI journaling companion,
+            Point to your Ollama instance to enable Aura — your AI journaling companion,
             semantic search, and writing prompts. You can skip this and set it up later in
             Settings.
           </p>
@@ -264,7 +264,7 @@ export default function OnboardingWizard() {
           onContinue={(chat, embed) => {
             setChatModel(chat);
             setEmbedModel(embed);
-            setStep("whisper-chat");
+            setStep("aura-chat");
           }}
           onBack={() => setStep("ai-connect")}
         />
@@ -272,13 +272,13 @@ export default function OnboardingWizard() {
     );
   }
 
-  // ── Step: Whisper Chat (AI path) ──────────────────────────────────────────
-  if (step === "whisper-chat") {
+  // ── Step: Aura Chat (AI path) ──────────────────────────────────────────
+  if (step === "aura-chat") {
     return (
       <>
         <ProgressBar current={step} aiPath={aiPath} />
         <SkipLink onSkip={skipAll} />
-        <WhisperChatStep
+        <AuraChatStep
           ollamaUrl={ollamaUrl}
           chatModel={chatModel}
           onContinue={(extracted) => {
@@ -325,7 +325,7 @@ export default function OnboardingWizard() {
 
       <div className="flex gap-3">
         <button
-          onClick={() => setStep(aiPath ? "whisper-chat" : "about-you")}
+          onClick={() => setStep(aiPath ? "aura-chat" : "about-you")}
           className="px-5 py-2.5 text-base-content/60 hover:text-base-content transition-colors text-sm"
         >
           ← Back

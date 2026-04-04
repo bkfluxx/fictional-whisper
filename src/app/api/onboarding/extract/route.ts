@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
   }
 
   const transcript = messages
-    .map((m) => `${m.role === "user" ? "User" : "Whisper"}: ${m.content}`)
+    .map((m) => `${m.role === "user" ? "User" : "Aura"}: ${m.content}`)
     .join("\n");
 
   try {
@@ -144,7 +144,7 @@ Respond with ONLY valid JSON. No explanation, no markdown, no code fences. Examp
     const extracted = await ollamaJson(
       ollamaUrl,
       model,
-      `You are a data extraction assistant. Read the following onboarding conversation between a user and Whisper (a journaling app assistant), then extract structured information about the user.
+      `You are a data extraction assistant. Read the following onboarding conversation between a user and Aura (a journaling app assistant), then extract structured information about the user.
 
 CONVERSATION:
 ${transcript}

@@ -25,7 +25,7 @@ const FEATURES = [
     icon: "💬",
     name: "Chat",
     description:
-      "Ask Whisper anything about your journal. Semantic search finds entries by meaning, not just keywords.",
+      "Ask Aura anything about your journal. Semantic search finds entries by meaning, not just keywords.",
     aiOnly: true,
   },
   {

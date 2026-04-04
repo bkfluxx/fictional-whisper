@@ -30,10 +30,10 @@ interface Props {
 const INITIAL_MESSAGE: Message = {
   role: "assistant",
   content:
-    "Hi! I'm Whisper, your personal journaling assistant. I'm here to help you get started. What's your name?",
+    "Hi! I'm Aura, your personal journaling assistant. I'm here to help you get started. What's your name?",
 };
 
-export default function WhisperChatStep({
+export default function AuraChatStep({
   ollamaUrl,
   chatModel,
   onContinue,
@@ -208,7 +208,7 @@ export default function WhisperChatStep({
           <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-sm">
             ✦
           </div>
-          <span className="text-base-content font-medium">Whisper</span>
+          <span className="text-base-content font-medium">Aura</span>
         </div>
         <p className="text-xs text-base-content/40 ml-9">
           Have a quick conversation to personalise your experience
