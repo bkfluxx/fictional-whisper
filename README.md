@@ -34,12 +34,11 @@ A self-hosted, privacy-first personal journal. All data stays on your machine â€
 - [Docker](https://docs.docker.com/get-docker/) and Docker Compose
 - [Ollama](https://ollama.com/) running on the host (or as a separate container)
 
-### 1. Clone and configure
+### 1. Download the compose file and configure
 
 ```bash
-git clone https://github.com/bkfluxx/aura.git
-cd aura
-cp .env.example .env
+curl -fsSL https://raw.githubusercontent.com/bkfluxx/fictional-whisper/main/docker-compose.yml -o docker-compose.yml
+curl -fsSL https://raw.githubusercontent.com/bkfluxx/fictional-whisper/main/.env.example -o .env
 ```
 
 Edit `.env` and fill in every `CHANGE_ME` value. Generate secrets with:
@@ -64,6 +63,8 @@ Key variables:
 ```bash
 docker compose up -d
 ```
+
+The image is pulled automatically from `ghcr.io/bkfluxx/fictional-whisper:latest`. No local build required.
 
 ### 3. Create your account
 
@@ -98,12 +99,19 @@ Authorization: Bearer <CRON_SECRET>
 ## Updating
 
 ```bash
-git pull
-docker compose build --no-cache
+docker compose pull
 docker compose up -d
 ```
 
 Database migrations are applied automatically on startup.
+
+To pin a specific version instead of always pulling `latest`, edit `docker-compose.yml` and change the image tag:
+
+```yaml
+image: ghcr.io/bkfluxx/fictional-whisper:0.1.0
+```
+
+Available tags are listed on the [releases page](https://github.com/bkfluxx/fictional-whisper/releases).
 
 ## Security Notes
 
