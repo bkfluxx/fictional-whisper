@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
+import UpdateNotice from "@/components/layout/UpdateNotice";
 
 const MAIN_NAV = [
   {
@@ -111,6 +112,7 @@ export default function SidebarNav() {
             isActive={pathname.startsWith(item.href)}
           />
         ))}
+        <UpdateNotice />
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
           className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-base-content/60 hover:bg-base-content/5 hover:text-base-content transition-colors w-full text-left"
