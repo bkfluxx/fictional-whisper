@@ -6,6 +6,7 @@ import Image from "next/image";
 import SearchBar from "@/components/search/SearchBar";
 import SidebarNav from "@/components/layout/SidebarNav";
 import OllamaWarmup from "@/components/layout/OllamaWarmup";
+import IdleLogout from "@/components/layout/IdleLogout";
 
 export default async function AppLayout({
   children,
@@ -38,6 +39,7 @@ export default async function AppLayout({
 
       <main className="flex-1 overflow-y-auto min-h-0">{children}</main>
       <OllamaWarmup />
+      <IdleLogout />
     </div>
   );
 }

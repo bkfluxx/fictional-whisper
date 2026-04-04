@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 const MAIN_NAV = [
   {
@@ -101,8 +102,8 @@ export default function SidebarNav() {
         return <NavLink key={item.href} {...item} isActive={isActive} />;
       })}
 
-      {/* Settings — pinned to bottom */}
-      <div className="mt-auto pt-3 border-t border-base-200">
+      {/* Settings + Logout — pinned to bottom */}
+      <div className="mt-auto pt-3 border-t border-base-200 flex flex-col gap-0.5">
         {BOTTOM_NAV.map((item) => (
           <NavLink
             key={item.href}
@@ -110,6 +111,16 @@ export default function SidebarNav() {
             isActive={pathname.startsWith(item.href)}
           />
         ))}
+        <button
+          onClick={() => signOut({ callbackUrl: "/login" })}
+          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-base-content/60 hover:bg-base-content/5 hover:text-base-content transition-colors w-full text-left"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+            <path strokeLinecap="round" strokeLinejoin="round"
+              d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+          </svg>
+          Log out
+        </button>
       </div>
     </nav>
   );
