@@ -4,6 +4,14 @@ All notable changes to Aura will be documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] - 2026-04-03
+
+### Added
+
+- Pre-built Docker images published to GitHub Container Registry (`ghcr.io/bkfluxx/fictional-whisper`) on every version tag — no local build required
+- Error log viewer in Settings → Advanced: colour-coded preview of application errors, download as `.txt`, and one-click clear
+- File-based logger (`/app/logs/aura.log`) with 5 MB rotation, persisted via Docker volume
+
 ## [0.1.0] - 2026-04-04
 
 ### Added
