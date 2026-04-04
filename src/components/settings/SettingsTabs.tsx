@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import PasswordChangeForm from "./PasswordChangeForm";
+import TwoFactorSettings from "./TwoFactorSettings";
 import ExportSection from "./ExportSection";
 import ImportSection from "./ImportSection";
 import AiModelsSettings from "./AiModelsSettings";
@@ -58,15 +59,28 @@ export default function SettingsTabs() {
       )}
 
       {active === "security" && (
-        <section className="space-y-4">
-          <div className="mb-5">
-            <h2 className="text-base font-medium text-base-content">Security</h2>
-            <p className="text-sm text-base-content/40 mt-0.5">
-              Changing your password re-wraps your encryption key. Your entries
-              stay decryptable and your session stays active.
-            </p>
+        <section className="space-y-8">
+          <div>
+            <div className="mb-5">
+              <h2 className="text-base font-medium text-base-content">Password</h2>
+              <p className="text-sm text-base-content/40 mt-0.5">
+                Changing your password re-wraps your encryption key. Your entries
+                stay decryptable and your session stays active.
+              </p>
+            </div>
+            <PasswordChangeForm />
           </div>
-          <PasswordChangeForm />
+
+          <div className="border-t border-base-200 pt-6">
+            <div className="mb-5">
+              <h2 className="text-base font-medium text-base-content">Two-factor authentication</h2>
+              <p className="text-sm text-base-content/40 mt-0.5">
+                Add a second factor to your login. You will need an authenticator
+                app (Google Authenticator, Authy, 1Password, etc.).
+              </p>
+            </div>
+            <TwoFactorSettings />
+          </div>
         </section>
       )}
 

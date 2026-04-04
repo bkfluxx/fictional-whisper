@@ -25,6 +25,7 @@ model KeyStore {
 model User {
   id           String   @id @default(cuid())
   passwordHash String
+  totpSecret   String?  // base32-encoded TOTP secret; null = 2FA disabled
   createdAt    DateTime @default(now())
 }
 
