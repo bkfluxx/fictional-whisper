@@ -34,7 +34,7 @@ COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
-RUN mkdir -p /app/attachments /app/backups
+RUN mkdir -p /app/attachments /app/backups /app/logs
 
 # Entrypoint runs both Next.js and the cron daemon
 COPY docker/entrypoint.sh /entrypoint.sh

@@ -3,6 +3,7 @@ import { getSessionDEK, isDEKResult } from "@/lib/api-helpers";
 import { encryptString } from "@/lib/crypto";
 import { prisma } from "@/lib/prisma";
 import { indexEntry } from "@/lib/search/hmac-index";
+import { logger } from "@/lib/logger";
 import {
   parseFWJson,
   parseDayOneJson,
@@ -92,7 +93,7 @@ export async function POST(req: NextRequest) {
     // Index search tokens asynchronously
     setImmediate(() => {
       indexEntry(created.id, entry.body, process.env.SEARCH_HMAC_SECRET!).catch(
-        console.error,
+        (e) => logger.error("Failed to index imported entry", e),
       );
     });
 

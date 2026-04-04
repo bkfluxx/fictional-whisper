@@ -10,8 +10,9 @@ import TemplatesSettings from "./TemplatesSettings";
 import ThemeSettings from "./ThemeSettings";
 import CategoriesSettings from "./CategoriesSettings";
 import PersonasSettings from "./PersonasSettings";
+import ErrorLogSection from "./ErrorLogSection";
 
-type Tab = "appearance" | "security" | "import-export" | "ai" | "personas" | "templates" | "categories";
+type Tab = "appearance" | "security" | "import-export" | "ai" | "personas" | "templates" | "categories" | "advanced";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "ai", label: "AI settings" },
@@ -21,6 +22,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "templates", label: "Templates" },
   { id: "categories", label: "Categories" },
   { id: "import-export", label: "Import / Export" },
+  { id: "advanced", label: "Advanced" },
 ];
 
 export default function SettingsTabs() {
@@ -151,6 +153,19 @@ export default function SettingsTabs() {
             </p>
           </div>
           <TemplatesSettings />
+        </section>
+      )}
+
+      {active === "advanced" && (
+        <section>
+          <div className="mb-5">
+            <h2 className="text-base font-medium text-base-content">Error log</h2>
+            <p className="text-sm text-base-content/40 mt-0.5">
+              Application errors logged since the last container start. Download
+              as a text file to share with support or inspect yourself.
+            </p>
+          </div>
+          <ErrorLogSection />
         </section>
       )}
 

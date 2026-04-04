@@ -4,6 +4,7 @@ import { encryptString, decryptString } from "@/lib/crypto";
 import { getSessionDEK, isDEKResult } from "@/lib/api-helpers";
 import { indexEntry, deleteEntryTokens } from "@/lib/search/hmac-index";
 import { embedEntryText } from "@/lib/ai/embed";
+import { logger } from "@/lib/logger";
 import type { EntryPayload, DecryptedEntry } from "@/types/entry";
 
 /** GET /api/entries/[id] — fetch and decrypt a single entry */
@@ -93,9 +94,9 @@ export async function PATCH(
     setImmediate(async () => {
       await deleteEntryTokens(id);
       await indexEntry(id, plainBody, process.env.SEARCH_HMAC_SECRET!).catch(
-        console.error,
+        (e) => logger.error("Failed to index entry", e),
       );
-      await embedEntryText(id, plainBody).catch(console.error);
+      await embedEntryText(id, plainBody).catch((e) => logger.error("Failed to embed entry", e));
     });
   }
 

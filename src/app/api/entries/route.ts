@@ -4,6 +4,7 @@ import { encryptString, decryptString } from "@/lib/crypto";
 import { getSessionDEK, isDEKResult } from "@/lib/api-helpers";
 import { indexEntry } from "@/lib/search/hmac-index";
 import { embedEntryText } from "@/lib/ai/embed";
+import { logger } from "@/lib/logger";
 import type { EntryPayload, EntryStub } from "@/types/entry";
 
 /** GET /api/entries — list entries (stubs, no body) */
@@ -86,9 +87,9 @@ export async function POST(req: NextRequest) {
   const plainBody = body.body;
   setImmediate(() => {
     indexEntry(entry.id, plainBody, process.env.SEARCH_HMAC_SECRET!).catch(
-      console.error,
+      (e) => logger.error("Failed to index entry", e),
     );
-    embedEntryText(entry.id, plainBody).catch(console.error);
+    embedEntryText(entry.id, plainBody).catch((e) => logger.error("Failed to embed entry", e));
   });
 
   return NextResponse.json(
