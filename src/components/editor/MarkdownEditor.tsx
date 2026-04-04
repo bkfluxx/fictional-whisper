@@ -11,6 +11,8 @@ interface MarkdownEditorProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  entryId?: string;
+  onVoiceNoteSaved?: () => void;
 }
 
 // ── Toolbar ──────────────────────────────────────────────────────────────────
@@ -49,7 +51,7 @@ function Divider() {
   return <div className="w-px h-4 bg-base-content/20 mx-0.5" />;
 }
 
-function Toolbar({ editor }: { editor: Editor | null }) {
+function Toolbar({ editor, entryId, onVoiceNoteSaved }: { editor: Editor | null; entryId?: string; onVoiceNoteSaved?: () => void }) {
   if (!editor) return null;
 
   function handleTranscript(text: string) {
@@ -167,7 +169,11 @@ function Toolbar({ editor }: { editor: Editor | null }) {
       </ToolbarButton>
 
       <Divider />
-      <VoiceMicButton onTranscript={handleTranscript} />
+      <VoiceMicButton
+        onTranscript={handleTranscript}
+        entryId={entryId}
+        onSaved={onVoiceNoteSaved}
+      />
     </div>
   );
 }
@@ -178,6 +184,8 @@ export default function MarkdownEditor({
   value,
   onChange,
   placeholder,
+  entryId,
+  onVoiceNoteSaved,
 }: MarkdownEditorProps) {
   const handleUpdate = useCallback(
     ({ editor }: { editor: Editor }) => {
@@ -215,7 +223,7 @@ export default function MarkdownEditor({
 
   return (
     <div className="flex flex-col flex-1 min-h-0 border border-base-content/20 rounded-xl overflow-hidden">
-      <Toolbar editor={editor} />
+      <Toolbar editor={editor} entryId={entryId} onVoiceNoteSaved={onVoiceNoteSaved} />
       <EditorContent
         editor={editor}
         className="flex-1 overflow-y-auto"

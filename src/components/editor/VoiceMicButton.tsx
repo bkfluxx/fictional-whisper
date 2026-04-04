@@ -2,10 +2,12 @@
 
 import { useRef, useState, useCallback, useEffect } from "react";
 
-type RecordState = "idle" | "recording" | "preview" | "transcribing" | "error";
+type RecordState = "idle" | "recording" | "preview" | "saving" | "transcribing" | "error";
 
 interface VoiceMicButtonProps {
   onTranscript: (text: string) => void;
+  entryId?: string;
+  onSaved?: () => void;
 }
 
 function formatDuration(ms: number) {
@@ -14,7 +16,7 @@ function formatDuration(ms: number) {
   return `${m}:${String(s % 60).padStart(2, "0")}`;
 }
 
-export default function VoiceMicButton({ onTranscript }: VoiceMicButtonProps) {
+export default function VoiceMicButton({ onTranscript, entryId, onSaved }: VoiceMicButtonProps) {
   const [state, setState] = useState<RecordState>("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [duration, setDuration] = useState(0); // ms elapsed while recording
@@ -95,6 +97,26 @@ export default function VoiceMicButton({ onTranscript }: VoiceMicButtonProps) {
     setState("idle");
   }, [audioUrl]);
 
+  const saveNote = useCallback(async () => {
+    if (!blobRef.current || !entryId) return;
+    setState("saving");
+    try {
+      const formData = new FormData();
+      formData.append("audio", blobRef.current, "recording.webm");
+      const res = await fetch(`/api/entries/${entryId}/attachments`, {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      onSaved?.();
+      discard();
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "Failed to save");
+      setState("error");
+      setTimeout(() => discard(), 4000);
+    }
+  }, [entryId, onSaved, discard]);
+
   const transcribe = useCallback(async () => {
     if (!blobRef.current) return;
     setState("transcribing");
@@ -165,6 +187,17 @@ export default function VoiceMicButton({ onTranscript }: VoiceMicButtonProps) {
     return (
       <div className="ml-auto flex items-center gap-2">
         <audio src={audioUrl ?? undefined} controls className="h-7 w-44 rounded" />
+        {entryId && (
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={saveNote}
+            title="Save as voice note"
+            className="px-2 py-1 rounded text-xs bg-base-content/10 text-base-content hover:bg-base-content/20 transition-colors whitespace-nowrap"
+          >
+            Save note
+          </button>
+        )}
         <button
           type="button"
           onMouseDown={(e) => e.preventDefault()}
@@ -183,6 +216,19 @@ export default function VoiceMicButton({ onTranscript }: VoiceMicButtonProps) {
         >
           Discard
         </button>
+      </div>
+    );
+  }
+
+  // ── Saving ──────────────────────────────────────────────────────────────────
+  if (state === "saving") {
+    return (
+      <div className="ml-auto flex items-center gap-2 text-xs text-base-content/50">
+        <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+        </svg>
+        Saving…
       </div>
     );
   }

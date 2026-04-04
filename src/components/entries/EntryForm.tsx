@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import type { DecryptedEntry, EntryPayload } from "@/types/entry";
 import { JOURNAL_TYPES } from "@/lib/journal-types";
 import AiPanel from "./AiPanel";
+import VoiceNotesList from "./VoiceNotesList";
 
 interface UserCategory {
   id: string;
@@ -42,6 +43,8 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
   const [saveState, setSaveState] = useState<SaveState>(
     initial ? "saved" : "unsaved",
   );
+  const [entryId, setEntryId] = useState<string | null>(initial?.id ?? null);
+  const [voiceNoteRefreshKey, setVoiceNoteRefreshKey] = useState(0);
   const [aiOpen, setAiOpen] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
@@ -85,6 +88,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
         const data = await res.json();
         if (isNew) {
           entryIdRef.current = data.id;
+          setEntryId(data.id);
           window.history.replaceState(null, "", `/journal/${data.id}/edit`);
         }
 
@@ -334,8 +338,23 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
               scheduleSave(v, title, tags, mood, categories);
             }}
             placeholder="Start writing…"
+            entryId={entryId ?? undefined}
+            onVoiceNoteSaved={() => setVoiceNoteRefreshKey((k) => k + 1)}
           />
         </div>
+
+        {/* Voice notes */}
+        {entryId && (
+          <VoiceNotesList
+            entryId={entryId}
+            refreshKey={voiceNoteRefreshKey}
+            onTranscript={(text) => {
+              const newBody = body ? `${body}\n\n${text}` : text;
+              setBody(newBody);
+              scheduleSave(newBody, title, tags, mood, categories);
+            }}
+          />
+        )}
       </div>
 
       {/* AI sidebar */}
