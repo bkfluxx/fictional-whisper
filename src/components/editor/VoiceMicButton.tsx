@@ -121,6 +121,18 @@ export default function VoiceMicButton({ onTranscript, entryId, onSaved }: Voice
     if (!blobRef.current) return;
     setState("transcribing");
 
+    // Auto-save the recording as an attachment before transcribing
+    if (entryId && blobRef.current) {
+      try {
+        const saveForm = new FormData();
+        saveForm.append("audio", blobRef.current, "recording.webm");
+        await fetch(`/api/entries/${entryId}/attachments`, { method: "POST", body: saveForm });
+        onSaved?.();
+      } catch {
+        // Non-fatal — continue with transcription even if save fails
+      }
+    }
+
     try {
       const formData = new FormData();
       formData.append("audio", blobRef.current, "recording.webm");
@@ -143,7 +155,7 @@ export default function VoiceMicButton({ onTranscript, entryId, onSaved }: Voice
       setState("error");
       setTimeout(() => discard(), 4000);
     }
-  }, [onTranscript, discard]);
+  }, [entryId, onTranscript, onSaved, discard]);
 
   // ── Idle: mic button ────────────────────────────────────────────────────────
   if (state === "idle") {

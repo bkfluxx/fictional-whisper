@@ -71,7 +71,10 @@ export default async function JournalPage({
           }
         : {}),
     },
-    include: { tags: { select: { id: true, name: true } } },
+    include: {
+      tags: { select: { id: true, name: true } },
+      _count: { select: { attachments: true } },
+    },
     orderBy: { entryDate: "desc" },
     take: 100,
   });
@@ -139,6 +142,8 @@ export default async function JournalPage({
                   const title = e.title ? decryptString(e.title, dek) : null;
                   const body = decryptString(e.body, dek);
                   const preview = textPreview(body);
+                  const hasVoice = e._count.attachments > 0;
+                  const isVoiceOnly = hasVoice && !preview;
 
                   const firstCat = e.categories[0];
                   const jt = firstCat ? getJournalType(firstCat) : null;
@@ -168,18 +173,29 @@ export default async function JournalPage({
                                 </span>
                               )}
                             </span>
-                            {jt && (
-                              <span className="text-base shrink-0 leading-none mt-0.5">
-                                {jt.emoji}
-                              </span>
-                            )}
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              {hasVoice && (
+                                <span className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-400">
+                                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" />
+                                  </svg>
+                                </span>
+                              )}
+                              {jt && (
+                                <span className="text-base leading-none mt-0.5">{jt.emoji}</span>
+                              )}
+                            </div>
                           </div>
 
-                          {preview && (
+                          {isVoiceOnly ? (
+                            <p className="text-xs text-indigo-400/70 mt-1 italic">
+                              Voice note
+                            </p>
+                          ) : preview ? (
                             <p className="text-xs text-base-content/50 mt-1 leading-relaxed line-clamp-2">
                               {preview}
                             </p>
-                          )}
+                          ) : null}
 
                           {(e.categories.length > 0 || e.tags.length > 0 || e.mood) && (
                             <div className="flex gap-1 mt-2 flex-wrap items-center">

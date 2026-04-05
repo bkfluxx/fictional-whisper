@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import WaveformPlayer from "@/components/ui/WaveformPlayer";
 
 interface VoiceNote {
   id: string;
@@ -68,46 +69,42 @@ export default function VoiceNotesList({ entryId, refreshKey, onTranscript }: Pr
         return (
           <div
             key={note.id}
-            className="flex items-center gap-2 bg-base-200/50 rounded-lg px-3 py-2"
+            className="space-y-1.5"
           >
-            <svg className="w-3.5 h-3.5 text-base-content/30 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-              <path strokeLinecap="round" strokeLinejoin="round"
-                d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" />
-            </svg>
-
-            <audio
+            <WaveformPlayer
               src={`/api/entries/${entryId}/attachments/${note.id}`}
-              controls
-              className="h-8 flex-1 min-w-0"
+              className="w-full"
             />
+            <div className="flex items-center justify-between px-1">
+              <span className="text-xs text-base-content/30">{date}</span>
 
-            <span className="text-xs text-base-content/30 shrink-0 hidden sm:block">{date}</span>
-
-            {onTranscript && (
-              <button
-                onClick={() => transcribeNote(note.id)}
-                disabled={transcribing === note.id}
-                title="Transcribe and insert into entry"
-                className="text-xs px-2 py-1 rounded text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 disabled:opacity-40 transition-colors whitespace-nowrap"
-              >
-                {transcribing === note.id ? (
-                  <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                ) : "Transcribe"}
-              </button>
-            )}
-
-            <button
-              onClick={() => deleteNote(note.id)}
-              title="Delete voice note"
-              className="text-base-content/30 hover:text-red-400 transition-colors shrink-0"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-              </svg>
-            </button>
+              <div className="flex items-center gap-3">
+                {onTranscript && (
+                  <button
+                    onClick={() => transcribeNote(note.id)}
+                    disabled={transcribing === note.id}
+                    className="text-xs text-indigo-400 hover:text-indigo-300 disabled:opacity-40 transition-colors flex items-center gap-1"
+                  >
+                    {transcribing === note.id ? (
+                      <>
+                        <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        Transcribing…
+                      </>
+                    ) : "Transcribe"}
+                  </button>
+                )}
+                <button
+                  onClick={() => deleteNote(note.id)}
+                  title="Delete voice note"
+                  className="text-xs text-base-content/30 hover:text-red-400 transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
           </div>
         );
       })}
