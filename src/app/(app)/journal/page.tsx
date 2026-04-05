@@ -6,14 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getDEK } from "@/lib/session/dek-store";
 import { decryptString } from "@/lib/crypto";
 import { getJournalType } from "@/lib/journal-types";
-
-const MOOD_DOT: Record<string, string> = {
-  great: "bg-emerald-500",
-  good: "bg-indigo-500",
-  okay: "bg-amber-400",
-  tough: "bg-orange-500",
-  awful: "bg-red-500",
-};
+import JournalView, { type DayGroup } from "@/components/journal/JournalView";
 
 function formatDay(dateStr: string): { weekday: string; date: string } {
   const d = new Date(dateStr + "T00:00:00");
@@ -37,7 +30,6 @@ function formatDay(dateStr: string): { weekday: string; date: string } {
   };
 }
 
-// Strip HTML tags and collapse whitespace for body previews
 function textPreview(html: string, maxLen = 140): string {
   const text = html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
   if (text.length <= maxLen) return text;
@@ -79,21 +71,39 @@ export default async function JournalPage({
     take: 100,
   });
 
-  // Group by date string YYYY-MM-DD
-  const grouped = new Map<string, typeof entries>();
+  // Build decrypted day groups for the client component
+  const grouped = new Map<string, DayGroup>();
   for (const e of entries) {
     const key = e.entryDate.toISOString().slice(0, 10);
-    if (!grouped.has(key)) grouped.set(key, []);
-    grouped.get(key)!.push(e);
+    if (!grouped.has(key)) {
+      const { weekday, date } = formatDay(key);
+      grouped.set(key, { day: key, weekday, date, entries: [] });
+    }
+
+    const title = e.title ? decryptString(e.title, dek) : null;
+    const body = decryptString(e.body, dek);
+    const preview = textPreview(body);
+    const hasVoice = e._count.attachments > 0;
+
+    grouped.get(key)!.entries.push({
+      id: e.id,
+      title,
+      preview,
+      hasVoice,
+      isVoiceOnly: hasVoice && !preview,
+      mood: e.mood,
+      categories: e.categories,
+      tags: e.tags,
+    });
   }
-  const days = [...grouped.keys()];
+  const days = [...grouped.values()];
 
   const heading = categoryDef ? `${categoryDef.emoji} ${categoryDef.name}` : "Journal";
 
   return (
-    <div className="px-6 py-8 max-w-3xl">
+    <div className="flex flex-col h-full overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between mb-10">
+      <div className="flex items-center justify-between px-6 py-8 pb-4 shrink-0">
         <h1 className="text-xl font-semibold text-base-content">{heading}</h1>
         <Link
           href="/journal/new"
@@ -115,124 +125,8 @@ export default async function JournalPage({
           </Link>
         </div>
       ) : (
-        /* Custom timeline: dot column is w-8 (32px), dots centred at 16px.
-           Line sits at left-[15px] + w-0.5 (2px) → centre = 16px. Pixel-perfect. */
-        <div className="relative">
-          <div className="absolute left-[15px] top-2 bottom-2 w-0.5 bg-base-content/15" />
-
-          {days.map((day) => {
-            const dayEntries = grouped.get(day)!;
-            const { weekday, date } = formatDay(day);
-
-            return (
-              <div key={day}>
-                {/* Date marker */}
-                <div className="flex items-center gap-2 py-2">
-                  <div className="flex w-8 shrink-0 justify-center">
-                    <span className="relative z-10 flex size-3 items-center justify-center rounded-full bg-base-100 ring-1 ring-base-content/20">
-                      <span className="size-1.5 rounded-full bg-base-content/40" />
-                    </span>
-                  </div>
-                  <span className="text-xs font-semibold text-base-content/50">{weekday}</span>
-                  <span className="text-xs text-base-content/30">{date}</span>
-                </div>
-
-                {/* Entry cards */}
-                {dayEntries.map((e) => {
-                  const title = e.title ? decryptString(e.title, dek) : null;
-                  const body = decryptString(e.body, dek);
-                  const preview = textPreview(body);
-                  const hasVoice = e._count.attachments > 0;
-                  const isVoiceOnly = hasVoice && !preview;
-
-                  const firstCat = e.categories[0];
-                  const jt = firstCat ? getJournalType(firstCat) : null;
-                  const dotColor = e.mood
-                    ? (MOOD_DOT[e.mood] ?? "bg-primary")
-                    : jt
-                      ? "bg-primary"
-                      : "bg-base-content/30";
-
-                  return (
-                    <div key={e.id} className="flex items-start gap-2 mb-2">
-                      {/* Dot – w-8 column centred on line; pt-3 aligns with card title */}
-                      <div className="flex w-8 shrink-0 justify-center pt-3">
-                        <span className="relative z-10 flex size-5 items-center justify-center rounded-full bg-base-100">
-                          <span className={`size-2.5 rounded-sm ${dotColor}`} />
-                        </span>
-                      </div>
-
-                      {/* Card */}
-                      <div className="flex-1 rounded-xl border border-base-content/10 bg-base-200 hover:bg-base-content/8 transition-colors overflow-hidden">
-                        <Link href={`/journal/${e.id}`} className="block px-4 py-3">
-                          <div className="flex items-start justify-between gap-3">
-                            <span className="text-sm font-semibold text-base-content leading-snug">
-                              {title ?? (
-                                <span className="text-base-content/40 font-normal italic">
-                                  Untitled
-                                </span>
-                              )}
-                            </span>
-                            <div className="flex items-center gap-1.5 shrink-0">
-                              {hasVoice && (
-                                <span className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-400">
-                                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" />
-                                  </svg>
-                                </span>
-                              )}
-                              {jt && (
-                                <span className="text-base leading-none mt-0.5">{jt.emoji}</span>
-                              )}
-                            </div>
-                          </div>
-
-                          {isVoiceOnly ? (
-                            <p className="text-xs text-indigo-400/70 mt-1 italic">
-                              Voice note
-                            </p>
-                          ) : preview ? (
-                            <p className="text-xs text-base-content/50 mt-1 leading-relaxed line-clamp-2">
-                              {preview}
-                            </p>
-                          ) : null}
-
-                          {(e.categories.length > 0 || e.tags.length > 0 || e.mood) && (
-                            <div className="flex gap-1 mt-2 flex-wrap items-center">
-                              {e.mood && (
-                                <span className="text-xs px-2 py-0.5 bg-base-content/10 text-base-content/60 rounded-full capitalize">
-                                  {e.mood}
-                                </span>
-                              )}
-                              {e.categories.map((c) => {
-                                const catJt = getJournalType(c);
-                                return (
-                                  <span
-                                    key={c}
-                                    className="text-xs px-2 py-0.5 bg-indigo-500/15 text-indigo-500 rounded-full"
-                                  >
-                                    {catJt ? `${catJt.emoji} ${catJt.name}` : c}
-                                  </span>
-                                );
-                              })}
-                              {e.tags.map((t) => (
-                                <span
-                                  key={t.id}
-                                  className="text-xs px-2 py-0.5 bg-base-content/10 text-base-content/60 rounded-full"
-                                >
-                                  #{t.name}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </Link>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
+        <div className="flex-1 min-h-0 overflow-hidden">
+          <JournalView days={days} />
         </div>
       )}
     </div>
