@@ -6,6 +6,7 @@ import { getDEK } from "@/lib/session/dek-store";
 import { prisma } from "@/lib/prisma";
 import { decryptString } from "@/lib/crypto";
 import { getJournalType } from "@/lib/journal-types";
+import VoiceNotesList from "@/components/entries/VoiceNotesList";
 
 export default async function EntryViewPage({
   params,
@@ -21,7 +22,7 @@ export default async function EntryViewPage({
 
   const entry = await prisma.entry.findUnique({
     where: { id },
-    include: { tags: true },
+    include: { tags: true, _count: { select: { attachments: true } } },
   });
 
   if (!entry) notFound();
@@ -84,6 +85,12 @@ export default async function EntryViewPage({
         className="fw-prose max-w-none"
         dangerouslySetInnerHTML={{ __html: body }}
       />
+
+      {entry._count.attachments > 0 && (
+        <div className="mt-8">
+          <VoiceNotesList entryId={entry.id} refreshKey={0} />
+        </div>
+      )}
     </div>
   );
 }

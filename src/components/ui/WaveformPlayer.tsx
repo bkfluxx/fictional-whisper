@@ -123,13 +123,13 @@ export default function WaveformPlayer({ src, barCount = 52, className = "" }: P
 
       {/* Waveform */}
       <div
-        className="flex-1 flex items-center gap-px h-7 cursor-pointer select-none"
+        className="flex-1 flex items-center gap-[2px] h-7 cursor-pointer select-none overflow-hidden"
         onClick={handleScrub}
       >
         {(loading ? Array(barCount).fill(0.3) : waveform).map((h, i) => (
           <div
             key={i}
-            className={`flex-1 rounded-full ${
+            className={`flex-1 max-w-[4px] min-w-[2px] shrink-0 rounded-full ${
               loading
                 ? "bg-base-content/10 animate-pulse"
                 : i < activeCount
