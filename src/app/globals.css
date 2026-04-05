@@ -38,6 +38,10 @@
   --color-error-content: var(--color-error-content);
 }
 
+html {
+  font-size: 110%;
+}
+
 body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }

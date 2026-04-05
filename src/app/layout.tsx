@@ -31,11 +31,11 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-base-100 text-base-content">
-        {/* Apply saved theme before first paint to avoid flash */}
+        {/* Apply saved theme + font scale before first paint to avoid flash */}
         <Script
           id="theme-init"
           strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('aura-theme');if(t&&t!=='system'){document.documentElement.setAttribute('data-theme',t)}else{document.documentElement.setAttribute('data-theme',window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}}catch(e){}})();` }}
+          dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('aura-theme');if(t&&t!=='system'){document.documentElement.setAttribute('data-theme',t)}else{document.documentElement.setAttribute('data-theme',window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}}catch(e){}try{var s=localStorage.getItem('aura-font-scale');if(s)document.documentElement.style.fontSize=s+'%'}catch(e){}})();` }}
         />
         <ThemeProvider />
         {children}

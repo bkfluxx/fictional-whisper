@@ -8,6 +8,7 @@ import ImportSection from "./ImportSection";
 import AiModelsSettings from "./AiModelsSettings";
 import TemplatesSettings from "./TemplatesSettings";
 import ThemeSettings from "./ThemeSettings";
+import FontScaleSettings from "./FontScaleSettings";
 import CategoriesSettings from "./CategoriesSettings";
 import PersonasSettings from "./PersonasSettings";
 import ErrorLogSection from "./ErrorLogSection";
@@ -49,14 +50,26 @@ export default function SettingsTabs() {
 
       {/* Tab panels */}
       {active === "appearance" && (
-        <section>
-          <div className="mb-6">
-            <h2 className="text-base font-medium text-base-content">Theme</h2>
-            <p className="text-sm text-base-content/40 mt-0.5">
-              Choose a color theme. "System" follows your OS light / dark preference.
-            </p>
+        <section className="space-y-10">
+          <div>
+            <div className="mb-6">
+              <h2 className="text-base font-medium text-base-content">Theme</h2>
+              <p className="text-sm text-base-content/40 mt-0.5">
+                Choose a color theme. "System" follows your OS light / dark preference.
+              </p>
+            </div>
+            <ThemeSettings />
           </div>
-          <ThemeSettings />
+
+          <div className="border-t border-base-200 pt-8">
+            <div className="mb-6">
+              <h2 className="text-base font-medium text-base-content">Text size</h2>
+              <p className="text-sm text-base-content/40 mt-0.5">
+                Adjust the base font size across the entire app.
+              </p>
+            </div>
+            <FontScaleSettings />
+          </div>
         </section>
       )}
 
