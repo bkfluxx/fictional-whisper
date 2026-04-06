@@ -101,16 +101,27 @@ export default function TemplatePicker({
         </div>
       </div>
 
-      {/* Blank entry — always first */}
-      <Link
-        href="/journal/new?from=blank"
-        className="group flex items-center gap-3 w-full px-4 py-3 mb-8 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl transition-colors"
-      >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-        </svg>
-        Blank entry
-      </Link>
+      {/* Quick-start row */}
+      <div className="flex gap-3 mb-8">
+        <Link
+          href="/journal/new?from=blank"
+          className="group flex items-center gap-2 flex-1 px-4 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl transition-colors"
+        >
+          <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          Blank entry
+        </Link>
+        <Link
+          href="/journal/guided"
+          className="group flex items-center gap-2 flex-1 px-4 py-3 bg-base-200 hover:bg-base-content/10 border border-base-content/10 hover:border-indigo-500/40 text-base-content font-medium rounded-xl transition-colors"
+        >
+          <svg className="w-4 h-4 shrink-0 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+          </svg>
+          <span>Guided session</span>
+        </Link>
+      </div>
 
       {/* Recommended templates (only shown when intentions were captured) */}
       {recommended.length > 0 && (
