@@ -188,3 +188,17 @@ model Persona {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
+
+// Goal / intention tracking. Title and notes are encrypted; status is a plain
+// slug so it can be queried and filtered without decryption.
+model Goal {
+  id          String    @id @default(cuid())
+  title       String    // AES-256-GCM encrypted
+  notes       String?   // AES-256-GCM encrypted — optional free-text progress notes
+  status      String    @default("active") // "active" | "completed" | "paused"
+  targetDate  DateTime? // optional target date (plain — not sensitive)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status])
+}
