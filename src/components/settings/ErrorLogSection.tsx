@@ -25,18 +25,18 @@ function parseLine(raw: string): ParsedLine | null {
 
 function LogLine({ raw }: { raw: string }) {
   const parsed = parseLine(raw);
-  if (!parsed) return <div className="text-base-content/40">{raw}</div>;
+  if (!parsed) return <div className="text-foreground/40">{raw}</div>;
 
   const time = new Date(parsed.ts).toLocaleString();
   const isError = parsed.level === "error";
 
   return (
-    <div className={`py-1 border-b border-base-200/50 last:border-0 ${isError ? "text-red-500 dark:text-red-400" : "text-amber-600 dark:text-amber-400"}`}>
-      <span className="text-base-content/30 mr-2 select-none">{time}</span>
+    <div className={`py-1 border-b border-border/50 last:border-0 ${isError ? "text-red-500 dark:text-red-400" : "text-amber-600 dark:text-amber-400"}`}>
+      <span className="text-foreground/30 mr-2 select-none">{time}</span>
       <span className="font-medium uppercase text-[10px] mr-2">{parsed.level}</span>
       <span>{parsed.msg}</span>
       {parsed.error && (
-        <span className="text-base-content/50 ml-2">— {parsed.error}</span>
+        <span className="text-foreground/50 ml-2">— {parsed.error}</span>
       )}
     </div>
   );
@@ -92,19 +92,19 @@ export default function ErrorLogSection() {
           {clearing ? "Clearing…" : "Clear log"}
         </button>
         {preview && (
-          <span className="text-xs text-base-content/40 ml-auto">
+          <span className="text-xs text-foreground/40 ml-auto">
             {preview.total} {preview.total === 1 ? "entry" : "entries"}
             {preview.total > 200 && " (showing last 200)"}
           </span>
         )}
       </div>
 
-      <div className="rounded-lg border border-base-200 bg-base-200/30 p-3 font-mono text-xs leading-relaxed max-h-80 overflow-y-auto">
+      <div className="rounded-lg border border-border bg-card/30 p-3 font-mono text-xs leading-relaxed max-h-80 overflow-y-auto">
         {loading && (
-          <div className="text-base-content/40">Loading…</div>
+          <div className="text-foreground/40">Loading…</div>
         )}
         {!loading && isEmpty && (
-          <div className="text-base-content/40">No log entries.</div>
+          <div className="text-foreground/40">No log entries.</div>
         )}
         {!loading && preview && preview.lines.map((line, i) => (
           <LogLine key={i} raw={line} />

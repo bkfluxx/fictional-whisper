@@ -90,7 +90,7 @@ export default function WaveformPlayer({ src, barCount = 52, className = "" }: P
   const activeCount = Math.round(progress * barCount);
 
   return (
-    <div className={`flex items-center gap-2.5 bg-base-300/60 rounded-full px-3 py-2 ${className}`}>
+    <div className={`flex items-center gap-2.5 bg-muted/60 rounded-full px-3 py-2 ${className}`}>
       <audio
         ref={audioRef}
         src={src}
@@ -107,15 +107,15 @@ export default function WaveformPlayer({ src, barCount = 52, className = "" }: P
         type="button"
         onClick={toggle}
         disabled={loading}
-        className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center bg-base-content/10 hover:bg-base-content/20 disabled:opacity-30 transition-colors"
+        className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center bg-foreground/10 hover:bg-foreground/20 disabled:opacity-30 transition-colors"
       >
         {isPlaying ? (
-          <svg className="w-3 h-3 text-base-content" fill="currentColor" viewBox="0 0 24 24">
+          <svg className="w-3 h-3 text-foreground" fill="currentColor" viewBox="0 0 24 24">
             <rect x="5" y="4" width="4" height="16" rx="1" />
             <rect x="15" y="4" width="4" height="16" rx="1" />
           </svg>
         ) : (
-          <svg className="w-3 h-3 text-base-content ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+          <svg className="w-3 h-3 text-foreground ml-0.5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M8 5v14l11-7z" />
           </svg>
         )}
@@ -131,10 +131,10 @@ export default function WaveformPlayer({ src, barCount = 52, className = "" }: P
             key={i}
             className={`flex-1 max-w-[4px] min-w-[2px] shrink-0 rounded-full ${
               loading
-                ? "bg-base-content/10 animate-pulse"
+                ? "bg-foreground/10 animate-pulse"
                 : i < activeCount
                   ? "bg-indigo-400"
-                  : "bg-base-content/20"
+                  : "bg-foreground/20"
             }`}
             style={{ height: `${Math.max(12, Math.round(h * 100))}%` }}
           />
@@ -142,7 +142,7 @@ export default function WaveformPlayer({ src, barCount = 52, className = "" }: P
       </div>
 
       {/* Time */}
-      <span className="text-xs tabular-nums text-base-content/40 shrink-0 w-9 text-right">
+      <span className="text-xs tabular-nums text-foreground/40 shrink-0 w-9 text-right">
         {formatTime(displayTime)}
       </span>
     </div>

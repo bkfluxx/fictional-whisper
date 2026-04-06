@@ -87,7 +87,7 @@ export default function SearchBar() {
     <div ref={containerRef} className="relative w-full">
       <div className="relative">
         <svg
-          className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-base-content/40 pointer-events-none"
+          className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-foreground/40 pointer-events-none"
           fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
         >
           <path strokeLinecap="round" strokeLinejoin="round"
@@ -100,41 +100,41 @@ export default function SearchBar() {
           onKeyDown={handleKeyDown}
           onFocus={() => results.length > 0 && setOpen(true)}
           placeholder="Search entries…"
-          className="w-full pl-8 pr-3 py-2 text-sm bg-base-100 border border-base-content/20 rounded-lg text-base-content placeholder-base-content/40 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+          className="w-full pl-8 pr-3 py-2 text-sm bg-background border border-foreground/20 rounded-lg text-foreground placeholder-foreground/40 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
         />
         {loading && (
-          <div className="absolute right-2.5 top-2.5 h-3.5 w-3.5 border-2 border-base-content/30 border-t-indigo-400 rounded-full animate-spin" />
+          <div className="absolute right-2.5 top-2.5 h-3.5 w-3.5 border-2 border-foreground/30 border-t-indigo-400 rounded-full animate-spin" />
         )}
       </div>
 
       {open && results.length > 0 && (
-        <div className="absolute top-full mt-1 left-0 right-0 z-50 bg-base-200 border border-base-content/20 rounded-xl shadow-xl overflow-hidden">
+        <div className="absolute top-full mt-1 left-0 right-0 z-50 bg-card border border-foreground/20 rounded-xl shadow-xl overflow-hidden">
           {results.map((r, i) => (
             <button
               key={r.id}
               onClick={() => navigate(r.id)}
-              className={`w-full text-left px-4 py-3 hover:bg-base-content/8 transition-colors border-b border-base-200 last:border-0 ${
-                i === selectedIdx ? "bg-base-content/10" : ""
+              className={`w-full text-left px-4 py-3 hover:bg-foreground/8 transition-colors border-b border-border last:border-0 ${
+                i === selectedIdx ? "bg-foreground/10" : ""
               }`}
             >
               <div className="flex items-baseline justify-between gap-2 mb-0.5">
-                <span className="text-sm font-medium text-base-content truncate">
-                  {r.title ?? <span className="text-base-content/40 italic">Untitled</span>}
+                <span className="text-sm font-medium text-foreground truncate">
+                  {r.title ?? <span className="text-foreground/40 italic">Untitled</span>}
                 </span>
-                <span className="text-xs text-base-content/40 shrink-0">
+                <span className="text-xs text-foreground/40 shrink-0">
                   {new Date(r.entryDate).toLocaleDateString("en-US", {
                     month: "short", day: "numeric", year: "numeric",
                   })}
                 </span>
               </div>
-              <p className="text-xs text-base-content/60 line-clamp-2 leading-5">{r.snippet}</p>
+              <p className="text-xs text-foreground/60 line-clamp-2 leading-5">{r.snippet}</p>
             </button>
           ))}
         </div>
       )}
 
       {open && query && results.length === 0 && !loading && (
-        <div className="absolute top-full mt-1 left-0 right-0 z-50 bg-base-200 border border-base-content/20 rounded-xl shadow-xl px-4 py-3 text-sm text-base-content/40">
+        <div className="absolute top-full mt-1 left-0 right-0 z-50 bg-card border border-foreground/20 rounded-xl shadow-xl px-4 py-3 text-sm text-foreground/40">
           No entries found for &ldquo;{query}&rdquo;
         </div>
       )}

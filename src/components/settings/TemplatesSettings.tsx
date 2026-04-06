@@ -224,23 +224,23 @@ export default function TemplatesSettings() {
   }
 
   if (loading) {
-    return <p className="text-sm text-base-content/50">Loading templates…</p>;
+    return <p className="text-sm text-foreground/50">Loading templates…</p>;
   }
 
   return (
     <div className="space-y-8">
       {/* Custom templates */}
       <div>
-        <p className="text-xs font-medium text-base-content/40 mb-3 uppercase tracking-widest">
+        <p className="text-xs font-medium text-foreground/40 mb-3 uppercase tracking-widest">
           Custom
         </p>
         {customTemplates.length === 0 && editing !== "new" ? (
-          <p className="text-sm text-base-content/40 mb-3">No custom templates yet.</p>
+          <p className="text-sm text-foreground/40 mb-3">No custom templates yet.</p>
         ) : (
           <div className="space-y-1.5 mb-3">
             {customTemplates.map((t) =>
               editing === t.id ? (
-                <div key={t.id} className="rounded-xl border border-indigo-500/40 bg-base-200 p-4 space-y-3">
+                <div key={t.id} className="rounded-xl border border-indigo-500/40 bg-card p-4 space-y-3">
                   <TemplateForm form={form} onChange={setForm} />
                   {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
                   <div className="flex gap-2">
@@ -251,19 +251,19 @@ export default function TemplatesSettings() {
                     >
                       {saving ? "Saving…" : "Save"}
                     </button>
-                    <button onClick={cancelEdit} className="px-3 py-1.5 text-base-content/50 hover:text-base-content text-xs transition-colors">
+                    <button onClick={cancelEdit} className="px-3 py-1.5 text-foreground/50 hover:text-foreground text-xs transition-colors">
                       Cancel
                     </button>
                   </div>
                 </div>
               ) : (
-                <div key={t.id} className="flex items-center justify-between gap-4 rounded-xl border border-base-content/10 bg-base-200 px-4 py-3">
+                <div key={t.id} className="flex items-center justify-between gap-4 rounded-xl border border-foreground/10 bg-card px-4 py-3">
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="text-xl shrink-0">{t.emoji}</span>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-base-content truncate">{t.title}</p>
+                      <p className="text-sm font-medium text-foreground truncate">{t.title}</p>
                       {t.description && (
-                        <p className="text-xs text-base-content/50 truncate">{t.description}</p>
+                        <p className="text-xs text-foreground/50 truncate">{t.description}</p>
                       )}
                     </div>
                   </div>
@@ -275,7 +275,7 @@ export default function TemplatesSettings() {
                         description: t.description ?? "",
                         body: t.body,
                       })}
-                      className="p-1.5 text-base-content/40 hover:text-base-content rounded-lg hover:bg-base-content/8 transition-colors"
+                      className="p-1.5 text-foreground/40 hover:text-foreground rounded-lg hover:bg-foreground/8 transition-colors"
                       title="Edit"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -285,7 +285,7 @@ export default function TemplatesSettings() {
                     <button
                       onClick={() => deleteCustom(t.id)}
                       disabled={saving}
-                      className="p-1.5 text-base-content/40 hover:text-red-500 rounded-lg hover:bg-red-500/10 transition-colors disabled:opacity-40"
+                      className="p-1.5 text-foreground/40 hover:text-red-500 rounded-lg hover:bg-red-500/10 transition-colors disabled:opacity-40"
                       title="Delete"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -298,7 +298,7 @@ export default function TemplatesSettings() {
             )}
 
             {editing === "new" && (
-              <div className="rounded-xl border border-indigo-500/40 bg-base-200 p-4 space-y-3">
+              <div className="rounded-xl border border-indigo-500/40 bg-card p-4 space-y-3">
                 <TemplateForm form={form} onChange={setForm} />
                 {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
                 <div className="flex gap-2">
@@ -309,7 +309,7 @@ export default function TemplatesSettings() {
                   >
                     {saving ? "Adding…" : "Add"}
                   </button>
-                  <button onClick={cancelEdit} className="px-3 py-1.5 text-base-content/50 hover:text-base-content text-xs transition-colors">
+                  <button onClick={cancelEdit} className="px-3 py-1.5 text-foreground/50 hover:text-foreground text-xs transition-colors">
                     Cancel
                   </button>
                 </div>
@@ -329,7 +329,7 @@ export default function TemplatesSettings() {
 
       {/* Built-in templates */}
       <div>
-        <p className="text-xs font-medium text-base-content/40 mb-3 uppercase tracking-widest">
+        <p className="text-xs font-medium text-foreground/40 mb-3 uppercase tracking-widest">
           Built-in
         </p>
         <div className="space-y-1.5">
@@ -343,7 +343,7 @@ export default function TemplatesSettings() {
 
             if (editing === editKey) {
               return (
-                <div key={bt.id} className="rounded-xl border border-indigo-500/40 bg-base-200 p-4 space-y-3">
+                <div key={bt.id} className="rounded-xl border border-indigo-500/40 bg-card p-4 space-y-3">
                   <TemplateForm form={form} onChange={setForm} />
                   {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
                   <div className="flex gap-2">
@@ -354,7 +354,7 @@ export default function TemplatesSettings() {
                     >
                       {saving ? "Saving…" : "Save"}
                     </button>
-                    <button onClick={cancelEdit} className="px-3 py-1.5 text-base-content/50 hover:text-base-content text-xs transition-colors">
+                    <button onClick={cancelEdit} className="px-3 py-1.5 text-foreground/50 hover:text-foreground text-xs transition-colors">
                       Cancel
                     </button>
                   </div>
@@ -367,21 +367,21 @@ export default function TemplatesSettings() {
                 key={bt.id}
                 className={`flex items-center justify-between gap-4 rounded-xl border px-4 py-3 ${
                   isHidden
-                    ? "border-base-content/5 bg-base-100 opacity-50"
-                    : "border-base-content/10 bg-base-200"
+                    ? "border-foreground/5 bg-background opacity-50"
+                    : "border-foreground/10 bg-card"
                 }`}
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <span className="text-xl shrink-0">{displayEmoji}</span>
                   <div className="min-w-0">
-                    <p className={`text-sm font-medium truncate ${isHidden ? "line-through text-base-content/50" : "text-base-content"}`}>
+                    <p className={`text-sm font-medium truncate ${isHidden ? "line-through text-foreground/50" : "text-foreground"}`}>
                       {displayTitle}
                     </p>
                     {override && !isHidden && override.title !== bt.title && (
-                      <p className="text-xs text-base-content/40 truncate">was: {bt.title}</p>
+                      <p className="text-xs text-foreground/40 truncate">was: {bt.title}</p>
                     )}
                     {!isHidden && displayDesc && (
-                      <p className="text-xs text-base-content/40 truncate">{displayDesc}</p>
+                      <p className="text-xs text-foreground/40 truncate">{displayDesc}</p>
                     )}
                   </div>
                 </div>
@@ -395,7 +395,7 @@ export default function TemplatesSettings() {
                         description: displayDesc ?? "",
                         body: override?.body ?? bt.body,
                       })}
-                      className="p-1.5 text-base-content/40 hover:text-base-content rounded-lg hover:bg-base-content/8 transition-colors"
+                      className="p-1.5 text-foreground/40 hover:text-foreground rounded-lg hover:bg-foreground/8 transition-colors"
                       title="Edit"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -415,7 +415,7 @@ export default function TemplatesSettings() {
                     <button
                       onClick={() => toggleBuiltinHidden(bt.id, true)}
                       disabled={saving}
-                      className="p-1.5 text-base-content/40 hover:text-red-500 rounded-lg hover:bg-red-500/10 transition-colors disabled:opacity-40"
+                      className="p-1.5 text-foreground/40 hover:text-red-500 rounded-lg hover:bg-red-500/10 transition-colors disabled:opacity-40"
                       title="Hide from picker"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -427,7 +427,7 @@ export default function TemplatesSettings() {
                     <button
                       onClick={() => resetBuiltin(override.id)}
                       disabled={saving}
-                      className="text-xs px-2 py-1 text-base-content/30 hover:text-base-content/60 rounded-lg transition-colors disabled:opacity-40"
+                      className="text-xs px-2 py-1 text-foreground/30 hover:text-foreground/60 rounded-lg transition-colors disabled:opacity-40"
                       title="Reset to default"
                     >
                       Reset
@@ -460,14 +460,14 @@ function TemplateForm({
           onChange={(e) => onChange({ ...form, emoji: e.target.value })}
           placeholder="📝"
           maxLength={4}
-          className="w-14 bg-base-100 border border-base-content/20 text-base-content text-center text-lg rounded-lg px-2 py-1.5 focus:outline-none focus:border-indigo-500"
+          className="w-14 bg-background border border-foreground/20 text-foreground text-center text-lg rounded-lg px-2 py-1.5 focus:outline-none focus:border-indigo-500"
         />
         <input
           type="text"
           value={form.title}
           onChange={(e) => onChange({ ...form, title: e.target.value })}
           placeholder="Template name"
-          className="flex-1 bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 placeholder:text-base-content/30"
+          className="flex-1 bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 placeholder:text-foreground/30"
         />
       </div>
       <input
@@ -475,14 +475,14 @@ function TemplateForm({
         value={form.description}
         onChange={(e) => onChange({ ...form, description: e.target.value })}
         placeholder="Short description (optional)"
-        className="w-full bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 placeholder:text-base-content/30"
+        className="w-full bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 placeholder:text-foreground/30"
       />
       <textarea
         rows={6}
         value={form.body}
         onChange={(e) => onChange({ ...form, body: e.target.value })}
         placeholder="Template body — use HTML headings like <h2>Section</h2>"
-        className="w-full bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 placeholder:text-base-content/30 font-mono resize-y"
+        className="w-full bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 placeholder:text-foreground/30 font-mono resize-y"
       />
     </div>
   );

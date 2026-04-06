@@ -185,7 +185,7 @@ export default async function AnalyticsPage() {
 
   return (
     <div className="max-w-[900px] mx-auto px-6 py-8">
-      <h1 className="text-xl font-semibold text-base-content mb-8">Analytics</h1>
+      <h1 className="text-xl font-semibold text-foreground mb-8">Analytics</h1>
       <AnalyticsTabs
         totalEntries={totalEntries}
         currentStreak={currentStreak}

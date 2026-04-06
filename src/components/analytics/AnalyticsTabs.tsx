@@ -126,15 +126,15 @@ export default function AnalyticsTabs({
   return (
     <div>
       {/* Tab bar */}
-      <div className="flex border-b border-base-200 mb-8">
+      <div className="flex border-b border-border mb-8">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActive(tab.id)}
             className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
               active === tab.id
-                ? "border-indigo-500 text-base-content"
-                : "border-transparent text-base-content/40 hover:text-base-content/80"
+                ? "border-indigo-500 text-foreground"
+                : "border-transparent text-foreground/40 hover:text-foreground/80"
             }`}
           >
             {tab.label}
@@ -146,7 +146,7 @@ export default function AnalyticsTabs({
       {active === "stats" && (
         <>
           {totalEntries === 0 ? (
-            <p className="text-base-content/40">
+            <p className="text-foreground/40">
               No entries yet — start writing and your stats will appear here.
             </p>
           ) : (
@@ -173,7 +173,7 @@ export default function AnalyticsTabs({
               </div>
 
               <section className="mb-10">
-                <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-4">
+                <h2 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-4">
                   Activity — last 52 weeks
                 </h2>
                 <ActivityHeatmap weeks={heatmapWeeks} />
@@ -181,14 +181,14 @@ export default function AnalyticsTabs({
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
                 <section>
-                  <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-4">
+                  <h2 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-4">
                     Entries per month
                   </h2>
                   <MonthlyBars data={monthlyData} />
                 </section>
 
                 <section>
-                  <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-4">
+                  <h2 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-4">
                     Day of week
                   </h2>
                   <div>
@@ -207,11 +207,11 @@ export default function AnalyticsTabs({
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
                 <section>
-                  <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-4">
+                  <h2 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-4">
                     Mood breakdown
                   </h2>
                   {moodBreakdown.length === 0 ? (
-                    <p className="text-sm text-base-content/30">No mood data yet.</p>
+                    <p className="text-sm text-foreground/30">No mood data yet.</p>
                   ) : (
                     moodBreakdown.map(([mood, count]) => (
                       <HorizontalBar
@@ -226,11 +226,11 @@ export default function AnalyticsTabs({
                 </section>
 
                 <section>
-                  <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-4">
+                  <h2 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-4">
                     Top categories
                   </h2>
                   {categoryBreakdown.length === 0 ? (
-                    <p className="text-sm text-base-content/30">No categories used yet.</p>
+                    <p className="text-sm text-foreground/30">No categories used yet.</p>
                   ) : (
                     categoryBreakdown.map(({ name, count }) => (
                       <HorizontalBar
@@ -248,34 +248,34 @@ export default function AnalyticsTabs({
               {/* Goals section */}
               {goals.length > 0 && (
                 <section>
-                  <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-4">
+                  <h2 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-4">
                     Goal progress
                   </h2>
                   <div className="grid grid-cols-3 gap-4 mb-6">
-                    <div className="bg-base-200 rounded-xl p-4 text-center">
-                      <p className="text-2xl font-semibold text-base-content">{activeGoals.length}</p>
-                      <p className="text-xs text-base-content/40 mt-0.5">Active</p>
+                    <div className="bg-card rounded-xl p-4 text-center">
+                      <p className="text-2xl font-semibold text-foreground">{activeGoals.length}</p>
+                      <p className="text-xs text-foreground/40 mt-0.5">Active</p>
                     </div>
-                    <div className="bg-base-200 rounded-xl p-4 text-center">
+                    <div className="bg-card rounded-xl p-4 text-center">
                       <p className="text-2xl font-semibold text-emerald-400">{completedGoals.length}</p>
-                      <p className="text-xs text-base-content/40 mt-0.5">Completed</p>
+                      <p className="text-xs text-foreground/40 mt-0.5">Completed</p>
                     </div>
-                    <div className="bg-base-200 rounded-xl p-4 text-center">
-                      <p className="text-2xl font-semibold text-base-content">{completionRate}%</p>
-                      <p className="text-xs text-base-content/40 mt-0.5">Completion rate</p>
+                    <div className="bg-card rounded-xl p-4 text-center">
+                      <p className="text-2xl font-semibold text-foreground">{completionRate}%</p>
+                      <p className="text-xs text-foreground/40 mt-0.5">Completion rate</p>
                     </div>
                   </div>
 
                   {/* Completion progress bar */}
                   {goals.length > 0 && (
                     <div className="mb-6">
-                      <div className="h-2 bg-base-200 rounded-full overflow-hidden">
+                      <div className="h-2 bg-card rounded-full overflow-hidden">
                         <div
                           className="h-full bg-emerald-500 rounded-full transition-all"
                           style={{ width: `${completionRate}%` }}
                         />
                       </div>
-                      <p className="text-xs text-base-content/30 mt-1.5">
+                      <p className="text-xs text-foreground/30 mt-1.5">
                         {completedGoals.length} of {goals.length} goals completed
                       </p>
                     </div>
@@ -291,16 +291,16 @@ export default function AnalyticsTabs({
                         return (
                           <div
                             key={g.id}
-                            className="flex items-center gap-3 bg-base-200 rounded-lg px-3 py-2.5"
+                            className="flex items-center gap-3 bg-card rounded-lg px-3 py-2.5"
                           >
                             <div
                               className={`w-2 h-2 rounded-full shrink-0 ${
                                 g.status === "paused"
-                                  ? "bg-base-content/30"
+                                  ? "bg-foreground/30"
                                   : "bg-indigo-400"
                               }`}
                             />
-                            <span className="flex-1 text-sm text-base-content truncate">
+                            <span className="flex-1 text-sm text-foreground truncate">
                               {g.title}
                             </span>
                             {days !== null && (
@@ -310,7 +310,7 @@ export default function AnalyticsTabs({
                                     ? "text-red-400"
                                     : soon
                                       ? "text-amber-400"
-                                      : "text-base-content/30"
+                                      : "text-foreground/30"
                                 }`}
                               >
                                 {overdue
@@ -323,7 +323,7 @@ export default function AnalyticsTabs({
                               </span>
                             )}
                             {g.status === "paused" && (
-                              <span className="text-[10px] text-base-content/30 shrink-0">
+                              <span className="text-[10px] text-foreground/30 shrink-0">
                                 paused
                               </span>
                             )}

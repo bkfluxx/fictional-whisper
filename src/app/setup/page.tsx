@@ -61,16 +61,16 @@ export default function SetupPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-base-100 px-4">
+    <main className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             <Image src="/logo.jpg" alt="Aura" width={96} height={96} className="rounded-2xl" priority unoptimized />
           </div>
-          <h1 className="text-2xl font-semibold text-base-content mb-2">
+          <h1 className="text-2xl font-semibold text-foreground mb-2">
             Welcome to Aura
           </h1>
-          <p className="text-sm text-base-content/50">
+          <p className="text-sm text-foreground/50">
             Set a master password to get started. This password encrypts all
             your journal entries — there is no way to recover it, so choose
             something you will remember.
@@ -79,10 +79,10 @@ export default function SetupPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="bg-base-200 rounded-2xl px-8 py-8 shadow-xl space-y-4"
+          className="bg-card rounded-2xl px-8 py-8 shadow-xl space-y-4"
         >
           <div>
-            <label className="block text-sm text-base-content/70 mb-1">
+            <label className="block text-sm text-foreground/70 mb-1">
               Master password
             </label>
             <input
@@ -92,7 +92,7 @@ export default function SetupPage() {
               autoFocus
               autoComplete="new-password"
               placeholder="At least 8 characters"
-              className="w-full px-3 py-2 bg-base-100 border border-base-content/20 rounded-lg text-base-content placeholder-base-content/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             />
             {weak && (
               <p className="text-xs text-warning mt-1">
@@ -102,7 +102,7 @@ export default function SetupPage() {
           </div>
 
           <div>
-            <label className="block text-sm text-base-content/70 mb-1">
+            <label className="block text-sm text-foreground/70 mb-1">
               Confirm password
             </label>
             <input
@@ -111,8 +111,8 @@ export default function SetupPage() {
               onChange={(e) => setConfirm(e.target.value)}
               autoComplete="new-password"
               placeholder="Re-enter your password"
-              className={`w-full px-3 py-2 bg-base-100 border rounded-lg text-base-content placeholder-base-content/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
-                mismatch ? "border-error" : "border-base-content/20"
+              className={`w-full px-3 py-2 bg-background border rounded-lg text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
+                mismatch ? "border-error" : "border-foreground/20"
               }`}
             />
             {mismatch && (
@@ -138,7 +138,7 @@ export default function SetupPage() {
                 : "Create account →"}
           </button>
 
-          <p className="text-xs text-base-content/30 text-center pt-1">
+          <p className="text-xs text-foreground/30 text-center pt-1">
             Your password is never sent to any server — encryption happens
             entirely on your machine.
           </p>

@@ -63,19 +63,19 @@ export default function FeatureMapStep({
     <div className="max-w-lg mx-auto px-6 py-12">
       <div className="text-center mb-10">
         <div className="text-5xl mb-4">{introMode ? "📖" : "🎉"}</div>
-        <h2 className="text-2xl font-semibold text-base-content mb-2">{heading}</h2>
-        <p className="text-base-content/60 text-sm">{subtitle}</p>
+        <h2 className="text-2xl font-semibold text-foreground mb-2">{heading}</h2>
+        <p className="text-foreground/60 text-sm">{subtitle}</p>
       </div>
 
       <div className="space-y-3">
         {FEATURES.filter((f) => !f.aiOnly || aiEnabled).map((feature) => (
           <div
             key={feature.name}
-            className="flex items-start gap-4 bg-base-200 rounded-xl p-4"
+            className="flex items-start gap-4 bg-card rounded-xl p-4"
           >
             <div className="text-2xl shrink-0">{feature.icon}</div>
             <div>
-              <div className="text-sm font-medium text-base-content flex items-center gap-2">
+              <div className="text-sm font-medium text-foreground flex items-center gap-2">
                 {feature.name}
                 {feature.aiOnly && (
                   <span className="text-xs bg-indigo-900 text-indigo-300 px-1.5 py-0.5 rounded-full">
@@ -83,7 +83,7 @@ export default function FeatureMapStep({
                   </span>
                 )}
               </div>
-              <div className="text-xs text-base-content/60 mt-0.5 leading-relaxed">
+              <div className="text-xs text-foreground/60 mt-0.5 leading-relaxed">
                 {feature.description}
               </div>
             </div>
@@ -92,7 +92,7 @@ export default function FeatureMapStep({
       </div>
 
       {!aiEnabled && (
-        <p className="text-xs text-base-content/40 mt-4 text-center">
+        <p className="text-xs text-foreground/40 mt-4 text-center">
           You can enable AI features anytime in Settings → AI settings.
         </p>
       )}
@@ -101,7 +101,7 @@ export default function FeatureMapStep({
         {onBack && (
           <button
             onClick={onBack}
-            className="text-sm text-base-content/40 hover:text-base-content/80 transition-colors"
+            className="text-sm text-foreground/40 hover:text-foreground/80 transition-colors"
           >
             ← Back
           </button>

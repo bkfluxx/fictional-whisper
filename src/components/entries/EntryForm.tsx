@@ -170,7 +170,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
               setTitle(e.target.value);
               scheduleSave(body, e.target.value, tags, mood, categories);
             }}
-            className="flex-1 bg-transparent text-2xl font-semibold text-base-content placeholder-base-content/30 focus:outline-none"
+            className="flex-1 bg-transparent text-2xl font-semibold text-foreground placeholder-foreground/30 focus:outline-none"
           />
           <div className="flex items-center gap-2 shrink-0">
             {saveState === "unsaved" && (
@@ -184,7 +184,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
                 Save
               </button>
             )}
-            <span className="text-xs text-base-content/40">
+            <span className="text-xs text-foreground/40">
               {saveState === "saving"
                 ? "Saving…"
                 : saveState === "saved"
@@ -197,7 +197,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
               <button
                 onClick={() => setDeleteConfirm(true)}
                 title="Delete entry"
-                className="text-base-content/30 hover:text-red-400 transition-colors p-1"
+                className="text-foreground/30 hover:text-red-400 transition-colors p-1"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
@@ -206,7 +206,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
             )}
             {deleteConfirm && (
               <div className="flex items-center gap-2">
-                <span className="text-xs text-base-content/50">Delete entry?</span>
+                <span className="text-xs text-foreground/50">Delete entry?</span>
                 <button
                   onClick={async () => {
                     setDeleting(true);
@@ -220,7 +220,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
                 </button>
                 <button
                   onClick={() => setDeleteConfirm(false)}
-                  className="text-xs text-base-content/40 hover:text-base-content transition-colors"
+                  className="text-xs text-foreground/40 hover:text-foreground transition-colors"
                 >
                   Cancel
                 </button>
@@ -234,7 +234,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
             className={`shrink-0 p-1.5 rounded-lg transition-colors ${
               aiOpen
                 ? "bg-indigo-600 text-white"
-                : "text-base-content/40 hover:text-base-content/80 hover:bg-base-content/8"
+                : "text-foreground/40 hover:text-foreground/80 hover:bg-foreground/8"
             }`}
           >
             <svg
@@ -254,7 +254,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
         </div>
 
         {/* Metadata row */}
-        <div className="flex flex-wrap gap-3 text-sm text-base-content/60">
+        <div className="flex flex-wrap gap-3 text-sm text-foreground/60">
           <input
             placeholder="Tags (comma-separated)"
             value={tags}
@@ -262,7 +262,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
               setTags(e.target.value);
               scheduleSave(body, title, e.target.value, mood, categories);
             }}
-            className="bg-transparent focus:outline-none flex-1 min-w-[120px] placeholder-base-content/30"
+            className="bg-transparent focus:outline-none flex-1 min-w-[120px] placeholder-foreground/30"
           />
 
           <select
@@ -271,7 +271,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
               setMood(e.target.value);
               scheduleSave(body, title, tags, e.target.value, categories);
             }}
-            className="bg-base-200 text-base-content/60 text-sm rounded focus:outline-none"
+            className="bg-card text-foreground/60 text-sm rounded focus:outline-none"
           >
             <option value="">Mood</option>
             <option value="joyful">Joyful</option>
@@ -314,16 +314,16 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
           <button
             type="button"
             onClick={() => setPickerOpen((o) => !o)}
-            className="text-xs px-2 py-0.5 text-base-content/30 hover:text-base-content/80 border border-base-200 hover:border-base-content/30 rounded-full transition-colors"
+            className="text-xs px-2 py-0.5 text-foreground/30 hover:text-foreground/80 border border-border hover:border-foreground/30 rounded-full transition-colors"
           >
             + category
           </button>
 
           {pickerOpen && (
-            <div className="absolute top-full left-0 mt-1.5 z-20 bg-base-200 border border-base-content/20 rounded-xl p-2 shadow-2xl w-72 max-h-72 overflow-y-auto">
+            <div className="absolute top-full left-0 mt-1.5 z-20 bg-card border border-foreground/20 rounded-xl p-2 shadow-2xl w-72 max-h-72 overflow-y-auto">
               {customCategories.length > 0 && (
                 <>
-                  <p className="text-xs text-base-content/40 px-2 pt-1 pb-0.5 uppercase tracking-wider font-medium">My categories</p>
+                  <p className="text-xs text-foreground/40 px-2 pt-1 pb-0.5 uppercase tracking-wider font-medium">My categories</p>
                   <div className="grid grid-cols-2 gap-0.5 mb-1">
                     {customCategories.map((uc) => {
                       const active = categories.includes(uc.id);
@@ -335,7 +335,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
                           className={`flex items-center gap-2 text-xs px-2.5 py-1.5 rounded-lg transition-colors text-left ${
                             active
                               ? "bg-indigo-600 text-white"
-                              : "text-base-content/60 hover:bg-base-content/8 hover:text-base-content"
+                              : "text-foreground/60 hover:bg-foreground/8 hover:text-foreground"
                           }`}
                         >
                           <span className="shrink-0">{uc.emoji}</span>
@@ -344,12 +344,12 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
                       );
                     })}
                   </div>
-                  <div className="border-t border-base-content/10 mb-1" />
+                  <div className="border-t border-foreground/10 mb-1" />
                 </>
               )}
               {visibleBuiltins.length > 0 && (
                 <>
-                  <p className="text-xs text-base-content/40 px-2 pt-1 pb-0.5 uppercase tracking-wider font-medium">Built-in</p>
+                  <p className="text-xs text-foreground/40 px-2 pt-1 pb-0.5 uppercase tracking-wider font-medium">Built-in</p>
                   <div className="grid grid-cols-2 gap-0.5">
                     {visibleBuiltins.map((jt) => {
                       const override = overridesByBuiltinId.get(jt.id);
@@ -362,7 +362,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
                           className={`flex items-center gap-2 text-xs px-2.5 py-1.5 rounded-lg transition-colors text-left ${
                             active
                               ? "bg-indigo-600 text-white"
-                              : "text-base-content/60 hover:bg-base-content/8 hover:text-base-content"
+                              : "text-foreground/60 hover:bg-foreground/8 hover:text-foreground"
                           }`}
                         >
                           <span className="shrink-0">{override?.emoji ?? jt.emoji}</span>
@@ -407,7 +407,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
 
       {/* AI sidebar */}
       {aiOpen && (
-        <aside className="w-72 shrink-0 border-l border-base-200 px-4 py-4">
+        <aside className="w-72 shrink-0 border-l border-border px-4 py-4">
           <AiPanel
             entryId={entryIdRef.current}
             categories={categories}

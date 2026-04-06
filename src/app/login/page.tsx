@@ -112,19 +112,19 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-base-100 px-4">
-      <div className="w-full max-w-sm px-8 py-10 bg-base-200 rounded-2xl shadow-xl">
+    <main className="min-h-screen flex items-center justify-center bg-background px-4">
+      <div className="w-full max-w-sm px-8 py-10 bg-card rounded-2xl shadow-xl">
         <div className="flex justify-center mb-4">
           <Image src="/logo.jpg" alt="Aura" width={96} height={96} className="rounded-2xl" priority unoptimized />
         </div>
-        <p className="text-sm text-center text-base-content/50 mb-8">Your private journal</p>
+        <p className="text-sm text-center text-foreground/50 mb-8">Your private journal</p>
 
         {step === "password" && (
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm text-base-content/70 mb-1"
+                className="block text-sm text-foreground/70 mb-1"
               >
                 Password
               </label>
@@ -137,7 +137,7 @@ export default function LoginPage() {
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 bg-base-100 border border-base-content/20 rounded-lg text-base-content placeholder-base-content/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
             </div>
 
@@ -156,10 +156,10 @@ export default function LoginPage() {
         {step === "totp" && (
           <form onSubmit={handleTotpSubmit} className="space-y-4">
             <div>
-              <p className="text-sm font-medium text-base-content mb-1">
+              <p className="text-sm font-medium text-foreground mb-1">
                 Two-factor authentication
               </p>
-              <p className="text-xs text-base-content/50 mb-3">
+              <p className="text-xs text-foreground/50 mb-3">
                 Enter the 6-digit code from your authenticator app.
               </p>
               <input
@@ -172,7 +172,7 @@ export default function LoginPage() {
                 value={totpCode}
                 onChange={(e) => setTotpCode(e.target.value)}
                 placeholder="000000"
-                className="w-full px-3 py-2 bg-base-100 border border-base-content/20 rounded-lg text-base-content text-center text-lg tracking-widest placeholder-base-content/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono"
+                className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground text-center text-lg tracking-widest placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono"
               />
             </div>
 
@@ -189,7 +189,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={backToPassword}
-              className="w-full py-1.5 text-sm text-base-content/50 hover:text-base-content transition-colors"
+              className="w-full py-1.5 text-sm text-foreground/50 hover:text-foreground transition-colors"
             >
               ← Back
             </button>

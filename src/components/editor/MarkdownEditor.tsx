@@ -39,7 +39,7 @@ function ToolbarButton({
       className={`px-1.5 py-1 rounded text-sm transition-colors ${
         active
           ? "bg-indigo-600 text-white"
-          : "text-base-content/60 hover:text-base-content hover:bg-base-content/8"
+          : "text-foreground/60 hover:text-foreground hover:bg-foreground/8"
       }`}
     >
       {children}
@@ -48,7 +48,7 @@ function ToolbarButton({
 }
 
 function Divider() {
-  return <div className="w-px h-4 bg-base-content/20 mx-0.5" />;
+  return <div className="w-px h-4 bg-foreground/20 mx-0.5" />;
 }
 
 function Toolbar({ editor, entryId, onVoiceNoteSaved }: { editor: Editor | null; entryId?: string; onVoiceNoteSaved?: () => void }) {
@@ -63,7 +63,7 @@ function Toolbar({ editor, entryId, onVoiceNoteSaved }: { editor: Editor | null;
   }
 
   return (
-    <div className="flex items-center gap-0.5 flex-wrap px-3 py-2 border-b border-base-content/10 bg-base-200/50">
+    <div className="flex items-center gap-0.5 flex-wrap px-3 py-2 border-b border-foreground/10 bg-card/50">
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleBold().run()}
         active={editor.isActive("bold")}
@@ -222,7 +222,7 @@ export default function MarkdownEditor({
   }, [value, editor]);
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 border border-base-content/20 rounded-xl overflow-hidden">
+    <div className="flex flex-col flex-1 min-h-0 border border-foreground/20 rounded-xl overflow-hidden">
       <Toolbar editor={editor} entryId={entryId} onVoiceNoteSaved={onVoiceNoteSaved} />
       <EditorContent
         editor={editor}

@@ -35,9 +35,9 @@ export default function EntryPane({ entryId, onClose }: Props) {
   }, [entryId]);
 
   return (
-    <div className="h-full flex flex-col overflow-hidden border-l border-base-content/10">
+    <div className="h-full flex flex-col overflow-hidden border-l border-foreground/10">
       {/* Pane header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-base-content/10 shrink-0">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-foreground/10 shrink-0">
         {entry && (
           <Link
             href={`/journal/${entryId}/edit`}
@@ -50,7 +50,7 @@ export default function EntryPane({ entryId, onClose }: Props) {
         <button
           onClick={onClose}
           title="Close"
-          className="p-1.5 rounded-lg text-base-content/30 hover:text-base-content hover:bg-base-content/8 transition-colors"
+          className="p-1.5 rounded-lg text-foreground/30 hover:text-foreground hover:bg-foreground/8 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -61,17 +61,17 @@ export default function EntryPane({ entryId, onClose }: Props) {
       {/* Pane body */}
       <div className="flex-1 overflow-y-auto px-6 py-6">
         {loading ? (
-          <div className="flex items-center justify-center h-32 text-base-content/30 text-sm">
+          <div className="flex items-center justify-center h-32 text-foreground/30 text-sm">
             Loading…
           </div>
         ) : entry ? (
           <>
-            <h2 className="text-xl font-semibold text-base-content mb-1">
+            <h2 className="text-xl font-semibold text-foreground mb-1">
               {entry.title ?? (
-                <span className="text-base-content/40 italic font-normal">Untitled</span>
+                <span className="text-foreground/40 italic font-normal">Untitled</span>
               )}
             </h2>
-            <p className="text-sm text-base-content/40 mb-4">
+            <p className="text-sm text-foreground/40 mb-4">
               {new Date(entry.entryDate).toLocaleDateString("en-US", {
                 weekday: "long",
                 year: "numeric",
@@ -94,7 +94,7 @@ export default function EntryPane({ entryId, onClose }: Props) {
                   );
                 })}
                 {entry.tags.map((t) => (
-                  <span key={t.id} className="text-xs px-2 py-0.5 bg-base-content/10 text-base-content/60 rounded-full">
+                  <span key={t.id} className="text-xs px-2 py-0.5 bg-foreground/10 text-foreground/60 rounded-full">
                     #{t.name}
                   </span>
                 ))}

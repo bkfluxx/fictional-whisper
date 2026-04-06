@@ -179,7 +179,7 @@ export default function PersonasSettings() {
   const allPersonas: AnyPersona[] = [...BUILT_IN_PERSONAS, ...custom];
 
   if (loading) {
-    return <p className="text-sm text-base-content/40">Loading…</p>;
+    return <p className="text-sm text-foreground/40">Loading…</p>;
   }
 
   return (
@@ -189,8 +189,8 @@ export default function PersonasSettings() {
       {/* Enable / disable toggle */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-base-content">Enable personas</p>
-          <p className="text-xs text-base-content/40 mt-0.5">
+          <p className="text-sm font-medium text-foreground">Enable personas</p>
+          <p className="text-xs text-foreground/40 mt-0.5">
             When on, the active persona shapes tone across chat, mood analysis, and writing prompts.
           </p>
         </div>
@@ -198,7 +198,7 @@ export default function PersonasSettings() {
           onClick={() => toggleEnabled(!enabled)}
           disabled={saving}
           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors disabled:opacity-50 ${
-            enabled ? "bg-indigo-500" : "bg-base-300"
+            enabled ? "bg-indigo-500" : "bg-muted"
           }`}
         >
           <span
@@ -211,7 +211,7 @@ export default function PersonasSettings() {
 
       {/* Status note when personas are off */}
       {!enabled && (
-        <p className="text-xs text-base-content/50 bg-base-200 rounded-lg px-3 py-2">
+        <p className="text-xs text-foreground/50 bg-card rounded-lg px-3 py-2">
           Personas are off — the default system prompt is active.
         </p>
       )}
@@ -226,15 +226,15 @@ export default function PersonasSettings() {
               className={`rounded-lg border px-4 py-3 transition-colors ${
                 isActive
                   ? "border-indigo-500 bg-indigo-500/5"
-                  : "border-base-content/10"
+                  : "border-foreground/10"
               }`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-medium text-base-content">{p.name}</span>
+                    <span className="text-sm font-medium text-foreground">{p.name}</span>
                     {p.isBuiltIn && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-base-content/10 text-base-content/40 uppercase tracking-wide">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-foreground/10 text-foreground/40 uppercase tracking-wide">
                         built-in
                       </span>
                     )}
@@ -245,9 +245,9 @@ export default function PersonasSettings() {
                     )}
                   </div>
                   {p.description && (
-                    <p className="text-xs text-base-content/50 mt-0.5">{p.description}</p>
+                    <p className="text-xs text-foreground/50 mt-0.5">{p.description}</p>
                   )}
-                  <p className="text-xs text-base-content/30 mt-1 line-clamp-2 font-mono">
+                  <p className="text-xs text-foreground/30 mt-1 line-clamp-2 font-mono">
                     {p.systemPrompt}
                   </p>
                 </div>
@@ -257,7 +257,7 @@ export default function PersonasSettings() {
                     <button
                       onClick={() => activate(p.id)}
                       disabled={saving}
-                      className="text-xs px-2.5 py-1 rounded bg-base-200 hover:bg-base-300 text-base-content/70 transition-colors disabled:opacity-50"
+                      className="text-xs px-2.5 py-1 rounded bg-card hover:bg-muted text-foreground/70 transition-colors disabled:opacity-50"
                     >
                       Activate
                     </button>
@@ -266,13 +266,13 @@ export default function PersonasSettings() {
                     <>
                       <button
                         onClick={() => openEdit(p as CustomPersona)}
-                        className="text-xs px-2.5 py-1 rounded bg-base-200 hover:bg-base-300 text-base-content/70 transition-colors"
+                        className="text-xs px-2.5 py-1 rounded bg-card hover:bg-muted text-foreground/70 transition-colors"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => deletePersona(p.id)}
-                        className="text-xs px-2.5 py-1 rounded bg-base-200 hover:bg-red-500/10 text-base-content/50 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                        className="text-xs px-2.5 py-1 rounded bg-card hover:bg-red-500/10 text-foreground/50 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                       >
                         Delete
                       </button>
@@ -288,7 +288,7 @@ export default function PersonasSettings() {
         {!showForm && (
           <button
             onClick={openCreate}
-            className="w-full text-sm py-2.5 rounded-lg border border-dashed border-base-content/20 text-base-content/40 hover:text-base-content/70 hover:border-base-content/30 transition-colors"
+            className="w-full text-sm py-2.5 rounded-lg border border-dashed border-foreground/20 text-foreground/40 hover:text-foreground/70 hover:border-foreground/30 transition-colors"
           >
             + New persona
           </button>
@@ -296,8 +296,8 @@ export default function PersonasSettings() {
 
         {/* Create / edit form */}
         {showForm && (
-          <div className="rounded-lg border border-base-content/10 p-4 space-y-3">
-            <p className="text-sm font-medium text-base-content">
+          <div className="rounded-lg border border-foreground/10 p-4 space-y-3">
+            <p className="text-sm font-medium text-foreground">
               {editingId ? "Edit persona" : "New persona"}
             </p>
 
@@ -306,42 +306,42 @@ export default function PersonasSettings() {
             )}
 
             <div>
-              <label className="text-xs text-base-content/50 mb-1 block">Name</label>
+              <label className="text-xs text-foreground/50 mb-1 block">Name</label>
               <input
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 placeholder="e.g. Stoic Advisor"
-                className="w-full text-sm bg-base-200 border border-base-content/10 rounded-md px-3 py-2 text-base-content placeholder:text-base-content/30 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full text-sm bg-card border border-foreground/10 rounded-md px-3 py-2 text-foreground placeholder:text-foreground/30 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
 
             <div>
-              <label className="text-xs text-base-content/50 mb-1 block">Description (optional)</label>
+              <label className="text-xs text-foreground/50 mb-1 block">Description (optional)</label>
               <input
                 type="text"
                 value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 placeholder="One-line description shown in the list"
-                className="w-full text-sm bg-base-200 border border-base-content/10 rounded-md px-3 py-2 text-base-content placeholder:text-base-content/30 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full text-sm bg-card border border-foreground/10 rounded-md px-3 py-2 text-foreground placeholder:text-foreground/30 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
 
             <div>
-              <label className="text-xs text-base-content/50 mb-1 block">System prompt</label>
+              <label className="text-xs text-foreground/50 mb-1 block">System prompt</label>
               <textarea
                 rows={5}
                 value={form.systemPrompt}
                 onChange={(e) => setForm((f) => ({ ...f, systemPrompt: e.target.value }))}
                 placeholder="You are a..."
-                className="w-full text-sm bg-base-200 border border-base-content/10 rounded-md px-3 py-2 text-base-content placeholder:text-base-content/30 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-y font-mono"
+                className="w-full text-sm bg-card border border-foreground/10 rounded-md px-3 py-2 text-foreground placeholder:text-foreground/30 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-y font-mono"
               />
             </div>
 
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setShowForm(false)}
-                className="text-sm px-3 py-1.5 rounded-md bg-base-200 hover:bg-base-300 text-base-content/60 transition-colors"
+                className="text-sm px-3 py-1.5 rounded-md bg-card hover:bg-muted text-foreground/60 transition-colors"
               >
                 Cancel
               </button>
@@ -357,28 +357,28 @@ export default function PersonasSettings() {
         )}
       </div>
       {/* System prompt fallback */}
-      <div className="border-t border-base-content/10 pt-6 space-y-3">
+      <div className="border-t border-foreground/10 pt-6 space-y-3">
         <div>
           <div className="flex items-center justify-between mb-1">
-            <p className="text-sm font-medium text-base-content">Default AI voice</p>
+            <p className="text-sm font-medium text-foreground">Default AI voice</p>
             <button
               onClick={resetPrompt}
               disabled={systemPrompt.trim() === DEFAULT_SYSTEM_PROMPT.trim()}
-              className="text-xs text-base-content/50 hover:text-base-content disabled:opacity-30 transition-colors"
+              className="text-xs text-foreground/50 hover:text-foreground disabled:opacity-30 transition-colors"
             >
               Reset to default
             </button>
           </div>
-          <p className="text-xs text-base-content/40 mb-2">
+          <p className="text-xs text-foreground/40 mb-2">
             Used when personas are off. When personas are on and none is active, this is the fallback.
           </p>
           <textarea
             rows={5}
             value={systemPrompt}
             onChange={(e) => setSystemPrompt(e.target.value)}
-            className="w-full bg-base-200 border border-base-content/10 rounded-lg px-3 py-2 text-sm text-base-content font-mono resize-y focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full bg-card border border-foreground/10 rounded-lg px-3 py-2 text-sm text-foreground font-mono resize-y focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
-          <p className="text-xs text-base-content/30 mt-1">{systemPrompt.length} chars</p>
+          <p className="text-xs text-foreground/30 mt-1">{systemPrompt.length} chars</p>
         </div>
         <button
           onClick={saveSystemPrompt}

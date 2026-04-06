@@ -113,13 +113,13 @@ function ModelPuller({
   if (state === "pulling") {
     return (
       <div className="flex items-center gap-2 min-w-[140px]">
-        <div className="flex-1 h-1.5 bg-base-content/20 rounded-full overflow-hidden">
+        <div className="flex-1 h-1.5 bg-foreground/20 rounded-full overflow-hidden">
           <div
             className="h-full bg-indigo-500 rounded-full transition-all duration-300"
             style={{ width: `${progress.pct ?? 0}%` }}
           />
         </div>
-        <span className="text-xs text-base-content/60 shrink-0">
+        <span className="text-xs text-foreground/60 shrink-0">
           {progress.pct !== undefined ? `${progress.pct}%` : progress.status ?? "…"}
         </span>
       </div>
@@ -169,23 +169,23 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
   return (
     <div className="max-w-lg mx-auto px-6 py-12">
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold text-base-content mb-2">Set up AI models</h2>
-        <p className="text-base-content/60 text-sm">
+        <h2 className="text-2xl font-semibold text-foreground mb-2">Set up AI models</h2>
+        <p className="text-foreground/60 text-sm">
           Aura needs two models — one for conversation and one for semantic search.
           We&apos;ll download them to your Ollama instance if they&apos;re not already there.
         </p>
       </div>
 
       {loading ? (
-        <div className="text-base-content/40 text-sm">Checking installed models…</div>
+        <div className="text-foreground/40 text-sm">Checking installed models…</div>
       ) : (
         <div className="space-y-4">
           {/* Chat model */}
-          <div className="bg-base-200 rounded-xl p-4 space-y-3">
+          <div className="bg-card rounded-xl p-4 space-y-3">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="text-sm font-medium text-base-content">Chat model</div>
-                <div className="text-xs text-base-content/60 mt-0.5">
+                <div className="text-sm font-medium text-foreground">Chat model</div>
+                <div className="text-xs text-foreground/60 mt-0.5">
                   Used for journaling prompts, analysis, and conversations with Aura
                 </div>
               </div>
@@ -202,12 +202,12 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
 
             {/* Model selector */}
             <div>
-              <label className="text-xs text-base-content/40 mb-1 block">Selected model</label>
+              <label className="text-xs text-foreground/40 mb-1 block">Selected model</label>
               {models.length > 0 ? (
                 <select
                   value={chatModel}
                   onChange={(e) => setChatModel(e.target.value)}
-                  className="w-full bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500"
                 >
                   <option value={DEFAULT_CHAT_MODEL}>{DEFAULT_CHAT_MODEL} (recommended)</option>
                   {models
@@ -224,7 +224,7 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
                     ))}
                 </select>
               ) : (
-                <div className="text-sm text-base-content/40 bg-base-100 rounded-lg px-3 py-1.5">
+                <div className="text-sm text-foreground/40 bg-background rounded-lg px-3 py-1.5">
                   {DEFAULT_CHAT_MODEL} (will be downloaded)
                 </div>
               )}
@@ -232,11 +232,11 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
           </div>
 
           {/* Embed model */}
-          <div className="bg-base-200 rounded-xl p-4 space-y-3">
+          <div className="bg-card rounded-xl p-4 space-y-3">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="text-sm font-medium text-base-content">Embedding model</div>
-                <div className="text-xs text-base-content/60 mt-0.5">
+                <div className="text-sm font-medium text-foreground">Embedding model</div>
+                <div className="text-xs text-foreground/60 mt-0.5">
                   Used for semantic search — find entries by meaning, not just keywords
                 </div>
               </div>
@@ -252,9 +252,9 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
               )}
             </div>
 
-            <div className="flex items-center justify-between bg-base-100 rounded-lg px-3 py-1.5">
-              <span className="text-sm font-mono text-base-content/70">{DEFAULT_EMBED_MODEL}</span>
-              <span className="text-xs text-base-content/30">fixed</span>
+            <div className="flex items-center justify-between bg-background rounded-lg px-3 py-1.5">
+              <span className="text-sm font-mono text-foreground/70">{DEFAULT_EMBED_MODEL}</span>
+              <span className="text-xs text-foreground/30">fixed</span>
             </div>
           </div>
 
@@ -264,8 +264,8 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
             </p>
           )}
 
-          <p className="text-xs text-base-content/40 border border-base-content/10 rounded-lg px-3 py-2 leading-relaxed">
-            <span className="text-base-content/60 font-medium">Model tip:</span> Aura works best with thinking-enabled models (e.g. <span className="font-mono">qwen3</span>, <span className="font-mono">deepseek-r2</span>). Thinking models reason through prompts before responding, which significantly improves journaling insights and template generation.
+          <p className="text-xs text-foreground/40 border border-foreground/10 rounded-lg px-3 py-2 leading-relaxed">
+            <span className="text-foreground/60 font-medium">Model tip:</span> Aura works best with thinking-enabled models (e.g. <span className="font-mono">qwen3</span>, <span className="font-mono">deepseek-r2</span>). Thinking models reason through prompts before responding, which significantly improves journaling insights and template generation.
           </p>
         </div>
       )}
@@ -273,7 +273,7 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
       <div className="mt-10 flex items-center justify-between">
         <button
           onClick={onBack}
-          className="text-sm text-base-content/40 hover:text-base-content/80 transition-colors"
+          className="text-sm text-foreground/40 hover:text-foreground/80 transition-colors"
         >
           ← Back
         </button>

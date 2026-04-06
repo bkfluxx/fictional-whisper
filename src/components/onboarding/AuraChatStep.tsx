@@ -208,9 +208,9 @@ export default function AuraChatStep({
           <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-sm">
             ✦
           </div>
-          <span className="text-base-content font-medium">Aura</span>
+          <span className="text-foreground font-medium">Aura</span>
         </div>
-        <p className="text-xs text-base-content/40 ml-9">
+        <p className="text-xs text-foreground/40 ml-9">
           Have a quick conversation to personalise your experience
         </p>
       </div>
@@ -226,11 +226,11 @@ export default function AuraChatStep({
               className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                 msg.role === "user"
                   ? "bg-indigo-600 text-white rounded-br-sm"
-                  : "bg-base-content/10 text-base-content rounded-bl-sm"
+                  : "bg-foreground/10 text-foreground rounded-bl-sm"
               }`}
             >
               {msg.content || (
-                <span className="inline-flex gap-1 text-base-content/40">
+                <span className="inline-flex gap-1 text-foreground/40">
                   <span className="animate-pulse">●</span>
                   <span className="animate-pulse delay-75">●</span>
                   <span className="animate-pulse delay-150">●</span>
@@ -256,7 +256,7 @@ export default function AuraChatStep({
           onKeyDown={handleKeyDown}
           disabled={streaming || extracting}
           placeholder="Type a message…"
-          className="flex-1 bg-base-100 border border-base-content/20 text-base-content text-sm rounded-xl px-4 py-2.5 placeholder-base-content/30 focus:outline-none focus:border-indigo-500 disabled:opacity-50"
+          className="flex-1 bg-background border border-foreground/20 text-foreground text-sm rounded-xl px-4 py-2.5 placeholder-foreground/30 focus:outline-none focus:border-indigo-500 disabled:opacity-50"
           autoFocus
         />
         <button
@@ -270,11 +270,11 @@ export default function AuraChatStep({
 
       {progress && (
         <div className="mt-4 space-y-1.5">
-          <div className="flex items-center justify-between text-xs text-base-content/50">
+          <div className="flex items-center justify-between text-xs text-foreground/50">
             <span>{progress.label}</span>
             <span>{progress.pct}%</span>
           </div>
-          <div className="h-1.5 w-full bg-base-content/10 rounded-full overflow-hidden">
+          <div className="h-1.5 w-full bg-foreground/10 rounded-full overflow-hidden">
             <div
               className="h-full bg-indigo-500 rounded-full transition-all duration-500 ease-out"
               style={{ width: `${progress.pct === 0 ? 8 : progress.pct}%` }}
@@ -287,7 +287,7 @@ export default function AuraChatStep({
         <button
           onClick={onBack}
           disabled={extracting}
-          className="text-sm text-base-content/40 hover:text-base-content/80 transition-colors disabled:opacity-40"
+          className="text-sm text-foreground/40 hover:text-foreground/80 transition-colors disabled:opacity-40"
         >
           ← Back
         </button>
@@ -298,7 +298,7 @@ export default function AuraChatStep({
           className={`px-6 py-2.5 rounded-xl font-medium text-sm transition-colors ${
             canFinish && !extracting
               ? "bg-indigo-600 hover:bg-indigo-500 text-white"
-              : "text-base-content/40 hover:text-base-content/60"
+              : "text-foreground/40 hover:text-foreground/60"
           }`}
         >
           {extracting

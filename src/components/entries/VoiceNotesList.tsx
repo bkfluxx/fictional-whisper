@@ -55,8 +55,8 @@ export default function VoiceNotesList({ entryId, refreshKey, onTranscript }: Pr
   if (!notes.length) return null;
 
   return (
-    <div className="border-t border-base-content/10 pt-3 space-y-2">
-      <p className="text-xs text-base-content/40 font-medium uppercase tracking-wider px-1">
+    <div className="border-t border-foreground/10 pt-3 space-y-2">
+      <p className="text-xs text-foreground/40 font-medium uppercase tracking-wider px-1">
         Voice notes
       </p>
       {notes.map((note) => {
@@ -76,7 +76,7 @@ export default function VoiceNotesList({ entryId, refreshKey, onTranscript }: Pr
               className="w-full"
             />
             <div className="flex items-center justify-between px-1">
-              <span className="text-xs text-base-content/30">{date}</span>
+              <span className="text-xs text-foreground/30">{date}</span>
 
               <div className="flex items-center gap-3">
                 {onTranscript && (
@@ -99,7 +99,7 @@ export default function VoiceNotesList({ entryId, refreshKey, onTranscript }: Pr
                 <button
                   onClick={() => deleteNote(note.id)}
                   title="Delete voice note"
-                  className="text-xs text-base-content/30 hover:text-red-400 transition-colors"
+                  className="text-xs text-foreground/30 hover:text-red-400 transition-colors"
                 >
                   Delete
                 </button>

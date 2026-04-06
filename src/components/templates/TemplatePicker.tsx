@@ -51,21 +51,21 @@ function TemplateCard({ template }: { template: AnyTemplate }) {
   return (
     <Link
       href={`/journal/new?from=${template.id}`}
-      className="group flex flex-col gap-2 p-4 bg-base-200 border border-base-200 rounded-xl hover:border-base-content/30 hover:bg-base-content/8 transition-all"
+      className="group flex flex-col gap-2 p-4 bg-card border border-border rounded-xl hover:border-foreground/30 hover:bg-foreground/8 transition-all"
     >
       <div className="flex items-center gap-2">
         <span className="text-xl">{template.emoji}</span>
-        <span className="text-sm font-medium text-base-content group-hover:text-indigo-300 transition-colors">
+        <span className="text-sm font-medium text-foreground group-hover:text-indigo-300 transition-colors">
           {template.title}
         </span>
         {!template.isBuiltIn && (
-          <span className="ml-auto text-[10px] text-base-content/30 border border-base-content/20 rounded px-1">
+          <span className="ml-auto text-[10px] text-foreground/30 border border-foreground/20 rounded px-1">
             custom
           </span>
         )}
       </div>
       {template.description && (
-        <p className="text-xs text-base-content/40 leading-relaxed">{template.description}</p>
+        <p className="text-xs text-foreground/40 leading-relaxed">{template.description}</p>
       )}
     </Link>
   );
@@ -94,8 +94,8 @@ export default function TemplatePicker({
     <div className="max-w-3xl mx-auto px-6 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-xl font-semibold text-base-content">New entry</h1>
-          <p className="text-sm text-base-content/40 mt-0.5">
+          <h1 className="text-xl font-semibold text-foreground">New entry</h1>
+          <p className="text-sm text-foreground/40 mt-0.5">
             Start from a template or jump straight to a blank page
           </p>
         </div>
@@ -114,7 +114,7 @@ export default function TemplatePicker({
         </Link>
         <Link
           href="/journal/guided"
-          className="group flex items-center gap-2 flex-1 px-4 py-3 bg-base-200 hover:bg-base-content/10 border border-base-content/10 hover:border-indigo-500/40 text-base-content font-medium rounded-xl transition-colors"
+          className="group flex items-center gap-2 flex-1 px-4 py-3 bg-card hover:bg-foreground/10 border border-foreground/10 hover:border-indigo-500/40 text-foreground font-medium rounded-xl transition-colors"
         >
           <svg className="w-4 h-4 shrink-0 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
@@ -126,7 +126,7 @@ export default function TemplatePicker({
       {/* Recommended templates (only shown when intentions were captured) */}
       {recommended.length > 0 && (
         <section className="mb-8">
-          <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-3 flex items-center gap-2">
+          <h2 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-3 flex items-center gap-2">
             ✦ Recommended for you
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -140,7 +140,7 @@ export default function TemplatePicker({
       {/* User templates */}
       {userMapped.length > 0 && (
         <section className="mb-8">
-          <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-3">
+          <h2 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-3">
             My templates
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -159,7 +159,7 @@ export default function TemplatePicker({
         if (groupTemplates.length === 0) return null;
         return (
           <section key={group} className="mb-8">
-            <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-3">
+            <h2 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-3">
               {group}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

@@ -153,14 +153,14 @@ export default function AiModelsSettings() {
   }
 
   if (loadState === "loading") {
-    return <p className="text-sm text-base-content/50">Checking Ollama…</p>;
+    return <p className="text-sm text-foreground/50">Checking Ollama…</p>;
   }
 
   return (
     <div className="space-y-6">
       {/* URL field — always visible */}
       <div>
-        <label className="block text-xs font-medium text-base-content/60 mb-1.5">
+        <label className="block text-xs font-medium text-foreground/60 mb-1.5">
           Ollama base URL
         </label>
         <div className="flex gap-2">
@@ -172,12 +172,12 @@ export default function AiModelsSettings() {
               setTestResult(null);
             }}
             placeholder="http://localhost:11434"
-            className="flex-1 bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 placeholder:text-base-content/30"
+            className="flex-1 bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 placeholder:text-foreground/30"
           />
           <button
             onClick={testUrl}
             disabled={testingUrl || !draft.baseUrl.trim()}
-            className="px-3 py-2 bg-base-content/10 hover:bg-base-content/20 disabled:opacity-40 text-base-content text-sm rounded-lg transition-colors whitespace-nowrap"
+            className="px-3 py-2 bg-foreground/10 hover:bg-foreground/20 disabled:opacity-40 text-foreground text-sm rounded-lg transition-colors whitespace-nowrap"
           >
             {testingUrl ? "Testing…" : "Test"}
           </button>
@@ -197,18 +197,18 @@ export default function AiModelsSettings() {
 
       {/* Whisper URL */}
       <div>
-        <label className="block text-xs font-medium text-base-content/60 mb-1.5">
+        <label className="block text-xs font-medium text-foreground/60 mb-1.5">
           Whisper base URL
-          <span className="text-base-content/40 font-normal ml-1">(voice transcription)</span>
+          <span className="text-foreground/40 font-normal ml-1">(voice transcription)</span>
         </label>
         <input
           type="url"
           value={draft.whisperBaseUrl}
           onChange={(e) => setDraft((d) => ({ ...d, whisperBaseUrl: e.target.value }))}
           placeholder="http://localhost:8080"
-          className="w-full bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 placeholder:text-base-content/30"
+          className="w-full bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 placeholder:text-foreground/30"
         />
-        <p className="text-xs text-base-content/40 mt-1">
+        <p className="text-xs text-foreground/40 mt-1">
           URL of a local Whisper-compatible server (e.g.{" "}
           <span className="font-mono">faster-whisper-server</span>,{" "}
           <span className="font-mono">whisper.cpp</span>). Leave blank to disable voice input.
@@ -220,9 +220,9 @@ export default function AiModelsSettings() {
         <div className="grid gap-4 sm:grid-cols-2">
           {/* LLM model */}
           <div>
-            <label className="block text-xs font-medium text-base-content/60 mb-1.5">
+            <label className="block text-xs font-medium text-foreground/60 mb-1.5">
               Text model
-              <span className="text-base-content/40 font-normal ml-1">
+              <span className="text-foreground/40 font-normal ml-1">
                 (analysis, chat, prompts)
               </span>
             </label>
@@ -231,7 +231,7 @@ export default function AiModelsSettings() {
               onChange={(e) =>
                 setDraft((d) => ({ ...d, model: e.target.value }))
               }
-              className="w-full bg-base-100 border border-base-content/20 text-base-content text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500"
             >
               <option value="" disabled>Select a model…</option>
               {models
@@ -246,17 +246,17 @@ export default function AiModelsSettings() {
 
           {/* Embed model — fixed */}
           <div>
-            <label className="block text-xs font-medium text-base-content/60 mb-1.5">
+            <label className="block text-xs font-medium text-foreground/60 mb-1.5">
               Embedding model
-              <span className="text-base-content/40 font-normal ml-1">
+              <span className="text-foreground/40 font-normal ml-1">
                 (semantic search, chat context)
               </span>
             </label>
-            <div className="w-full bg-base-100 border border-base-content/20 text-sm rounded-lg px-3 py-2 flex items-center justify-between">
-              <span className="font-mono text-base-content/70">nomic-embed-text</span>
-              <span className="text-xs text-base-content/30">fixed</span>
+            <div className="w-full bg-background border border-foreground/20 text-sm rounded-lg px-3 py-2 flex items-center justify-between">
+              <span className="font-mono text-foreground/70">nomic-embed-text</span>
+              <span className="text-xs text-foreground/30">fixed</span>
             </div>
-            <p className="text-xs text-base-content/40 mt-1">
+            <p className="text-xs text-foreground/40 mt-1">
               Fixed to <span className="font-mono">nomic-embed-text</span> (768-dim) to match the search index.
             </p>
           </div>
@@ -264,15 +264,15 @@ export default function AiModelsSettings() {
       )}
 
       {models.length > 0 && (
-        <p className="text-xs text-base-content/40 border border-base-content/10 rounded-lg px-3 py-2 leading-relaxed">
-          <span className="text-base-content/60 font-medium">Model tip:</span> Aura works best with thinking-enabled models (e.g. <span className="font-mono text-base-content/60">qwen3</span>, <span className="font-mono text-base-content/60">deepseek-r2</span>). Thinking models reason through prompts before responding, which significantly improves journaling insights and chat quality.
+        <p className="text-xs text-foreground/40 border border-foreground/10 rounded-lg px-3 py-2 leading-relaxed">
+          <span className="text-foreground/60 font-medium">Model tip:</span> Aura works best with thinking-enabled models (e.g. <span className="font-mono text-foreground/60">qwen3</span>, <span className="font-mono text-foreground/60">deepseek-r2</span>). Thinking models reason through prompts before responding, which significantly improves journaling insights and chat quality.
         </p>
       )}
 
       {models.length === 0 && loadState === "ready" && (
-        <p className="text-sm text-base-content/50">
+        <p className="text-sm text-foreground/50">
           No models found. Pull one with:{" "}
-          <code className="text-base-content/80 bg-base-200 px-1.5 py-0.5 rounded text-xs">
+          <code className="text-foreground/80 bg-card px-1.5 py-0.5 rounded text-xs">
             ollama pull llama3.2
           </code>
         </p>

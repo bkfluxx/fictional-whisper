@@ -66,19 +66,19 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
       {/* ── Entry list ───────────────────────────────────────────── */}
       <div className={`overflow-y-auto px-6 py-0 shrink-0 ${selectedId ? "w-[380px]" : "flex-1"}`}>
         <div className="relative">
-          <div className="absolute left-[15px] top-2 bottom-2 w-0.5 bg-base-content/15" />
+          <div className="absolute left-[15px] top-2 bottom-2 w-0.5 bg-foreground/15" />
 
           {days.map((dayGroup) => (
             <div key={dayGroup.day}>
               {/* Date marker */}
               <div className="flex items-center gap-2 py-2">
                 <div className="flex w-8 shrink-0 justify-center">
-                  <span className="relative z-10 flex size-3 items-center justify-center rounded-full bg-base-100 ring-1 ring-base-content/20">
-                    <span className="size-1.5 rounded-full bg-base-content/40" />
+                  <span className="relative z-10 flex size-3 items-center justify-center rounded-full bg-background ring-1 ring-foreground/20">
+                    <span className="size-1.5 rounded-full bg-foreground/40" />
                   </span>
                 </div>
-                <span className="text-xs font-semibold text-base-content/50">{dayGroup.weekday}</span>
-                <span className="text-xs text-base-content/30">{dayGroup.date}</span>
+                <span className="text-xs font-semibold text-foreground/50">{dayGroup.weekday}</span>
+                <span className="text-xs text-foreground/30">{dayGroup.date}</span>
               </div>
 
               {/* Entry cards */}
@@ -88,14 +88,14 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                   ? (MOOD_DOT[e.mood] ?? "bg-primary")
                   : firstCat
                     ? "bg-primary"
-                    : "bg-base-content/30";
+                    : "bg-foreground/30";
                 const isSelected = selectedId === e.id;
 
                 return (
                   <div key={e.id} className="flex items-stretch gap-2 mb-2">
                     {/* Timeline dot — centred with the card */}
                     <div className="flex w-8 shrink-0 justify-center pt-3">
-                      <span className="relative z-10 flex size-5 items-center justify-center rounded-full bg-base-100">
+                      <span className="relative z-10 flex size-5 items-center justify-center rounded-full bg-background">
                         <span className={`size-2.5 rounded-sm ${dotColor}`} />
                       </span>
                     </div>
@@ -106,15 +106,15 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                       className={`flex-1 rounded-xl border overflow-hidden cursor-pointer flex transition-colors ${
                         isSelected
                           ? "border-indigo-500/40 bg-indigo-950/20"
-                          : "border-base-content/10 bg-base-200 hover:bg-base-content/8"
+                          : "border-foreground/10 bg-card hover:bg-foreground/8"
                       }`}
                     >
                       {/* Text content */}
                       <div className="flex-1 px-4 py-3 min-w-0">
                         <div className="flex items-start justify-between gap-3">
-                          <span className="text-sm font-semibold text-base-content leading-snug">
+                          <span className="text-sm font-semibold text-foreground leading-snug">
                             {e.title ?? (
-                              <span className="text-base-content/40 font-normal italic">Untitled</span>
+                              <span className="text-foreground/40 font-normal italic">Untitled</span>
                             )}
                           </span>
                           {firstCat && (
@@ -125,7 +125,7 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                         {e.isVoiceOnly ? (
                           <p className="text-xs text-indigo-400/70 mt-1 italic">Voice note</p>
                         ) : e.preview ? (
-                          <p className="text-xs text-base-content/50 mt-1 leading-relaxed line-clamp-2">
+                          <p className="text-xs text-foreground/50 mt-1 leading-relaxed line-clamp-2">
                             {e.preview}
                           </p>
                         ) : null}
@@ -133,7 +133,7 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                         {(e.categoryLabels.length > 0 || e.tags.length > 0 || e.mood) && (
                           <div className="flex gap-1 mt-2 flex-wrap items-center">
                             {e.mood && (
-                              <span className="text-xs px-2 py-0.5 bg-base-content/10 text-base-content/60 rounded-full capitalize">
+                              <span className="text-xs px-2 py-0.5 bg-foreground/10 text-foreground/60 rounded-full capitalize">
                                 {e.mood}
                               </span>
                             )}
@@ -143,7 +143,7 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                               </span>
                             ))}
                             {e.tags.map((t) => (
-                              <span key={t.id} className="text-xs px-2 py-0.5 bg-base-content/10 text-base-content/60 rounded-full">
+                              <span key={t.id} className="text-xs px-2 py-0.5 bg-foreground/10 text-foreground/60 rounded-full">
                                 #{t.name}
                               </span>
                             ))}

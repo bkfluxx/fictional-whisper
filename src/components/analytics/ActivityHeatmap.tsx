@@ -11,7 +11,7 @@ interface ActivityHeatmapProps {
 }
 
 function cellColor(count: number): string {
-  if (count === 0) return "bg-base-200";
+  if (count === 0) return "bg-card";
   if (count === 1) return "bg-primary/20";
   if (count === 2) return "bg-primary/40";
   if (count <= 4) return "bg-primary/70";
@@ -19,7 +19,7 @@ function cellColor(count: number): string {
 }
 
 const LEGEND_COLORS = [
-  "bg-base-200",
+  "bg-card",
   "bg-primary/20",
   "bg-primary/40",
   "bg-primary/70",
@@ -52,7 +52,7 @@ export default function ActivityHeatmap({ weeks }: ActivityHeatmapProps) {
           {DAY_LABELS.map((d, i) => (
             <div key={i} className="w-3 h-3 flex items-center justify-center">
               {i % 2 === 1 && (
-                <span className="text-[9px] text-base-content/30">{d}</span>
+                <span className="text-[9px] text-foreground/30">{d}</span>
               )}
             </div>
           ))}
@@ -66,7 +66,7 @@ export default function ActivityHeatmap({ weeks }: ActivityHeatmapProps) {
               {/* Month label */}
               <div className="h-4 flex items-center">
                 {label && (
-                  <span className="text-[9px] text-base-content/40 whitespace-nowrap">{label}</span>
+                  <span className="text-[9px] text-foreground/40 whitespace-nowrap">{label}</span>
                 )}
               </div>
               {/* Day cells */}
@@ -84,11 +84,11 @@ export default function ActivityHeatmap({ weeks }: ActivityHeatmapProps) {
 
       {/* Legend */}
       <div className="flex items-center gap-1.5 mt-3">
-        <span className="text-[10px] text-base-content/30">Less</span>
+        <span className="text-[10px] text-foreground/30">Less</span>
         {LEGEND_COLORS.map((c, i) => (
           <div key={i} className={`w-3 h-3 rounded-sm ${c}`} />
         ))}
-        <span className="text-[10px] text-base-content/30">More</span>
+        <span className="text-[10px] text-foreground/30">More</span>
       </div>
     </div>
   );

@@ -165,7 +165,7 @@ export default function VoiceMicButton({ onTranscript, entryId, onSaved }: Voice
         onMouseDown={(e) => e.preventDefault()}
         onClick={startRecording}
         title="Record voice note"
-        className="px-1.5 py-1 rounded text-sm text-base-content/60 hover:text-base-content hover:bg-base-content/8 transition-colors ml-auto"
+        className="px-1.5 py-1 rounded text-sm text-foreground/60 hover:text-foreground hover:bg-foreground/8 transition-colors ml-auto"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
           <path strokeLinecap="round" strokeLinejoin="round"
@@ -205,7 +205,7 @@ export default function VoiceMicButton({ onTranscript, entryId, onSaved }: Voice
             onMouseDown={(e) => e.preventDefault()}
             onClick={saveNote}
             title="Save as voice note"
-            className="px-2 py-1 rounded text-xs bg-base-content/10 text-base-content hover:bg-base-content/20 transition-colors whitespace-nowrap"
+            className="px-2 py-1 rounded text-xs bg-foreground/10 text-foreground hover:bg-foreground/20 transition-colors whitespace-nowrap"
           >
             Save note
           </button>
@@ -224,7 +224,7 @@ export default function VoiceMicButton({ onTranscript, entryId, onSaved }: Voice
           onMouseDown={(e) => e.preventDefault()}
           onClick={discard}
           title="Discard recording"
-          className="px-2 py-1 rounded text-xs text-base-content/50 hover:text-base-content hover:bg-base-content/8 transition-colors"
+          className="px-2 py-1 rounded text-xs text-foreground/50 hover:text-foreground hover:bg-foreground/8 transition-colors"
         >
           Discard
         </button>
@@ -235,7 +235,7 @@ export default function VoiceMicButton({ onTranscript, entryId, onSaved }: Voice
   // ── Saving ──────────────────────────────────────────────────────────────────
   if (state === "saving") {
     return (
-      <div className="ml-auto flex items-center gap-2 text-xs text-base-content/50">
+      <div className="ml-auto flex items-center gap-2 text-xs text-foreground/50">
         <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />

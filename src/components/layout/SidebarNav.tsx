@@ -87,8 +87,8 @@ function NavLink({
       href={href}
       className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
         isActive
-          ? "bg-base-content/10 text-base-content font-medium"
-          : "text-base-content/60 hover:bg-base-content/5 hover:text-base-content"
+          ? "bg-foreground/10 text-foreground font-medium"
+          : "text-foreground/60 hover:bg-foreground/5 hover:text-foreground"
       }`}
     >
       {icon}
@@ -114,7 +114,7 @@ export default function SidebarNav() {
       })}
 
       {/* Settings + Logout — pinned to bottom */}
-      <div className="mt-auto pt-3 border-t border-base-200 flex flex-col gap-0.5">
+      <div className="mt-auto pt-3 border-t border-border flex flex-col gap-0.5">
         {BOTTOM_NAV.map((item) => (
           <NavLink
             key={item.href}
@@ -125,7 +125,7 @@ export default function SidebarNav() {
         <UpdateNotice />
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-base-content/60 hover:bg-base-content/5 hover:text-base-content transition-colors w-full text-left"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-foreground/60 hover:bg-foreground/5 hover:text-foreground transition-colors w-full text-left"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
             <path strokeLinecap="round" strokeLinejoin="round"

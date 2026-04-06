@@ -85,7 +85,7 @@ export default function TwoFactorSettings() {
   }
 
   if (state === "loading") {
-    return <p className="text-sm text-base-content/40">Loading…</p>;
+    return <p className="text-sm text-foreground/40">Loading…</p>;
   }
 
   return (
@@ -93,8 +93,8 @@ export default function TwoFactorSettings() {
       {/* Status row */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-base-content">Two-factor authentication</p>
-          <p className="text-xs text-base-content/40 mt-0.5">
+          <p className="text-sm font-medium text-foreground">Two-factor authentication</p>
+          <p className="text-xs text-foreground/40 mt-0.5">
             {state === "enabled"
               ? "On · Authenticator app"
               : "Off · Login requires only your password"}
@@ -104,7 +104,7 @@ export default function TwoFactorSettings() {
           className={`text-xs px-2 py-0.5 rounded-full font-medium ${
             state === "enabled"
               ? "bg-emerald-500/10 text-emerald-500"
-              : "bg-base-content/10 text-base-content/40"
+              : "bg-foreground/10 text-foreground/40"
           }`}
         >
           {state === "enabled" ? "Enabled" : "Disabled"}
@@ -126,20 +126,20 @@ export default function TwoFactorSettings() {
 
       {/* Setup flow — show QR code */}
       {state === "setup" && (
-        <div className="space-y-4 rounded-lg border border-base-content/10 p-4">
-          <p className="text-sm text-base-content/70">
+        <div className="space-y-4 rounded-lg border border-foreground/10 p-4">
+          <p className="text-sm text-foreground/70">
             Scan this QR code with your authenticator app (Google Authenticator, Authy, 1Password, etc.)
           </p>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={qrDataUrl} alt="2FA QR code" className="w-48 h-48 rounded-lg" />
           <div>
-            <p className="text-xs text-base-content/40 mb-1">Or enter this code manually:</p>
-            <p className="font-mono text-sm bg-base-200 rounded px-3 py-1.5 text-base-content tracking-widest break-all">
+            <p className="text-xs text-foreground/40 mb-1">Or enter this code manually:</p>
+            <p className="font-mono text-sm bg-card rounded px-3 py-1.5 text-foreground tracking-widest break-all">
               {secret}
             </p>
           </div>
           <div>
-            <label className="text-xs text-base-content/50 mb-1 block">
+            <label className="text-xs text-foreground/50 mb-1 block">
               Enter the 6-digit code from your app to confirm
             </label>
             <input
@@ -150,7 +150,7 @@ export default function TwoFactorSettings() {
               value={code}
               onChange={(e) => { setCode(e.target.value); setError(null); }}
               placeholder="000000"
-              className="w-40 px-3 py-2 bg-base-100 border border-base-content/20 rounded-lg text-base-content text-center text-lg tracking-widest font-mono placeholder-base-content/30 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-40 px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground text-center text-lg tracking-widest font-mono placeholder-foreground/30 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
           <div className="flex gap-2">
@@ -163,7 +163,7 @@ export default function TwoFactorSettings() {
             </button>
             <button
               onClick={() => { setState("disabled"); setCode(""); setError(null); }}
-              className="px-4 py-2 bg-base-200 hover:bg-base-300 text-base-content/60 text-sm rounded-lg transition-colors"
+              className="px-4 py-2 bg-card hover:bg-muted text-foreground/60 text-sm rounded-lg transition-colors"
             >
               Cancel
             </button>
@@ -177,7 +177,7 @@ export default function TwoFactorSettings() {
           {state === "enabled" && (
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-base-content/50 mb-1 block">
+                <label className="text-xs text-foreground/50 mb-1 block">
                   Enter your current 2FA code to disable
                 </label>
                 <input
@@ -188,13 +188,13 @@ export default function TwoFactorSettings() {
                   value={code}
                   onChange={(e) => { setCode(e.target.value); setError(null); }}
                   placeholder="000000"
-                  className="w-40 px-3 py-2 bg-base-100 border border-base-content/20 rounded-lg text-base-content text-center text-lg tracking-widest font-mono placeholder-base-content/30 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-40 px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground text-center text-lg tracking-widest font-mono placeholder-foreground/30 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
               <button
                 onClick={disable}
                 disabled={busy || code.replace(/\s/g, "").length < 6}
-                className="px-4 py-2 bg-base-200 hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-40 text-base-content/60 text-sm font-medium rounded-lg transition-colors"
+                className="px-4 py-2 bg-card hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-40 text-foreground/60 text-sm font-medium rounded-lg transition-colors"
               >
                 {busy ? "Disabling…" : "Disable 2FA"}
               </button>

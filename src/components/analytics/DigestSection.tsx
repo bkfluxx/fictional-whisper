@@ -32,21 +32,21 @@ function DigestCard({ digest }: { digest: Digest }) {
   const weekLabel = `Week of ${formatWeek(digest.weekStart)}`;
 
   return (
-    <div className="border border-base-content/10 rounded-lg overflow-hidden">
+    <div className="border border-foreground/10 rounded-lg overflow-hidden">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-base-content/5 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-foreground/5 transition-colors"
       >
-        <span className="text-sm font-medium text-base-content">{weekLabel}</span>
-        <span className="text-xs text-base-content/40">
+        <span className="text-sm font-medium text-foreground">{weekLabel}</span>
+        <span className="text-xs text-foreground/40">
           {digest.entryCount} {digest.entryCount === 1 ? "entry" : "entries"}{" "}
           <span className="ml-1">{open ? "▲" : "▼"}</span>
         </span>
       </button>
 
       {open && (
-        <div className="px-4 pb-4 pt-1 border-t border-base-content/10">
-          <pre className="whitespace-pre-wrap text-sm text-base-content/80 font-sans leading-relaxed">
+        <div className="px-4 pb-4 pt-1 border-t border-foreground/10">
+          <pre className="whitespace-pre-wrap text-sm text-foreground/80 font-sans leading-relaxed">
             {digest.content}
           </pre>
         </div>
@@ -113,7 +113,7 @@ export default function DigestSection({ initial, all }: DigestSectionProps) {
   return (
     <section className="mb-10">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest">
+        <h2 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest">
           Weekly digest
         </h2>
         <button
@@ -130,24 +130,24 @@ export default function DigestSection({ initial, all }: DigestSectionProps) {
       )}
 
       {latest && hasThisWeek ? (
-        <div className="bg-base-content/5 rounded-lg px-4 py-4 mb-4">
-          <p className="text-xs text-base-content/40 mb-3">
+        <div className="bg-foreground/5 rounded-lg px-4 py-4 mb-4">
+          <p className="text-xs text-foreground/40 mb-3">
             Week of {formatWeek(latest.weekStart)} · {latest.entryCount}{" "}
             {latest.entryCount === 1 ? "entry" : "entries"}
           </p>
-          <pre className="whitespace-pre-wrap text-sm text-base-content/80 font-sans leading-relaxed">
+          <pre className="whitespace-pre-wrap text-sm text-foreground/80 font-sans leading-relaxed">
             {latest.content}
           </pre>
         </div>
       ) : !generating ? (
-        <p className="text-sm text-base-content/30 mb-4">
+        <p className="text-sm text-foreground/30 mb-4">
           No digest yet this week — click &ldquo;Generate this week&rdquo; to reflect on your entries.
         </p>
       ) : null}
 
       {pastDigests.length > 0 && (
         <>
-          <p className="text-xs text-base-content/30 uppercase tracking-widest mb-2">
+          <p className="text-xs text-foreground/30 uppercase tracking-widest mb-2">
             Past digests
           </p>
           <div className="space-y-2">

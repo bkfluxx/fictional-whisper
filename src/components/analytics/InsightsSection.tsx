@@ -91,25 +91,25 @@ export default function InsightsSection({ initial }: InsightsSectionProps) {
       <div className="flex flex-col sm:flex-row sm:items-end gap-3 mb-5">
         <div className="flex items-end gap-2 flex-1">
           <div className="flex-1">
-            <label className="block text-xs text-base-content/50 mb-1">From</label>
+            <label className="block text-xs text-foreground/50 mb-1">From</label>
             <input
               type="date"
               value={from}
               max={to || todayStr()}
               onChange={(e) => setFrom(e.target.value)}
-              className="w-full text-sm bg-base-200 border border-base-content/10 rounded-lg px-3 py-2 text-base-content focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full text-sm bg-card border border-foreground/10 rounded-lg px-3 py-2 text-foreground focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
-          <span className="text-base-content/30 text-sm pb-2">→</span>
+          <span className="text-foreground/30 text-sm pb-2">→</span>
           <div className="flex-1">
-            <label className="block text-xs text-base-content/50 mb-1">To</label>
+            <label className="block text-xs text-foreground/50 mb-1">To</label>
             <input
               type="date"
               value={to}
               min={from}
               max={todayStr()}
               onChange={(e) => setTo(e.target.value)}
-              className="w-full text-sm bg-base-200 border border-base-content/10 rounded-lg px-3 py-2 text-base-content focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full text-sm bg-card border border-foreground/10 rounded-lg px-3 py-2 text-foreground focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
         </div>
@@ -131,28 +131,28 @@ export default function InsightsSection({ initial }: InsightsSectionProps) {
       )}
 
       {generating && (
-        <div className="bg-base-content/5 rounded-lg px-4 py-6 text-center">
-          <p className="text-sm text-base-content/40">
+        <div className="bg-foreground/5 rounded-lg px-4 py-6 text-center">
+          <p className="text-sm text-foreground/40">
             Analysing your entries — this may take a minute…
           </p>
         </div>
       )}
 
       {!generating && hasResult && (
-        <div className="bg-base-content/5 rounded-lg px-4 py-4">
-          <p className="text-xs text-base-content/40 mb-3">
+        <div className="bg-foreground/5 rounded-lg px-4 py-4">
+          <p className="text-xs text-foreground/40 mb-3">
             {formatDate(insight.rangeFrom)} → {formatDate(insight.rangeTo)}{" "}
             · {insight.entryCount}{" "}
             {insight.entryCount === 1 ? "entry" : "entries"} analysed
           </p>
-          <pre className="whitespace-pre-wrap text-sm text-base-content/80 font-sans leading-relaxed">
+          <pre className="whitespace-pre-wrap text-sm text-foreground/80 font-sans leading-relaxed">
             {insight.content}
           </pre>
         </div>
       )}
 
       {!generating && !hasResult && (
-        <p className="text-sm text-base-content/30">
+        <p className="text-sm text-foreground/30">
           Select a date range and click &ldquo;Generate insights&rdquo; to discover patterns in your journaling.
         </p>
       )}

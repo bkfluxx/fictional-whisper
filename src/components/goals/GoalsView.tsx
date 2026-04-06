@@ -23,7 +23,7 @@ const STATUS_LABEL: Record<Status, string> = {
 const STATUS_STYLE: Record<Status, string> = {
   active: "bg-indigo-500/15 text-indigo-400",
   completed: "bg-emerald-500/15 text-emerald-400",
-  paused: "bg-base-content/10 text-base-content/50",
+  paused: "bg-foreground/10 text-foreground/50",
 };
 
 function formatDate(iso: string) {
@@ -59,34 +59,34 @@ function GoalForm({
   );
 
   return (
-    <div className="bg-base-200 border border-base-content/10 rounded-xl p-5 space-y-4">
+    <div className="bg-card border border-foreground/10 rounded-xl p-5 space-y-4">
       <div>
-        <label className="text-xs text-base-content/50 mb-1 block">Goal</label>
+        <label className="text-xs text-foreground/50 mb-1 block">Goal</label>
         <input
           autoFocus
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="What do you want to achieve?"
-          className="w-full bg-base-100 border border-base-content/10 rounded-lg px-3 py-2 text-sm text-base-content placeholder-base-content/30 focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
+          className="w-full bg-background border border-foreground/10 rounded-lg px-3 py-2 text-sm text-foreground placeholder-foreground/30 focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
         />
       </div>
       <div>
-        <label className="text-xs text-base-content/50 mb-1 block">Notes (optional)</label>
+        <label className="text-xs text-foreground/50 mb-1 block">Notes (optional)</label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Why does this matter? Any context or milestones…"
           rows={3}
-          className="w-full bg-base-100 border border-base-content/10 rounded-lg px-3 py-2 text-sm text-base-content placeholder-base-content/30 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 resize-none"
+          className="w-full bg-background border border-foreground/10 rounded-lg px-3 py-2 text-sm text-foreground placeholder-foreground/30 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 resize-none"
         />
       </div>
       <div>
-        <label className="text-xs text-base-content/50 mb-1 block">Target date (optional)</label>
+        <label className="text-xs text-foreground/50 mb-1 block">Target date (optional)</label>
         <input
           type="date"
           value={targetDate}
           onChange={(e) => setTargetDate(e.target.value)}
-          className="bg-base-100 border border-base-content/10 rounded-lg px-3 py-2 text-sm text-base-content focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
+          className="bg-background border border-foreground/10 rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
         />
       </div>
       <div className="flex gap-2">
@@ -99,7 +99,7 @@ function GoalForm({
         </button>
         <button
           onClick={onCancel}
-          className="px-4 py-2 text-sm text-base-content/40 hover:text-base-content border border-base-content/10 hover:border-base-content/30 rounded-lg transition-colors"
+          className="px-4 py-2 text-sm text-foreground/40 hover:text-foreground border border-foreground/10 hover:border-foreground/30 rounded-lg transition-colors"
         >
           Cancel
         </button>
@@ -124,9 +124,9 @@ function GoalCard({
   const days = goal.targetDate ? daysUntil(goal.targetDate) : null;
 
   return (
-    <div className={`bg-base-200 border rounded-xl p-4 transition-opacity ${
+    <div className={`bg-card border rounded-xl p-4 transition-opacity ${
       goal.status === "completed" ? "opacity-60" : ""
-    } border-base-content/10`}>
+    } border-foreground/10`}>
       <div className="flex items-start gap-3">
         {/* Checkbox */}
         <button
@@ -136,7 +136,7 @@ function GoalCard({
           className={`mt-0.5 shrink-0 w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors ${
             goal.status === "completed"
               ? "bg-emerald-500 border-emerald-500"
-              : "border-base-content/30 hover:border-indigo-400"
+              : "border-foreground/30 hover:border-indigo-400"
           }`}
         >
           {goal.status === "completed" && (
@@ -148,7 +148,7 @@ function GoalCard({
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className={`text-sm font-medium text-base-content ${goal.status === "completed" ? "line-through" : ""}`}>
+            <span className={`text-sm font-medium text-foreground ${goal.status === "completed" ? "line-through" : ""}`}>
               {goal.title}
             </span>
             <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${STATUS_STYLE[goal.status]}`}>
@@ -157,10 +157,10 @@ function GoalCard({
           </div>
 
           {goal.notes && (
-            <p className="text-xs text-base-content/50 mt-1 leading-relaxed">{goal.notes}</p>
+            <p className="text-xs text-foreground/50 mt-1 leading-relaxed">{goal.notes}</p>
           )}
 
-          <div className="flex items-center gap-3 mt-2 text-[11px] text-base-content/40">
+          <div className="flex items-center gap-3 mt-2 text-[11px] text-foreground/40">
             {goal.targetDate && (
               <span className={days !== null && days < 0 ? "text-red-400" : days !== null && days <= 7 ? "text-amber-400" : ""}>
                 {days === null ? "" : days < 0
@@ -180,7 +180,7 @@ function GoalCard({
         <div className="relative shrink-0">
           <button
             onClick={() => setMenuOpen((o) => !o)}
-            className="p-1 text-base-content/30 hover:text-base-content transition-colors rounded"
+            className="p-1 text-foreground/30 hover:text-foreground transition-colors rounded"
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <circle cx="12" cy="5" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="12" cy="19" r="1.5" />
@@ -188,22 +188,22 @@ function GoalCard({
           </button>
           {menuOpen && (
             <div
-              className="absolute right-0 top-6 z-10 bg-base-100 border border-base-content/10 rounded-xl shadow-xl py-1 w-40"
+              className="absolute right-0 top-6 z-10 bg-background border border-foreground/10 rounded-xl shadow-xl py-1 w-40"
               onBlur={() => setMenuOpen(false)}
             >
               {(["active", "paused", "completed"] as Status[]).map((s) => (
                 <button
                   key={s}
                   onClick={() => { onStatusChange(goal.id, s); setMenuOpen(false); }}
-                  className={`w-full text-left px-3 py-1.5 text-xs transition-colors hover:bg-base-content/8 ${goal.status === s ? "text-indigo-400 font-medium" : "text-base-content/60"}`}
+                  className={`w-full text-left px-3 py-1.5 text-xs transition-colors hover:bg-foreground/8 ${goal.status === s ? "text-indigo-400 font-medium" : "text-foreground/60"}`}
                 >
                   Mark {STATUS_LABEL[s].toLowerCase()}
                 </button>
               ))}
-              <div className="border-t border-base-content/10 my-1" />
+              <div className="border-t border-foreground/10 my-1" />
               <button
                 onClick={() => { onEdit(goal); setMenuOpen(false); }}
-                className="w-full text-left px-3 py-1.5 text-xs text-base-content/60 hover:bg-base-content/8 transition-colors"
+                className="w-full text-left px-3 py-1.5 text-xs text-foreground/60 hover:bg-foreground/8 transition-colors"
               >
                 Edit
               </button>
@@ -293,9 +293,9 @@ export default function GoalsView() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-semibold text-base-content">Goals</h1>
+          <h1 className="text-xl font-semibold text-foreground">Goals</h1>
           {goals.length > 0 && (
-            <p className="text-sm text-base-content/40 mt-0.5">
+            <p className="text-sm text-foreground/40 mt-0.5">
               {activeCount} active · {completedCount} completed
             </p>
           )}
@@ -319,15 +319,15 @@ export default function GoalsView() {
 
       {/* Filter tabs */}
       {goals.length > 0 && (
-        <div className="flex gap-1 mb-5 border-b border-base-content/10">
+        <div className="flex gap-1 mb-5 border-b border-foreground/10">
           {(["active", "all", "completed"] as FilterTab[]).map((tab) => (
             <button
               key={tab}
               onClick={() => setFilter(tab)}
               className={`px-3 py-2 text-sm font-medium border-b-2 -mb-px transition-colors capitalize ${
                 filter === tab
-                  ? "border-indigo-500 text-base-content"
-                  : "border-transparent text-base-content/40 hover:text-base-content/70"
+                  ? "border-indigo-500 text-foreground"
+                  : "border-transparent text-foreground/40 hover:text-foreground/70"
               }`}
             >
               {tab === "active" ? "In progress" : tab}
@@ -338,11 +338,11 @@ export default function GoalsView() {
 
       {/* Goal list */}
       {loading ? (
-        <div className="text-center py-20 text-base-content/30 text-sm">Loading…</div>
+        <div className="text-center py-20 text-foreground/30 text-sm">Loading…</div>
       ) : goals.length === 0 && !showForm ? (
         <div className="text-center py-20">
           <div className="text-4xl mb-3">🎯</div>
-          <p className="text-base-content/40 text-sm">No goals yet. Set one to get started.</p>
+          <p className="text-foreground/40 text-sm">No goals yet. Set one to get started.</p>
           <button
             onClick={() => setShowForm(true)}
             className="mt-4 inline-block text-indigo-500 hover:text-indigo-400 text-sm transition-colors"
@@ -371,7 +371,7 @@ export default function GoalsView() {
             ),
           )}
           {filtered.length === 0 && (
-            <p className="text-center py-8 text-base-content/30 text-sm">Nothing here.</p>
+            <p className="text-center py-8 text-foreground/30 text-sm">Nothing here.</p>
           )}
         </div>
       )}

@@ -24,15 +24,15 @@ export default async function AppLayout({
   if (!settings?.onboardingDone) redirect("/onboarding");
 
   return (
-    <div className="flex h-screen bg-base-100 text-base-content overflow-hidden">
-      <aside className="w-56 shrink-0 border-r border-base-200 flex flex-col py-5 px-3">
+    <div className="flex h-screen bg-background text-foreground overflow-hidden">
+      <aside className="w-56 shrink-0 border-r border-border flex flex-col py-5 px-3">
         <div className="px-3 mb-5">
           <Image src="/logo.jpg" alt="Aura" width={80} height={80} className="rounded-xl" priority unoptimized />
         </div>
 
         <SidebarNav />
 
-        <div className="mt-auto pt-4 border-t border-base-200">
+        <div className="mt-auto pt-4 border-t border-border">
           <SearchBar />
         </div>
       </aside>

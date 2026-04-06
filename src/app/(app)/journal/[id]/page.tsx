@@ -37,7 +37,7 @@ export default async function EntryViewPage({
   return (
     <div className="max-w-3xl mx-auto px-6 py-8">
       <div className="flex items-center justify-between mb-6">
-        <Link href="/journal" className="text-sm text-base-content/40 hover:text-base-content transition-colors">
+        <Link href="/journal" className="text-sm text-foreground/40 hover:text-foreground transition-colors">
           ← Journal
         </Link>
         <Link
@@ -48,10 +48,10 @@ export default async function EntryViewPage({
         </Link>
       </div>
 
-      <h1 className="text-2xl font-semibold text-base-content mb-1">
-        {title ?? <span className="text-base-content/40 italic">Untitled</span>}
+      <h1 className="text-2xl font-semibold text-foreground mb-1">
+        {title ?? <span className="text-foreground/40 italic">Untitled</span>}
       </h1>
-      <p className="text-sm text-base-content/40 mb-4">
+      <p className="text-sm text-foreground/40 mb-4">
         {new Date(entry.entryDate).toLocaleDateString("en-US", {
           weekday: "long",
           year: "numeric",
@@ -76,7 +76,7 @@ export default async function EntryViewPage({
           {entry.tags.map((t) => (
             <span
               key={t.id}
-              className="text-xs px-2 py-0.5 bg-base-content/10 text-base-content/60 rounded-full"
+              className="text-xs px-2 py-0.5 bg-foreground/10 text-foreground/60 rounded-full"
             >
               {t.name}
             </span>

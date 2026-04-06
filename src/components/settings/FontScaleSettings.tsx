@@ -42,16 +42,16 @@ export default function FontScaleSettings() {
             className={`flex flex-col items-center justify-center w-20 h-16 rounded-xl border-2 transition-all ${
               isActive
                 ? "border-primary bg-primary/5"
-                : "border-base-200 hover:border-base-300"
+                : "border-border hover:border-border"
             }`}
           >
             <span
-              className="font-semibold text-base-content leading-none mb-1"
+              className="font-semibold text-foreground leading-none mb-1"
               style={{ fontSize: `${s.value * 0.12}px` }}
             >
               Aa
             </span>
-            <span className="text-[10px] text-base-content/50">{s.hint}</span>
+            <span className="text-[10px] text-foreground/50">{s.hint}</span>
           </button>
         );
       })}
