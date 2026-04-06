@@ -1,64 +1,129 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Aura — self-hosted private journal
+# https://github.com/bkfluxx/fictional-whisper
+#
+# BEFORE YOU START — replace every value marked  ← CHANGE THIS
+#
+#   Generate a secret:  openssl rand -base64 32
+#
+# OPTIONAL SERVICES (uncomment to enable):
+#   • whisper  — local speech-to-text for voice note transcription
+#   • ollama   — run the AI locally inside Docker (skip if Ollama is on the host)
+# ─────────────────────────────────────────────────────────────────────────────
+
 services:
+
+  # ── Aura app ───────────────────────────────────────────────────────────────
   app:
     image: ghcr.io/bkfluxx/fictional-whisper:latest
+    container_name: aura
+    restart: unless-stopped
     ports:
-      - "3000:3000"
-    env_file:
-      - .env
+      - "3000:3000"           # change left side to use a different host port
     environment:
-      CRON_SECRET: ${CRON_SECRET:-fw-cron-xK9mP2qR7vLt4nWs8jYd3hBm}
-      BACKUP_SECRET: ${BACKUP_SECRET:-fw-backup-pQ6nF1rZ5cEa2wVi9kTm4jXo}
+      # ── Database (must match the db service below) ──────────────────────
+      POSTGRES_PASSWORD: changeme                     # ← CHANGE THIS
+      POSTGRES_DB: aura
+
+      # ── Auth ────────────────────────────────────────────────────────────
+      NEXTAUTH_SECRET: changeme                       # ← CHANGE THIS
+      # Public URL of your instance — no trailing slash
+      # Use your server's IP or domain, e.g. http://192.168.1.10:3000
+      NEXTAUTH_URL: http://localhost:3000             # ← CHANGE THIS
+
+      # ── Search ──────────────────────────────────────────────────────────
+      # WARNING: do NOT change this after you have entries — it will break search
+      SEARCH_HMAC_SECRET: changeme                    # ← CHANGE THIS
+
+      # ── Backups ─────────────────────────────────────────────────────────
+      BACKUP_PATH: /app/backups
+      BACKUP_SECRET: changeme                         # ← CHANGE THIS (or leave blank to skip)
+      CRON_SECRET: changeme                           # ← CHANGE THIS
+
+      # ── AI / Ollama ─────────────────────────────────────────────────────
+      # If Ollama runs on the Docker host:
+      #   OLLAMA_BASE_URL: http://host.docker.internal:11434
+      # If you uncomment the ollama service below:
+      #   OLLAMA_BASE_URL: http://ollama:11434
+      # You can also configure this later in Settings → AI Settings.
+      # OLLAMA_BASE_URL: http://host.docker.internal:11434
+      # OLLAMA_MODEL: qwen3:5b
+      # OLLAMA_EMBED_MODEL: nomic-embed-text
+
+      # ── Voice transcription ─────────────────────────────────────────────
+      # Uncomment if you enable the whisper service below
       # WHISPER_BASE_URL: http://whisper:8000
+
     volumes:
-      - attachments:/app/attachments
-      - backups:/app/backups
-      - logs:/app/logs
+      - aura_attachments:/app/attachments
+      - aura_backups:/app/backups
+      - aura_logs:/app/logs
     depends_on:
       db:
         condition: service_healthy
-    restart: unless-stopped
 
+  # ── PostgreSQL + pgvector ──────────────────────────────────────────────────
   db:
     image: pgvector/pgvector:pg16
-    ports:
-      - "5432:5432"
+    container_name: aura-db
+    restart: unless-stopped
     environment:
       POSTGRES_DB: aura
       POSTGRES_USER: fw
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_PASSWORD: changeme                     # ← must match app POSTGRES_PASSWORD
     volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - aura_db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U fw -d aura"]
       interval: 5s
       timeout: 5s
       retries: 10
-    restart: unless-stopped
 
+  # ── faster-whisper (optional — local speech-to-text) ──────────────────────
+  # Uncomment this block and set WHISPER_BASE_URL in the app service above.
+  # On first start it will download the model (~500 MB for "small").
+  #
   # whisper:
   #   image: fedirz/faster-whisper-server:latest-cpu
+  #   container_name: aura-whisper
+  #   restart: unless-stopped
+  #   environment:
+  #     ASR_MODEL: Systran/faster-whisper-small   # or: faster-whisper-medium
+  #   volumes:
+  #     - aura_whisper_models:/root/.cache/huggingface
   #   ports:
   #     - "8000:8000"
-  #   environment:
-  #     ASR_MODEL: ${WHISPER_MODEL:-Systran/faster-whisper-small}
-  #   volumes:
-  #     - whisper_models:/root/.cache/huggingface
-  #   restart: unless-stopped
 
+  # ── Ollama (optional — run AI inside Docker) ───────────────────────────────
+  # Only needed if you don't already have Ollama on the host.
+  # After starting, pull models with:
+  #   docker exec aura-ollama ollama pull qwen3:5b
+  #   docker exec aura-ollama ollama pull nomic-embed-text
+  #
   # ollama:
   #   image: ollama/ollama:latest
-  #   volumes:
-  #     - ollama_models:/root/.ollama
-  #   environment:
-  #     - OLLAMA_NUM_PARALLEL=1
-  #     - OLLAMA_MAX_LOADED_MODELS=1
+  #   container_name: aura-ollama
   #   restart: unless-stopped
+  #   volumes:
+  #     - aura_ollama_models:/root/.ollama
+  #   environment:
+  #     OLLAMA_NUM_PARALLEL: "1"
+  #     OLLAMA_MAX_LOADED_MODELS: "1"
+  #   ports:
+  #     - "11434:11434"
+  # # Uncomment for GPU (NVIDIA):
+  # # deploy:
+  # #   resources:
+  # #     reservations:
+  # #       devices:
+  # #         - driver: nvidia
+  # #           count: all
+  # #           capabilities: [gpu]
 
 volumes:
-  pgdata:
-  attachments:
-  backups:
-  logs:
-  whisper_models:
-  ollama_models:
+  aura_db:
+  aura_attachments:
+  aura_backups:
+  aura_logs:
+  aura_whisper_models:
+  aura_ollama_models:
