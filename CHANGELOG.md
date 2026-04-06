@@ -4,6 +4,32 @@ All notable changes to Aura will be documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] - 2026-04-06
+
+### Added
+
+- Voice note recordings saved as encrypted audio attachments on journal entries
+- Custom waveform player with amplitude visualisation, scrubbing, and play/pause
+- faster-whisper transcription service in Docker Compose — one-click transcribe from any voice note
+- Voice-only indicator on journal list (italic "Voice note" label + mic badge)
+- Reading pane on large screens — click an entry to preview it without navigating away
+- Full-height mic strip on entry cards that have voice recordings
+- Text scale setting in Settings → Appearance (90 % – 130 %, persisted across sessions)
+- Delete entry button with inline confirm dialog on the edit page
+- Voice notes now visible on the read-only entry view page
+
+### Changed
+
+- AI assistant renamed from **Whisper** to **Aura** throughout the app, onboarding, system prompts, and personas
+- Voice recording UX redesigned: record → preview with playback → Save note / Transcribe / Discard
+- Recording is preserved as an attachment even after transcription; users delete it manually
+- Whisper transcription service added to `docker-compose.dev.yml`; commented-out stub in production `docker-compose.yml`
+
+### Fixed
+
+- Waveform bars no longer stretch on wide layouts (capped at 4 px)
+- Voice notes now appear on the read-only entry view page, not just the edit page
+
 ## [0.2.0] - 2026-04-03
 
 ### Added
