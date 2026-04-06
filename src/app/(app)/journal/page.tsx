@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getDEK } from "@/lib/session/dek-store";
 import { decryptString } from "@/lib/crypto";
 import { getJournalType } from "@/lib/journal-types";
-import JournalView, { type DayGroup } from "@/components/journal/JournalView";
+import JournalView, { type DayGroup, type CategoryLabel } from "@/components/journal/JournalView";
 
 function formatDay(dateStr: string): { weekday: string; date: string } {
   const d = new Date(dateStr + "T00:00:00");
@@ -31,7 +31,11 @@ function formatDay(dateStr: string): { weekday: string; date: string } {
 }
 
 function textPreview(html: string, maxLen = 140): string {
-  const text = html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  // Strip heading tags AND their content — headings are template scaffolding,
+  // not entry body text worth previewing.
+  const noHeadings = html.replace(/<h[1-6][^>]*>.*?<\/h[1-6]>/gi, " ");
+  const text = noHeadings.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  if (!text) return "";
   if (text.length <= maxLen) return text;
   return text.slice(0, maxLen).replace(/\s+\S*$/, "") + "…";
 }
@@ -50,26 +54,32 @@ export default async function JournalPage({
   const { tag, from, to, category } = await searchParams;
   const categoryDef = category ? getJournalType(category) : null;
 
-  const entries = await prisma.entry.findMany({
-    where: {
-      ...(tag ? { tags: { some: { name: tag } } } : {}),
-      ...(category ? { categories: { has: category } } : {}),
-      ...(from || to
-        ? {
-            entryDate: {
-              ...(from ? { gte: new Date(from) } : {}),
-              ...(to ? { lte: new Date(to) } : {}),
-            },
-          }
-        : {}),
-    },
-    include: {
-      tags: { select: { id: true, name: true } },
-      _count: { select: { attachments: true } },
-    },
-    orderBy: { entryDate: "desc" },
-    take: 100,
-  });
+  const [entries, userCategories] = await Promise.all([
+    prisma.entry.findMany({
+      where: {
+        ...(tag ? { tags: { some: { name: tag } } } : {}),
+        ...(category ? { categories: { has: category } } : {}),
+        ...(from || to
+          ? {
+              entryDate: {
+                ...(from ? { gte: new Date(from) } : {}),
+                ...(to ? { lte: new Date(to) } : {}),
+              },
+            }
+          : {}),
+      },
+      include: {
+        tags: { select: { id: true, name: true } },
+        _count: { select: { attachments: true } },
+      },
+      orderBy: { entryDate: "desc" },
+      take: 100,
+    }),
+    prisma.userCategory.findMany({ select: { id: true, name: true, emoji: true } }),
+  ]);
+
+  // Build a lookup for user-created categories by ID
+  const userCatMap = new Map(userCategories.map((c) => [c.id, c]));
 
   // Build decrypted day groups for the client component
   const grouped = new Map<string, DayGroup>();
@@ -85,6 +95,15 @@ export default async function JournalPage({
     const preview = textPreview(body);
     const hasVoice = e._count.attachments > 0;
 
+    // Resolve each category ID to a label — built-in types first, then user categories
+    const categoryLabels: CategoryLabel[] = e.categories.map((id) => {
+      const builtin = getJournalType(id);
+      if (builtin) return { id, emoji: builtin.emoji, name: builtin.name };
+      const user = userCatMap.get(id);
+      if (user) return { id, emoji: user.emoji, name: user.name };
+      return { id, emoji: "📝", name: id };
+    });
+
     grouped.get(key)!.entries.push({
       id: e.id,
       title,
@@ -92,7 +111,7 @@ export default async function JournalPage({
       hasVoice,
       isVoiceOnly: hasVoice && !preview,
       mood: e.mood,
-      categories: e.categories,
+      categoryLabels,
       tags: e.tags,
     });
   }

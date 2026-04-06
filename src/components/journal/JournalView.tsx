@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getJournalType } from "@/lib/journal-types";
 import EntryPane from "./EntryPane";
 
 const MOOD_DOT: Record<string, string> = {
@@ -13,6 +12,12 @@ const MOOD_DOT: Record<string, string> = {
   awful: "bg-red-500",
 };
 
+export interface CategoryLabel {
+  id: string;
+  emoji: string;
+  name: string;
+}
+
 export interface EntryListItem {
   id: string;
   title: string | null;
@@ -20,7 +25,7 @@ export interface EntryListItem {
   hasVoice: boolean;
   isVoiceOnly: boolean;
   mood: string | null;
-  categories: string[];
+  categoryLabels: CategoryLabel[];
   tags: { id: string; name: string }[];
 }
 
@@ -78,11 +83,10 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
 
               {/* Entry cards */}
               {dayGroup.entries.map((e) => {
-                const firstCat = e.categories[0];
-                const jt = firstCat ? getJournalType(firstCat) : null;
+                const firstCat = e.categoryLabels[0];
                 const dotColor = e.mood
                   ? (MOOD_DOT[e.mood] ?? "bg-primary")
-                  : jt
+                  : firstCat
                     ? "bg-primary"
                     : "bg-base-content/30";
                 const isSelected = selectedId === e.id;
@@ -113,8 +117,8 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                               <span className="text-base-content/40 font-normal italic">Untitled</span>
                             )}
                           </span>
-                          {jt && (
-                            <span className="text-base leading-none mt-0.5 shrink-0">{jt.emoji}</span>
+                          {firstCat && (
+                            <span className="text-base leading-none mt-0.5 shrink-0">{firstCat.emoji}</span>
                           )}
                         </div>
 
@@ -126,21 +130,18 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                           </p>
                         ) : null}
 
-                        {(e.categories.length > 0 || e.tags.length > 0 || e.mood) && (
+                        {(e.categoryLabels.length > 0 || e.tags.length > 0 || e.mood) && (
                           <div className="flex gap-1 mt-2 flex-wrap items-center">
                             {e.mood && (
                               <span className="text-xs px-2 py-0.5 bg-base-content/10 text-base-content/60 rounded-full capitalize">
                                 {e.mood}
                               </span>
                             )}
-                            {e.categories.map((c) => {
-                              const catJt = getJournalType(c);
-                              return (
-                                <span key={c} className="text-xs px-2 py-0.5 bg-indigo-500/15 text-indigo-500 rounded-full">
-                                  {catJt ? `${catJt.emoji} ${catJt.name}` : c}
-                                </span>
-                              );
-                            })}
+                            {e.categoryLabels.map((c) => (
+                              <span key={c.id} className="text-xs px-2 py-0.5 bg-indigo-500/15 text-indigo-500 rounded-full">
+                                {c.emoji} {c.name}
+                              </span>
+                            ))}
                             {e.tags.map((t) => (
                               <span key={t.id} className="text-xs px-2 py-0.5 bg-base-content/10 text-base-content/60 rounded-full">
                                 #{t.name}
