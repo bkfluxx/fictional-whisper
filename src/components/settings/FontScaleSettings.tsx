@@ -1,17 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Slider } from "@/components/ui/slider";
 
 export const FONT_SCALE_KEY = "aura-font-scale";
-export const FONT_SCALE_DEFAULT = 110;
-
-const STEPS = [
-  { value: 90,  label: "Small",   hint: "90%" },
-  { value: 100, label: "Default", hint: "100%" },
-  { value: 110, label: "Medium",  hint: "110%" },
-  { value: 120, label: "Large",   hint: "120%" },
-  { value: 130, label: "Larger",  hint: "130%" },
-];
+export const FONT_SCALE_DEFAULT = 100;
 
 export function applyFontScale(scale: number) {
   document.documentElement.style.fontSize = `${scale}%`;
@@ -26,35 +19,38 @@ export default function FontScaleSettings() {
     if (saved) setScale(Number(saved));
   }, []);
 
-  function select(value: number) {
-    setScale(value);
-    applyFontScale(value);
+  function handleChange(value: number | readonly number[]) {
+    const next = Array.isArray(value) ? (value as number[])[0] : (value as number);
+    setScale(next);
+    applyFontScale(next);
   }
 
   return (
-    <div className="flex gap-2 flex-wrap">
-      {STEPS.map((s) => {
-        const isActive = scale === s.value;
-        return (
-          <button
-            key={s.value}
-            onClick={() => select(s.value)}
-            className={`flex flex-col items-center justify-center w-20 h-16 rounded-xl border-2 transition-all ${
-              isActive
-                ? "border-primary bg-primary/5"
-                : "border-border hover:border-border"
-            }`}
-          >
-            <span
-              className="font-semibold text-foreground leading-none mb-1"
-              style={{ fontSize: `${s.value * 0.12}px` }}
-            >
-              Aa
-            </span>
-            <span className="text-[10px] text-foreground/50">{s.hint}</span>
-          </button>
-        );
-      })}
+    <div className="space-y-4 max-w-sm">
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-foreground/60">Small</span>
+        <span className="text-sm font-medium text-foreground tabular-nums">{scale}%</span>
+        <span className="text-sm text-foreground/60">Large</span>
+      </div>
+      <Slider
+        min={100}
+        max={120}
+        step={5}
+        value={scale}
+        onValueChange={handleChange}
+        aria-label="Font size"
+      />
+      <div className="flex justify-between text-[10px] text-foreground/30 tabular-nums px-0.5">
+        {[100, 105, 110, 115, 120].map((v) => (
+          <span key={v}>{v}%</span>
+        ))}
+      </div>
+      <p
+        className="text-foreground/60 leading-relaxed mt-2 transition-all"
+        style={{ fontSize: `${scale * 0.01 * 0.875}rem` }}
+      >
+        Preview — The quick brown fox jumps over the lazy dog.
+      </p>
     </div>
   );
 }

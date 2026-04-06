@@ -9,6 +9,8 @@ import AiModelsSettings from "./AiModelsSettings";
 import TemplatesSettings from "./TemplatesSettings";
 import ThemeSettings from "./ThemeSettings";
 import FontScaleSettings from "./FontScaleSettings";
+import ColorThemeSettings from "./ColorThemeSettings";
+import DensitySettings from "./DensitySettings";
 import CategoriesSettings from "./CategoriesSettings";
 import PersonasSettings from "./PersonasSettings";
 import ErrorLogSection from "./ErrorLogSection";
@@ -51,16 +53,40 @@ export default function SettingsTabs() {
       {/* Tab panels */}
       {active === "appearance" && (
         <section className="space-y-10">
+          {/* Light / dark / system */}
           <div>
             <div className="mb-6">
-              <h2 className="text-base font-medium text-foreground">Theme</h2>
+              <h2 className="text-base font-medium text-foreground">Light / Dark mode</h2>
               <p className="text-sm text-foreground/40 mt-0.5">
-                Choose a color theme. "System" follows your OS light / dark preference.
+                System follows your OS preference. Switch anytime.
               </p>
             </div>
             <ThemeSettings />
           </div>
 
+          {/* Color palette */}
+          <div className="border-t border-border pt-8">
+            <div className="mb-6">
+              <h2 className="text-base font-medium text-foreground">Color palette</h2>
+              <p className="text-sm text-foreground/40 mt-0.5">
+                Pick a preset or build a custom palette. Changes apply instantly.
+              </p>
+            </div>
+            <ColorThemeSettings />
+          </div>
+
+          {/* Density */}
+          <div className="border-t border-border pt-8">
+            <div className="mb-6">
+              <h2 className="text-base font-medium text-foreground">Density</h2>
+              <p className="text-sm text-foreground/40 mt-0.5">
+                Controls spacing and padding throughout the app.
+              </p>
+            </div>
+            <DensitySettings />
+          </div>
+
+          {/* Font size */}
           <div className="border-t border-border pt-8">
             <div className="mb-6">
               <h2 className="text-base font-medium text-foreground">Text size</h2>

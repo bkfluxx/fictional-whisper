@@ -1,17 +1,26 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Lora, Roboto, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const lora = Lora({
+  variable: "--font-lora",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const roboto = Roboto({
+  variable: "--font-roboto",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -27,15 +36,17 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${lora.variable} ${roboto.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        {/* Restore saved font scale before first paint */}
+        {/* Restore palette, font scale, and density before first paint to avoid flash */}
         <Script
-          id="font-scale-init"
+          id="aura-init"
           strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: `(function(){try{var s=localStorage.getItem('aura-font-scale');if(s)document.documentElement.style.fontSize=s+'%'}catch(e){}})();` }}
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var pc=localStorage.getItem('aura-palette-css');if(pc){var ps=document.createElement('style');ps.id='aura-palette';ps.textContent=pc;document.head.appendChild(ps);}}catch(e){}try{var s=localStorage.getItem('aura-font-scale');if(s)document.documentElement.style.fontSize=s+'%';}catch(e){}try{var d=localStorage.getItem('aura-density');if(d)document.documentElement.setAttribute('data-density',d);}catch(e){}})();`,
+          }}
         />
         <ThemeProvider>
           {children}
