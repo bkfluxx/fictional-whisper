@@ -20,13 +20,17 @@ export default async function EntryViewPage({
   const dek = getDEK(session.jti);
   if (!dek) redirect("/login");
 
-  const entry = await prisma.entry.findUnique({
-    where: { id },
-    include: { tags: true, _count: { select: { attachments: true } } },
-  });
+  const [entry, userCategories] = await Promise.all([
+    prisma.entry.findUnique({
+      where: { id },
+      include: { tags: true, _count: { select: { attachments: true } } },
+    }),
+    prisma.userCategory.findMany({ select: { id: true, name: true, emoji: true } }),
+  ]);
 
   if (!entry) notFound();
 
+  const userCatMap = new Map(userCategories.map((c) => [c.id, c]));
   const title = entry.title ? decryptString(entry.title, dek) : null;
   const body = decryptString(entry.body, dek);
 
@@ -61,12 +65,11 @@ export default async function EntryViewPage({
         <div className="flex gap-1 mb-6 flex-wrap">
           {entry.categories.map((c) => {
             const jt = getJournalType(c);
+            const uc = userCatMap.get(c);
+            const label = jt ? `${jt.emoji} ${jt.name}` : uc ? `${uc.emoji} ${uc.name}` : c;
             return (
-              <span
-                key={c}
-                className="text-xs px-2 py-0.5 bg-indigo-950 text-indigo-400 rounded-full"
-              >
-                {jt ? `${jt.emoji} ${jt.name}` : c}
+              <span key={c} className="text-xs px-2 py-0.5 bg-indigo-950 text-indigo-400 rounded-full">
+                {label}
               </span>
             );
           })}

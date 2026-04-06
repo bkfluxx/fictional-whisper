@@ -6,6 +6,8 @@ import { getJournalType } from "@/lib/journal-types";
 import VoiceNotesList from "@/components/entries/VoiceNotesList";
 import type { DecryptedEntry } from "@/types/entry";
 
+interface UserCat { id: string; name: string; emoji: string; }
+
 interface Props {
   entryId: string;
   onClose: () => void;
@@ -13,7 +15,15 @@ interface Props {
 
 export default function EntryPane({ entryId, onClose }: Props) {
   const [entry, setEntry] = useState<DecryptedEntry | null>(null);
+  const [userCatMap, setUserCatMap] = useState<Map<string, UserCat>>(new Map());
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/categories")
+      .then((r) => r.json())
+      .then((data: UserCat[]) => setUserCatMap(new Map(data.map((c) => [c.id, c]))))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -75,9 +85,11 @@ export default function EntryPane({ entryId, onClose }: Props) {
               <div className="flex gap-1 mb-6 flex-wrap">
                 {entry.categories.map((c) => {
                   const jt = getJournalType(c);
+                  const uc = userCatMap.get(c);
+                  const label = jt ? `${jt.emoji} ${jt.name}` : uc ? `${uc.emoji} ${uc.name}` : c;
                   return (
                     <span key={c} className="text-xs px-2 py-0.5 bg-indigo-950 text-indigo-400 rounded-full">
-                      {jt ? `${jt.emoji} ${jt.name}` : c}
+                      {label}
                     </span>
                   );
                 })}
