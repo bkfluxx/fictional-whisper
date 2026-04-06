@@ -96,13 +96,14 @@ export default async function AnalyticsPage() {
   if (!dek) redirect("/login");
 
   // Fetch all data in parallel
-  const [digestRows, insightRow, entries] = await Promise.all([
+  const [digestRows, insightRow, entries, goalRows] = await Promise.all([
     prisma.weeklyDigest.findMany({ orderBy: { weekStart: "desc" }, take: 8 }),
     prisma.aiInsight.findUnique({ where: { id: "singleton" } }),
     prisma.entry.findMany({
       select: { entryDate: true, mood: true, categories: true },
       orderBy: { entryDate: "asc" },
     }),
+    prisma.goal.findMany({ orderBy: { createdAt: "asc" } }),
   ]);
 
   const digests = digestRows.map((r) => ({
@@ -173,6 +174,15 @@ export default async function AnalyticsPage() {
 
   const heatmapWeeks = buildHeatmapWeeks(entries.map((e) => e.entryDate));
 
+  // Goals
+  const goals = goalRows.map((g) => ({
+    id: g.id,
+    title: decryptString(g.title, dek),
+    status: g.status,
+    targetDate: g.targetDate?.toISOString() ?? null,
+    createdAt: g.createdAt.toISOString(),
+  }));
+
   return (
     <div className="max-w-[900px] mx-auto px-6 py-8">
       <h1 className="text-xl font-semibold text-base-content mb-8">Analytics</h1>
@@ -188,6 +198,7 @@ export default async function AnalyticsPage() {
         categoryBreakdown={categoryBreakdown}
         digests={digests}
         latestInsight={latestInsight}
+        goals={goals}
       />
     </div>
   );

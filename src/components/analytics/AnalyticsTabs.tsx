@@ -26,6 +26,14 @@ interface Insight {
   generatedAt: string;
 }
 
+interface GoalSummary {
+  id: string;
+  title: string;
+  status: string;
+  targetDate: string | null;
+  createdAt: string;
+}
+
 interface AnalyticsTabsProps {
   // Stats
   totalEntries: number;
@@ -37,6 +45,8 @@ interface AnalyticsTabsProps {
   dowCounts: number[];
   moodBreakdown: [string, number][];
   categoryBreakdown: { name: string; count: number }[];
+  // Goals
+  goals: GoalSummary[];
   // Weekly Digest
   digests: Digest[];
   // Insights
@@ -89,6 +99,7 @@ export default function AnalyticsTabs({
   dowCounts,
   moodBreakdown,
   categoryBreakdown,
+  goals,
   digests,
   latestInsight,
 }: AnalyticsTabsProps) {
@@ -96,6 +107,21 @@ export default function AnalyticsTabs({
 
   const dowMax = Math.max(...dowCounts, 1);
   const latestDigest = digests[0] ?? null;
+
+  // Goals derived stats
+  const activeGoals = goals.filter((g) => g.status === "active");
+  const pausedGoals = goals.filter((g) => g.status === "paused");
+  const completedGoals = goals.filter((g) => g.status === "completed");
+  const completionRate =
+    goals.length > 0 ? Math.round((completedGoals.length / goals.length) * 100) : 0;
+
+  function daysUntil(iso: string): number {
+    const target = new Date(iso);
+    target.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return Math.ceil((target.getTime() - today.getTime()) / 86400000);
+  }
 
   return (
     <div>
@@ -179,7 +205,7 @@ export default function AnalyticsTabs({
                 </section>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
                 <section>
                   <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-4">
                     Mood breakdown
@@ -218,6 +244,96 @@ export default function AnalyticsTabs({
                   )}
                 </section>
               </div>
+
+              {/* Goals section */}
+              {goals.length > 0 && (
+                <section>
+                  <h2 className="text-xs font-semibold text-base-content/40 uppercase tracking-widest mb-4">
+                    Goal progress
+                  </h2>
+                  <div className="grid grid-cols-3 gap-4 mb-6">
+                    <div className="bg-base-200 rounded-xl p-4 text-center">
+                      <p className="text-2xl font-semibold text-base-content">{activeGoals.length}</p>
+                      <p className="text-xs text-base-content/40 mt-0.5">Active</p>
+                    </div>
+                    <div className="bg-base-200 rounded-xl p-4 text-center">
+                      <p className="text-2xl font-semibold text-emerald-400">{completedGoals.length}</p>
+                      <p className="text-xs text-base-content/40 mt-0.5">Completed</p>
+                    </div>
+                    <div className="bg-base-200 rounded-xl p-4 text-center">
+                      <p className="text-2xl font-semibold text-base-content">{completionRate}%</p>
+                      <p className="text-xs text-base-content/40 mt-0.5">Completion rate</p>
+                    </div>
+                  </div>
+
+                  {/* Completion progress bar */}
+                  {goals.length > 0 && (
+                    <div className="mb-6">
+                      <div className="h-2 bg-base-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-emerald-500 rounded-full transition-all"
+                          style={{ width: `${completionRate}%` }}
+                        />
+                      </div>
+                      <p className="text-xs text-base-content/30 mt-1.5">
+                        {completedGoals.length} of {goals.length} goals completed
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Active & paused goals list */}
+                  {(activeGoals.length > 0 || pausedGoals.length > 0) && (
+                    <div className="space-y-2">
+                      {[...activeGoals, ...pausedGoals].map((g) => {
+                        const days = g.targetDate ? daysUntil(g.targetDate) : null;
+                        const overdue = days !== null && days < 0;
+                        const soon = days !== null && days >= 0 && days <= 7;
+                        return (
+                          <div
+                            key={g.id}
+                            className="flex items-center gap-3 bg-base-200 rounded-lg px-3 py-2.5"
+                          >
+                            <div
+                              className={`w-2 h-2 rounded-full shrink-0 ${
+                                g.status === "paused"
+                                  ? "bg-base-content/30"
+                                  : "bg-indigo-400"
+                              }`}
+                            />
+                            <span className="flex-1 text-sm text-base-content truncate">
+                              {g.title}
+                            </span>
+                            {days !== null && (
+                              <span
+                                className={`text-[11px] shrink-0 ${
+                                  overdue
+                                    ? "text-red-400"
+                                    : soon
+                                      ? "text-amber-400"
+                                      : "text-base-content/30"
+                                }`}
+                              >
+                                {overdue
+                                  ? `${Math.abs(days)}d overdue`
+                                  : days === 0
+                                    ? "Due today"
+                                    : days === 1
+                                      ? "Due tomorrow"
+                                      : `${days}d left`}
+                              </span>
+                            )}
+                            {g.status === "paused" && (
+                              <span className="text-[10px] text-base-content/30 shrink-0">
+                                paused
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </section>
+              )}
             </>
           )}
         </>
