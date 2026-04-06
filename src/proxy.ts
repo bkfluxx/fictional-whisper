@@ -16,8 +16,9 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  // Protect all app routes; leave /login and /api/auth/* public
+  // Protect all app routes; leave setup, login, auth endpoints, and
+  // static assets public so first-run setup and the login page work.
   matcher: [
-    "/((?!login|api/auth|_next/static|_next/image|favicon\\.ico).*)",
+    "/((?!login|setup|api/setup|api/auth|_next/static|_next/image|favicon\\.ico|.*\\.(?:jpg|jpeg|png|svg|ico|webp)$).*)",
   ],
 };
