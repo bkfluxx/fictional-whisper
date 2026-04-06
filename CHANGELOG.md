@@ -4,6 +4,24 @@ All notable changes to Aura will be documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-04-06
+
+### Added
+
+- Guided / conversational journal mode — Aura leads a reflective conversation and synthesises it into a structured entry with mood and categories; accessible from the New Entry picker
+
+### Fixed
+
+- User-created categories (auto-generated during onboarding) now display correctly with their emoji and name on the journal list, reading pane, and full entry view page — previously showed raw DB IDs
+- Entry preview on the journal list no longer shows template heading text (e.g. "Date & Location Species & Count") — headings are stripped before building the preview
+- Onboarding chat now correctly embraces non-standard journaling purposes (e.g. recipe logging, workout tracking) and tells the user a custom template will be created, instead of incorrectly deflecting
+- First-run setup page and `/api/setup` were blocked by the auth proxy, causing a redirect to `/login` on a fresh install — proxy matcher now correctly excludes `/setup`, `/api/setup`, and public assets
+
+### Changed
+
+- `docker-compose.yml` is now fully self-contained with no bind mounts — the pgvector extension is created by the entrypoint at startup, making it compatible with Portainer stacks without any local files
+- README updated with a ready-to-paste Portainer stack template and improved quick-start documentation
+
 ## [0.3.0] - 2026-04-06
 
 ### Added
