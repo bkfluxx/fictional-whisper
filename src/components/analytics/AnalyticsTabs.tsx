@@ -238,7 +238,7 @@ export default function AnalyticsTabs({
                         label={name}
                         count={count}
                         max={categoryBreakdown[0].count}
-                        color="bg-secondary"
+                        color="bg-chart-2"
                       />
                     ))
                   )}
@@ -257,7 +257,7 @@ export default function AnalyticsTabs({
                       <p className="text-xs text-foreground/40 mt-0.5">Active</p>
                     </div>
                     <div className="bg-card rounded-xl p-4 text-center">
-                      <p className="text-2xl font-semibold text-emerald-400">{completedGoals.length}</p>
+                      <p className="text-2xl font-semibold text-primary">{completedGoals.length}</p>
                       <p className="text-xs text-foreground/40 mt-0.5">Completed</p>
                     </div>
                     <div className="bg-card rounded-xl p-4 text-center">
@@ -269,9 +269,9 @@ export default function AnalyticsTabs({
                   {/* Completion progress bar */}
                   {goals.length > 0 && (
                     <div className="mb-6">
-                      <div className="h-2 bg-card rounded-full overflow-hidden">
+                      <div className="h-2 bg-muted rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-emerald-500 rounded-full transition-all"
+                          className="h-full bg-primary rounded-full transition-all"
                           style={{ width: `${completionRate}%` }}
                         />
                       </div>
@@ -297,7 +297,7 @@ export default function AnalyticsTabs({
                               className={`w-2 h-2 rounded-full shrink-0 ${
                                 g.status === "paused"
                                   ? "bg-foreground/30"
-                                  : "bg-indigo-400"
+                                  : "bg-primary"
                               }`}
                             />
                             <span className="flex-1 text-sm text-foreground truncate">

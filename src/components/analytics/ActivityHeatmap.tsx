@@ -44,7 +44,7 @@ function monthLabel(weeks: Day[][], wi: number): string | null {
 
 export default function ActivityHeatmap({ weeks }: ActivityHeatmapProps) {
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       <div className="flex gap-0.5 min-w-max">
         {/* Day-of-week labels on the left */}
         <div className="flex flex-col gap-0.5 mr-1">

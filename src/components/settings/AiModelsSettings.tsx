@@ -8,6 +8,13 @@
  */
 
 import { useState, useEffect } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ModelInfo {
   name: string;
@@ -172,12 +179,12 @@ export default function AiModelsSettings() {
               setTestResult(null);
             }}
             placeholder="http://localhost:11434"
-            className="flex-1 bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 placeholder:text-foreground/30"
+            className="flex-1 h-9 bg-background border border-border text-foreground text-sm rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-foreground/30"
           />
           <button
             onClick={testUrl}
             disabled={testingUrl || !draft.baseUrl.trim()}
-            className="px-3 py-2 bg-foreground/10 hover:bg-foreground/20 disabled:opacity-40 text-foreground text-sm rounded-lg transition-colors whitespace-nowrap"
+            className="h-9 px-4 bg-foreground/10 hover:bg-foreground/20 disabled:opacity-40 text-foreground text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
           >
             {testingUrl ? "Testing…" : "Test"}
           </button>
@@ -206,7 +213,7 @@ export default function AiModelsSettings() {
           value={draft.whisperBaseUrl}
           onChange={(e) => setDraft((d) => ({ ...d, whisperBaseUrl: e.target.value }))}
           placeholder="http://localhost:8080"
-          className="w-full bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 placeholder:text-foreground/30"
+          className="w-full h-9 bg-background border border-border text-foreground text-sm rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-foreground/30"
         />
         <p className="text-xs text-foreground/40 mt-1">
           URL of a local Whisper-compatible server (e.g.{" "}
@@ -226,22 +233,23 @@ export default function AiModelsSettings() {
                 (analysis, chat, prompts)
               </span>
             </label>
-            <select
+            <Select
               value={draft.model}
-              onChange={(e) =>
-                setDraft((d) => ({ ...d, model: e.target.value }))
-              }
-              className="w-full bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500"
+              onValueChange={(v) => v && setDraft((d) => ({ ...d, model: v }))}
             >
-              <option value="" disabled>Select a model…</option>
-              {models
-                .filter((m) => !m.name.startsWith("nomic-embed") && !m.name.startsWith("qwen3-embedding") && !m.name.includes("embed"))
-                .map((m) => (
-                  <option key={m.name} value={m.name}>
-                    {m.name} ({formatBytes(m.size)})
-                  </option>
-                ))}
-            </select>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a model…" />
+              </SelectTrigger>
+              <SelectContent>
+                {models
+                  .filter((m) => !m.name.startsWith("nomic-embed") && !m.name.startsWith("qwen3-embedding") && !m.name.includes("embed"))
+                  .map((m) => (
+                    <SelectItem key={m.name} value={m.name}>
+                      {m.name} ({formatBytes(m.size)})
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Embed model — fixed */}
