@@ -19,6 +19,6 @@ export const config = {
   // Protect all app routes; leave setup, login, auth endpoints, and
   // static assets public so first-run setup and the login page work.
   matcher: [
-    "/((?!login|setup|api/setup|api/auth|_next/static|_next/image|favicon\\.ico|.*\\.(?:jpg|jpeg|png|svg|ico|webp)$).*)",
+    "/((?!login|setup|recover|api/setup|api/auth|api/auth/recover|_next/static|_next/image|favicon\\.ico|.*\\.(?:jpg|jpeg|png|svg|ico|webp)$).*)",
   ],
 };

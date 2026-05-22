@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { BarChart2 } from "lucide-react";
 import StatCard from "@/components/analytics/StatCard";
 import HorizontalBar from "@/components/analytics/HorizontalBar";
 import MonthlyBars from "@/components/analytics/MonthlyBars";
 import ActivityHeatmap from "@/components/analytics/ActivityHeatmap";
 import DigestSection from "@/components/analytics/DigestSection";
 import InsightsSection from "@/components/analytics/InsightsSection";
+import EmptyState from "@/components/ui/EmptyState";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -146,9 +148,12 @@ export default function AnalyticsTabs({
       {active === "stats" && (
         <>
           {totalEntries === 0 ? (
-            <p className="text-foreground/40">
-              No entries yet — start writing and your stats will appear here.
-            </p>
+            <EmptyState
+              icon={BarChart2}
+              heading="No data yet"
+              subtitle="Write your first journal entry and your stats will start appearing here."
+              action={{ label: "Write your first entry", href: "/journal/new" }}
+            />
           ) : (
             <>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">

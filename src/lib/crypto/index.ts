@@ -6,6 +6,7 @@ import { aesEncrypt, aesDecrypt } from "./aes";
 
 export { deriveKEK } from "./kek";
 export { generateDEK, wrapDEK, unwrapDEK } from "./dek";
+export { generateRecoveryCode, normalizeRecoveryCode } from "./recovery-code";
 
 /** Encrypts a UTF-8 string. Returns a base64 blob for storage in a TEXT column. */
 export function encryptString(plaintext: string, dek: Buffer): string {

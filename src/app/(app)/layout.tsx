@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import Image from "next/image";
 import SearchBar from "@/components/search/SearchBar";
 import SidebarNav from "@/components/layout/SidebarNav";
+import MobileNav from "@/components/layout/MobileNav";
 import OllamaWarmup from "@/components/layout/OllamaWarmup";
 import IdleLogout from "@/components/layout/IdleLogout";
 
@@ -25,7 +26,8 @@ export default async function AppLayout({
 
   return (
     <div className="flex h-screen bg-background text-foreground overflow-hidden">
-      <aside className="w-56 shrink-0 border-r border-border flex flex-col py-5 px-3">
+      {/* Desktop sidebar */}
+      <aside className="hidden md:flex w-56 shrink-0 border-r border-border flex-col py-5 px-3">
         <div className="px-3 mb-5">
           <Image src="/logo.jpg" alt="Aura" width={80} height={80} className="rounded-xl" priority unoptimized />
         </div>
@@ -37,7 +39,11 @@ export default async function AppLayout({
         </div>
       </aside>
 
-      <main className="flex-1 overflow-y-auto min-h-0">{children}</main>
+      {/* Mobile top bar + slide-over drawer */}
+      <MobileNav />
+
+      {/* Main content — top padding on mobile clears the fixed top bar */}
+      <main className="flex-1 overflow-y-auto min-h-0 pt-14 md:pt-0">{children}</main>
       <OllamaWarmup />
       <IdleLogout />
     </div>

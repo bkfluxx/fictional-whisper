@@ -8,12 +8,16 @@
  */
 
 import { useState, useRef, useEffect, useCallback, FormEvent } from "react";
+import { ChevronDown, BrainCircuit } from "lucide-react";
+import { Toggle } from "@/components/ui/toggle";
 
 interface Message {
   id?: string;
   role: "user" | "assistant";
   content: string;
-  entryDraft?: EntryDraft; // only present on assistant messages that contain a draft
+  thinkingContent?: string;   // accumulated thinking text
+  thinkingDuration?: number;  // seconds; set when thinking phase ends
+  entryDraft?: EntryDraft;
 }
 
 interface EntryDraft {
@@ -44,6 +48,56 @@ function relativeDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
+// ── ThinkingBlock ──────────────────────────────────────────────────────────
+
+function ThinkingBlock({
+  content,
+  duration,
+  streaming,
+}: {
+  content: string;
+  duration?: number;   // undefined = still thinking
+  streaming: boolean;  // true = this is the active streaming message
+}) {
+  const isThinkingActive = streaming && duration === undefined;
+  // Auto-open while thinking, auto-close once done
+  const [open, setOpen] = useState(true);
+
+  useEffect(() => {
+    if (!isThinkingActive) setOpen(false);
+  }, [isThinkingActive]);
+
+  const label = duration !== undefined
+    ? `Thought for ${duration}s`
+    : "Thinking\u2026";
+
+  return (
+    <div className="mb-3">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center gap-1.5 text-xs text-foreground/40 hover:text-foreground/60 transition-colors select-none"
+      >
+        {/* status dot */}
+        <span
+          className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+            isThinkingActive ? "bg-primary animate-pulse" : "bg-foreground/25"
+          }`}
+        />
+        <span>{label}</span>
+        <ChevronDown
+          className={`w-3 h-3 transition-transform duration-150 ${open ? "" : "-rotate-90"}`}
+        />
+      </button>
+
+      {open && content && (
+        <div className="mt-1.5 ml-3 pl-3 border-l border-foreground/10 text-xs text-foreground/35 leading-relaxed whitespace-pre-wrap max-h-52 overflow-y-auto">
+          {content}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── component ──────────────────────────────────────────────────────────────
 
 export default function ChatPage() {
@@ -54,18 +108,22 @@ export default function ChatPage() {
   const [streaming, setStreaming] = useState(false);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  // tracks which draft cards are being saved (keyed by message index)
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [thinkMode, setThinkMode] = useState(false);
+  const [modelSupportsThinking, setModelSupportsThinking] = useState(false);
   const [savingDraft, setSavingDraft] = useState<Record<number, boolean>>({});
   const [savedDraft, setSavedDraft] = useState<Record<number, true>>({});
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom on new content
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Load session list on mount
+  // Open sidebar by default on desktop, keep closed on mobile
+  useEffect(() => {
+    setSidebarOpen(window.innerWidth >= 768);
+  }, []);
+
   const fetchSessions = useCallback(async () => {
     try {
       const res = await fetch("/api/ai/chat/sessions");
@@ -75,16 +133,26 @@ export default function ChatPage() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchSessions();
-  }, [fetchSessions]);
+  useEffect(() => { fetchSessions(); }, [fetchSessions]);
 
-  // Load messages for a session
+  // Load model capabilities to gate the thinking toggle
+  useEffect(() => {
+    fetch("/api/ai/models")
+      .then((r) => r.json())
+      .then((data) => {
+        const caps: string[] = data.selected?.capabilities ?? [];
+        setModelSupportsThinking(caps.includes("thinking"));
+      })
+      .catch(() => {});
+  }, []);
+
   const openSession = useCallback(async (id: string) => {
     setActiveSessionId(id);
     setMessages([]);
     setError(null);
     setLoadingMessages(true);
+    // On mobile, close sidebar so the chat area is visible
+    if (window.innerWidth < 768) setSidebarOpen(false);
     try {
       const res = await fetch(`/api/ai/chat/sessions/${id}/messages`);
       if (res.ok) {
@@ -96,7 +164,6 @@ export default function ChatPage() {
     }
   }, []);
 
-  // Start a new (unsaved) chat
   function newChat() {
     setActiveSessionId(null);
     setMessages([]);
@@ -104,7 +171,6 @@ export default function ChatPage() {
     setInput("");
   }
 
-  // Delete a session
   async function deleteSession(id: string, e: React.MouseEvent) {
     e.stopPropagation();
     await fetch(`/api/ai/chat/sessions/${id}`, { method: "DELETE" });
@@ -127,14 +193,13 @@ export default function ChatPage() {
       const res = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, sessionId: activeSessionId }),
+        body: JSON.stringify({ message: text, sessionId: activeSessionId, think: thinkMode }),
       });
 
       if (!res.ok || !res.body) {
         throw new Error(await res.text().catch(() => "Chat failed"));
       }
 
-      // Capture session id from header (new session created server-side)
       const returnedId = res.headers.get("X-Session-Id");
       if (returnedId && returnedId !== activeSessionId) {
         setActiveSessionId(returnedId);
@@ -149,61 +214,87 @@ export default function ChatPage() {
         ]);
       }
 
-      // Decode entry draft from header (if AI created one).
-      // atob() returns a binary string (bytes as Latin-1); run through
-      // TextDecoder to restore proper UTF-8 before JSON.parse.
       let entryDraft: EntryDraft | undefined;
       const draftHeader = res.headers.get("X-Entry-Draft");
       if (draftHeader) {
         try {
-          const bytes = Uint8Array.from(atob(draftHeader), (c) =>
-            c.charCodeAt(0),
-          );
+          const bytes = Uint8Array.from(atob(draftHeader), (c) => c.charCodeAt(0));
           entryDraft = JSON.parse(new TextDecoder().decode(bytes)) as EntryDraft;
         } catch {
           // ignore malformed header
         }
       }
 
-      // Stream tokens into the last assistant message
+      // ── Parse NDJSON stream ─────────────────────────────────────────────
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
+      let lineBuffer = "";
 
-      // eslint-disable-next-line no-constant-condition
       while (true) {
         let done: boolean;
         let value: Uint8Array | undefined;
         try {
           ({ done, value } = await reader.read());
         } catch {
-          // Safari throws instead of returning done:true when the stream ends
           break;
         }
         if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        setMessages((prev) => {
-          const next = [...prev];
-          next[next.length - 1] = {
-            role: "assistant",
-            content: next[next.length - 1].content + chunk,
-          };
-          return next;
-        });
+
+        lineBuffer += decoder.decode(value, { stream: true });
+        const lines = lineBuffer.split("\n");
+        lineBuffer = lines.pop() ?? "";
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          let event: { k: string; v: unknown };
+          try {
+            event = JSON.parse(line) as { k: string; v: unknown };
+          } catch {
+            continue;
+          }
+
+          if (event.k === "t") {
+            // thinking token
+            setMessages((prev) => {
+              const next = [...prev];
+              const last = { ...next[next.length - 1] };
+              last.thinkingContent = (last.thinkingContent ?? "") + String(event.v);
+              next[next.length - 1] = last;
+              return next;
+            });
+          } else if (event.k === "td") {
+            // thinking done — record duration
+            setMessages((prev) => {
+              const next = [...prev];
+              const last = { ...next[next.length - 1] };
+              last.thinkingDuration = Number(event.v);
+              next[next.length - 1] = last;
+              return next;
+            });
+          } else if (event.k === "c") {
+            // content token
+            setMessages((prev) => {
+              const next = [...prev];
+              const last = { ...next[next.length - 1] };
+              last.content = last.content + String(event.v);
+              next[next.length - 1] = last;
+              return next;
+            });
+          } else if (event.k === "e") {
+            setError(String(event.v));
+            setMessages((prev) => prev.slice(0, -1));
+          }
+        }
       }
 
-      // Attach the entry draft to the final assistant message so the UI can show it
       if (entryDraft) {
         setMessages((prev) => {
           const next = [...prev];
-          next[next.length - 1] = {
-            ...next[next.length - 1],
-            entryDraft,
-          };
+          next[next.length - 1] = { ...next[next.length - 1], entryDraft };
           return next;
         });
       }
 
-      // Refresh session list so updatedAt + count are current
       fetchSessions();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Chat failed");
@@ -230,7 +321,6 @@ export default function ChatPage() {
       if (!res.ok) throw new Error(await res.text());
       setSavedDraft((s) => ({ ...s, [msgIndex]: true }));
     } catch {
-      // show generic error inline
       setSavingDraft((s) => { const n = { ...s }; delete n[msgIndex]; return n; });
     }
   }
@@ -245,7 +335,6 @@ export default function ChatPage() {
           sidebarOpen ? "w-64" : "w-0"
         } shrink-0 transition-all duration-200 overflow-hidden border-r border-border flex flex-col bg-background`}
       >
-        {/* Sidebar header */}
         <div className="flex items-center justify-between px-3 py-4 border-b border-border shrink-0">
           <span className="text-xs font-semibold text-foreground/40 uppercase tracking-wider">
             Conversations
@@ -261,12 +350,12 @@ export default function ChatPage() {
           </button>
         </div>
 
-        {/* Session list */}
         <div className="flex-1 overflow-y-auto py-2">
           {sessions.length === 0 ? (
-            <p className="text-xs text-foreground/30 text-center px-4 mt-6">
-              No conversations yet
-            </p>
+            <div className="text-center px-4 mt-8">
+              <p className="text-xs font-medium text-foreground/30">No conversations yet</p>
+              <p className="text-[11px] text-foreground/20 mt-1 leading-relaxed">Ask something about your journal to start a chat.</p>
+            </div>
           ) : (
             sessions.map((s) => (
               <div
@@ -304,7 +393,6 @@ export default function ChatPage() {
 
       {/* ── Main chat area ───────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Chat header */}
         <div className="flex items-center gap-3 px-4 py-4 border-b border-border shrink-0">
           <button
             onClick={() => setSidebarOpen((o) => !o)}
@@ -321,9 +409,7 @@ export default function ChatPage() {
                 ? (sessions.find((s) => s.id === activeSessionId)?.title ?? "Chat")
                 : "New chat"}
             </h1>
-            <p className="text-xs text-foreground/30 mt-0.5">
-              Answers grounded in your journal entries
-            </p>
+            <p className="text-xs text-foreground/30 mt-0.5">Answers grounded in your journal entries</p>
           </div>
         </div>
 
@@ -336,8 +422,7 @@ export default function ChatPage() {
           ) : messages.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-foreground/30 text-sm">
-                Start by asking something about your journal — a theme, a
-                period, or a feeling.
+                Start by asking something about your journal — a theme, a period, or a feeling.
               </p>
               <div className="mt-4 flex flex-wrap gap-2 justify-center">
                 {[
@@ -359,32 +444,43 @@ export default function ChatPage() {
             messages.map((msg, i) => (
               <div
                 key={msg.id ?? i}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"}`}
               >
-                <div
-                  className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
-                    msg.role === "user"
-                      ? "bg-indigo-600 text-white"
-                      : "bg-card text-foreground"
-                  }`}
-                >
-                  {msg.content}
-                  {streaming &&
-                    i === messages.length - 1 &&
-                    msg.role === "assistant" && (
-                      <span className="inline-block w-1 h-4 bg-foreground/60 animate-pulse ml-0.5 align-middle" />
-                    )}
-                </div>
+                {/* Thinking block — assistant only */}
+                {msg.role === "assistant" && msg.thinkingContent !== undefined && (
+                  <ThinkingBlock
+                    content={msg.thinkingContent}
+                    duration={msg.thinkingDuration}
+                    streaming={streaming && i === messages.length - 1}
+                  />
+                )}
 
-                {/* Entry draft card — only on assistant messages with a draft */}
+                {/* Message bubble */}
+                {(msg.content || (streaming && i === messages.length - 1 && !msg.thinkingContent)) && (
+                  <div
+                    className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
+                      msg.role === "user"
+                        ? "bg-indigo-600 text-white"
+                        : "bg-card text-foreground"
+                    }`}
+                  >
+                    {msg.content}
+                    {streaming &&
+                      i === messages.length - 1 &&
+                      msg.role === "assistant" &&
+                      msg.thinkingDuration !== undefined && (
+                        <span className="inline-block w-1 h-4 bg-foreground/60 animate-pulse ml-0.5 align-middle" />
+                      )}
+                  </div>
+                )}
+
+                {/* Entry draft card */}
                 {msg.role === "assistant" && msg.entryDraft && (
                   <div className="mt-3 rounded-xl border border-indigo-800/60 bg-indigo-950/40 p-4 text-sm max-w-[85%]">
                     <p className="text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-2">
                       Journal entry draft
                     </p>
-                    <p className="text-foreground font-medium mb-1">
-                      {msg.entryDraft.title}
-                    </p>
+                    <p className="text-foreground font-medium mb-1">{msg.entryDraft.title}</p>
                     <p className="text-foreground/60 text-xs leading-relaxed line-clamp-3 mb-3">
                       {msg.entryDraft.body}
                     </p>
@@ -401,9 +497,7 @@ export default function ChatPage() {
                       )}
                       <div className="ml-auto">
                         {savedDraft[i] ? (
-                          <span className="text-xs text-emerald-400">
-                            Saved to journal
-                          </span>
+                          <span className="text-xs text-emerald-400">Saved to journal</span>
                         ) : (
                           <button
                             onClick={() => saveEntryDraft(msg.entryDraft!, i)}
@@ -441,6 +535,16 @@ export default function ChatPage() {
               disabled={streaming || loadingMessages}
               className="flex-1 bg-background border border-foreground/20 text-foreground text-sm rounded-xl px-4 py-2.5 placeholder-foreground/30 focus:outline-none focus:border-indigo-500 disabled:opacity-50 transition-colors"
             />
+            {modelSupportsThinking && (
+              <Toggle
+                pressed={thinkMode}
+                onPressedChange={setThinkMode}
+                title={thinkMode ? "Deep thinking on — click to disable" : "Deep thinking off — click to enable"}
+              >
+                <BrainCircuit className="w-3.5 h-3.5" />
+                Thinking
+              </Toggle>
+            )}
             <button
               type="submit"
               disabled={!input.trim() || streaming || loadingMessages}

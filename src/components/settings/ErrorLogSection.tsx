@@ -77,7 +77,7 @@ export default function ErrorLogSection() {
         <a
           href="/api/logs"
           download
-          className="btn btn-sm btn-outline"
+          className="inline-flex items-center gap-1.5 h-8 px-3 bg-background border border-border text-foreground text-xs font-medium rounded-lg hover:bg-muted transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -87,7 +87,7 @@ export default function ErrorLogSection() {
         <button
           onClick={handleClear}
           disabled={clearing || isEmpty}
-          className="btn btn-sm btn-ghost text-error disabled:opacity-40"
+          className="h-8 px-3 text-xs font-medium text-destructive hover:bg-destructive/10 disabled:opacity-40 rounded-lg transition-colors"
         >
           {clearing ? "Clearing…" : "Clear log"}
         </button>

@@ -14,7 +14,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionDEK, isDEKResult } from "@/lib/api-helpers";
 import { prisma } from "@/lib/prisma";
-import { isOllamaAvailable, listModels } from "@/lib/ollama";
+import { isOllamaAvailable, listModels, getModelCapabilities } from "@/lib/ollama";
 import { getOllamaConfig } from "@/lib/ai/config";
 
 export async function GET(req: NextRequest) {
@@ -31,8 +31,18 @@ export async function GET(req: NextRequest) {
 
   const settings = await prisma.appSettings.findUnique({
     where: { id: "singleton" },
-    select: { whisperBaseUrl: true },
+    select: { whisperBaseUrl: true, ollamaModelCapabilities: true },
   });
+
+  // ?capabilities=<model> — returns capability list for a specific model
+  // Used by the settings page when the user changes the dropdown before saving.
+  const capModel = req.nextUrl.searchParams.get("capabilities");
+  if (capModel) {
+    const caps = available
+      ? await getModelCapabilities(capModel, resolvedUrl)
+      : [];
+    return NextResponse.json({ capabilities: caps });
+  }
 
   return NextResponse.json({
     available,
@@ -43,6 +53,7 @@ export async function GET(req: NextRequest) {
       embedModel: config.embedModel,
       systemPrompt: config.systemPrompt,
       whisperBaseUrl: settings?.whisperBaseUrl ?? "",
+      capabilities: settings?.ollamaModelCapabilities ?? [],
     },
   });
 }
@@ -59,12 +70,21 @@ export async function PATCH(req: NextRequest) {
     whisperBaseUrl?: string | null;
   };
 
+  // Fetch capabilities for the new model if one is being saved
+  let capabilities: string[] | undefined;
+  if (body.model) {
+    const config = await getOllamaConfig();
+    const baseUrl = body.baseUrl ?? config.baseUrl;
+    capabilities = await getModelCapabilities(body.model, baseUrl);
+  }
+
   await prisma.appSettings.upsert({
     where: { id: "singleton" },
     create: {
       id: "singleton",
       ollamaBaseUrl: body.baseUrl || null,
       ollamaModel: body.model || null,
+      ollamaModelCapabilities: capabilities ?? [],
       ollamaEmbedModel: body.embedModel || null,
       chatSystemPrompt: body.systemPrompt || null,
       whisperBaseUrl: body.whisperBaseUrl || null,
@@ -74,6 +94,9 @@ export async function PATCH(req: NextRequest) {
         ? { ollamaBaseUrl: body.baseUrl || null }
         : {}),
       ...(body.model !== undefined ? { ollamaModel: body.model || null } : {}),
+      ...(capabilities !== undefined
+        ? { ollamaModelCapabilities: capabilities }
+        : {}),
       ...(body.embedModel !== undefined
         ? { ollamaEmbedModel: body.embedModel || null }
         : {}),
@@ -86,13 +109,18 @@ export async function PATCH(req: NextRequest) {
     },
   });
 
-  const config = await getOllamaConfig();
+  const updatedConfig = await getOllamaConfig();
+  const updatedSettings = await prisma.appSettings.findUnique({
+    where: { id: "singleton" },
+    select: { ollamaModelCapabilities: true },
+  });
   return NextResponse.json({
     selected: {
-      baseUrl: config.baseUrl,
-      model: config.model,
-      embedModel: config.embedModel,
-      systemPrompt: config.systemPrompt,
+      baseUrl: updatedConfig.baseUrl,
+      model: updatedConfig.model,
+      embedModel: updatedConfig.embedModel,
+      systemPrompt: updatedConfig.systemPrompt,
+      capabilities: updatedSettings?.ollamaModelCapabilities ?? [],
     },
   });
 }

@@ -1,0 +1,2 @@
+ALTER TABLE "KeyStore" ADD COLUMN IF NOT EXISTS "recoveryDek" TEXT;
+ALTER TABLE "KeyStore" ADD COLUMN IF NOT EXISTS "recoveryDekSalt" TEXT;

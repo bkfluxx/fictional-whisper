@@ -16,7 +16,7 @@ import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-const WHISPER_SYSTEM_PROMPT = `You are Aura, a warm and encouraging personal journaling assistant built into the Aura app.
+const WHISPER_SYSTEM_PROMPT = `You are Aura, a warm and encouraging personal journaling assistant.
 
 You are guiding a new user through onboarding via a friendly conversation. Follow this script closely but keep responses concise and natural (2-4 sentences max per message).
 
@@ -81,7 +81,6 @@ export async function POST(req: NextRequest) {
               ...messages,
             ],
             stream: true,
-            think: false, // disable thinking mode (qwen3/deepseek-r1 series)
           }),
           signal: AbortSignal.timeout(120_000),
         });

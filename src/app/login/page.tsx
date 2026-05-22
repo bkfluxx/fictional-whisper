@@ -150,6 +150,15 @@ export default function LoginPage() {
             >
               {loading ? "Checking…" : "Continue"}
             </button>
+
+            <div className="text-center pt-1">
+              <a
+                href="/recover"
+                className="text-xs text-foreground/30 hover:text-foreground/60 transition-colors"
+              >
+                Forgot password?
+              </a>
+            </div>
           </form>
         )}
 

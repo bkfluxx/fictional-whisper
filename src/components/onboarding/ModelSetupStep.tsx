@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef } from "react";
 
-export const DEFAULT_CHAT_MODEL = "qwen3.5";
 export const DEFAULT_EMBED_MODEL = "nomic-embed-text";
 
 interface ModelInfo {
@@ -34,21 +33,14 @@ function ModelPuller({
   url,
   model,
   onDone,
-  autoStart = false,
 }: {
   url: string;
   model: string;
   onDone: () => void;
-  autoStart?: boolean;
 }) {
   const [state, setState] = useState<PullState>("idle");
   const [progress, setProgress] = useState<PullStatus>({});
   const pullingRef = useRef(false);
-
-  useEffect(() => {
-    if (autoStart) pull();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   async function pull() {
     if (pullingRef.current) return;
@@ -139,7 +131,7 @@ function ModelPuller({
 export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props) {
   const [models, setModels] = useState<ModelInfo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [chatModel, setChatModel] = useState(DEFAULT_CHAT_MODEL);
+  const [chatModel, setChatModel] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -151,7 +143,11 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
           available: boolean;
           models: ModelInfo[];
         };
-        setModels(data.models ?? []);
+        const available = data.models ?? [];
+        setModels(available);
+        // Pre-select first non-embed model if any are installed
+        const chatModels = available.filter((m) => !m.name.includes("embed"));
+        if (chatModels.length > 0) setChatModel(chatModels[0].name);
       } catch {
         setModels([]);
       } finally {
@@ -160,113 +156,132 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
     })();
   }, [ollamaUrl]);
 
-  const modelNames = models.map((m) => m.name);
-  const hasChatModel = modelNames.some((n) => n === chatModel || n.startsWith(chatModel + ":"));
-  const hasEmbedModel = modelNames.some((n) => n === DEFAULT_EMBED_MODEL || n.startsWith(DEFAULT_EMBED_MODEL + ":"));
+  const chatModels = models.filter((m) => !m.name.includes("embed"));
+  const hasChatModel =
+    chatModel !== "" &&
+    models.some(
+      (m) => m.name === chatModel || m.name.startsWith(chatModel + ":")
+    );
+  const hasEmbedModel = models.some(
+    (m) =>
+      m.name === DEFAULT_EMBED_MODEL ||
+      m.name.startsWith(DEFAULT_EMBED_MODEL + ":")
+  );
 
   const canContinue = hasChatModel && hasEmbedModel;
 
   return (
     <div className="max-w-lg mx-auto px-6 py-12">
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold text-foreground mb-2">Set up AI models</h2>
+        <h2 className="text-2xl font-semibold text-foreground mb-2">
+          Set up AI models
+        </h2>
         <p className="text-foreground/60 text-sm">
-          Aura needs two models — one for conversation and one for semantic search.
-          We&apos;ll download them to your Ollama instance if they&apos;re not already there.
+          Aura needs two models — one for conversation and one for semantic
+          search.
         </p>
       </div>
 
       {loading ? (
-        <div className="text-foreground/40 text-sm">Checking installed models…</div>
+        <div className="text-foreground/40 text-sm">
+          Checking installed models…
+        </div>
       ) : (
         <div className="space-y-4">
           {/* Chat model */}
           <div className="bg-card rounded-xl p-4 space-y-3">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="text-sm font-medium text-foreground">Chat model</div>
+                <div className="text-sm font-medium text-foreground">
+                  Chat model
+                </div>
                 <div className="text-xs text-foreground/60 mt-0.5">
-                  Used for journaling prompts, analysis, and conversations with Aura
+                  Used for journaling prompts, analysis, and conversations with
+                  Aura
                 </div>
               </div>
-              {hasChatModel ? (
-                <span className="text-xs text-emerald-400 shrink-0 mt-0.5">✓ Installed</span>
-              ) : (
-                <ModelPuller
-                  url={ollamaUrl}
-                  model={chatModel}
-                  onDone={() => setModels((prev) => [...prev, { name: chatModel, size: 0 }])}
-                />
+              {hasChatModel && (
+                <span className="text-xs text-emerald-400 shrink-0 mt-0.5">
+                  ✓ Installed
+                </span>
               )}
             </div>
 
-            {/* Model selector */}
-            <div>
-              <label className="text-xs text-foreground/40 mb-1 block">Selected model</label>
-              {models.length > 0 ? (
+            {chatModels.length > 0 ? (
+              <div>
+                <label className="text-xs text-foreground/40 mb-1 block">
+                  Select model
+                </label>
                 <select
                   value={chatModel}
                   onChange={(e) => setChatModel(e.target.value)}
                   className="w-full bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500"
                 >
-                  <option value={DEFAULT_CHAT_MODEL}>{DEFAULT_CHAT_MODEL} (recommended)</option>
-                  {models
-                    .filter(
-                      (m) =>
-                        !m.name.includes("embed") &&
-                        m.name !== DEFAULT_CHAT_MODEL &&
-                        !m.name.startsWith(DEFAULT_CHAT_MODEL + ":")
-                    )
-                    .map((m) => (
-                      <option key={m.name} value={m.name}>
-                        {m.name} ({humanSize(m.size)})
-                      </option>
-                    ))}
+                  {chatModels.map((m) => (
+                    <option key={m.name} value={m.name}>
+                      {m.name} ({humanSize(m.size)})
+                    </option>
+                  ))}
                 </select>
-              ) : (
-                <div className="text-sm text-foreground/40 bg-background rounded-lg px-3 py-1.5">
-                  {DEFAULT_CHAT_MODEL} (will be downloaded)
-                </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="bg-background rounded-lg px-3 py-3 text-xs text-foreground/50 space-y-1.5">
+                <p>No models found. Pull one with Ollama:</p>
+                <code className="block font-mono text-foreground/70 bg-foreground/5 px-2 py-1 rounded">
+                  ollama pull llama3.2
+                </code>
+                <p className="text-foreground/40">
+                  Then come back to this step.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Embed model */}
           <div className="bg-card rounded-xl p-4 space-y-3">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="text-sm font-medium text-foreground">Embedding model</div>
+                <div className="text-sm font-medium text-foreground">
+                  Embedding model
+                </div>
                 <div className="text-xs text-foreground/60 mt-0.5">
-                  Used for semantic search — find entries by meaning, not just keywords
+                  Used for semantic search — find entries by meaning, not just
+                  keywords
                 </div>
               </div>
               {hasEmbedModel ? (
-                <span className="text-xs text-emerald-400 shrink-0 mt-0.5">✓ Installed</span>
+                <span className="text-xs text-emerald-400 shrink-0 mt-0.5">
+                  ✓ Installed
+                </span>
               ) : (
                 <ModelPuller
                   url={ollamaUrl}
                   model={DEFAULT_EMBED_MODEL}
-                  onDone={() => setModels((prev) => [...prev, { name: DEFAULT_EMBED_MODEL, size: 0 }])}
-                  autoStart={true}
+                  onDone={() =>
+                    setModels((prev) => [
+                      ...prev,
+                      { name: DEFAULT_EMBED_MODEL, size: 0 },
+                    ])
+                  }
                 />
               )}
             </div>
 
             <div className="flex items-center justify-between bg-background rounded-lg px-3 py-1.5">
-              <span className="text-sm font-mono text-foreground/70">{DEFAULT_EMBED_MODEL}</span>
+              <span className="text-sm font-mono text-foreground/70">
+                {DEFAULT_EMBED_MODEL}
+              </span>
               <span className="text-xs text-foreground/30">fixed</span>
             </div>
           </div>
 
-          {!canContinue && (
+          {!canContinue && (chatModels.length > 0 || hasEmbedModel) && (
             <p className="text-xs text-amber-400">
-              Download the models above before continuing.
+              {chatModels.length === 0
+                ? "Install a chat model to continue."
+                : "Download the embedding model to continue."}
             </p>
           )}
-
-          <p className="text-xs text-foreground/40 border border-foreground/10 rounded-lg px-3 py-2 leading-relaxed">
-            <span className="text-foreground/60 font-medium">Model tip:</span> Aura works best with thinking-enabled models (e.g. <span className="font-mono">qwen3</span>, <span className="font-mono">deepseek-r2</span>). Thinking models reason through prompts before responding, which significantly improves journaling insights and template generation.
-          </p>
         </div>
       )}
 

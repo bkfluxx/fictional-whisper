@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { BrainCircuit, Wrench, Eye } from "lucide-react";
 
 interface ModelInfo {
   name: string;
@@ -37,6 +38,56 @@ function formatBytes(bytes: number): string {
   return `${bytes} B`;
 }
 
+// ── Capability badge ────────────────────────────────────────────────────────
+
+const CAP_META: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
+  thinking: {
+    label: "Thinking",
+    icon: <BrainCircuit className="w-3 h-3" />,
+    color: "bg-primary/10 text-primary border-primary/20",
+  },
+  tools: {
+    label: "Tools",
+    icon: <Wrench className="w-3 h-3" />,
+    color: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+  },
+  vision: {
+    label: "Vision",
+    icon: <Eye className="w-3 h-3" />,
+    color: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+  },
+};
+
+function CapabilityBadges({ caps, loading }: { caps: string[]; loading: boolean }) {
+  const notable = caps.filter((c) => CAP_META[c]);
+  if (loading) {
+    return (
+      <div className="flex gap-1.5 mt-2">
+        <span className="h-5 w-16 rounded-full bg-foreground/10 animate-pulse" />
+      </div>
+    );
+  }
+  if (notable.length === 0) return null;
+  return (
+    <div className="flex flex-wrap gap-1.5 mt-2">
+      {notable.map((c) => {
+        const m = CAP_META[c];
+        return (
+          <span
+            key={c}
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[11px] font-medium ${m.color}`}
+          >
+            {m.icon}
+            {m.label}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Component ───────────────────────────────────────────────────────────────
+
 export default function AiModelsSettings() {
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [models, setModels] = useState<ModelInfo[]>([]);
@@ -52,6 +103,9 @@ export default function AiModelsSettings() {
     embedModel: "",
     whisperBaseUrl: "",
   });
+  const [savedCaps, setSavedCaps] = useState<string[]>([]);
+  const [draftCaps, setDraftCaps] = useState<string[]>([]);
+  const [loadingCaps, setLoadingCaps] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [testingUrl, setTestingUrl] = useState(false);
   const [testResult, setTestResult] = useState<"ok" | "fail" | null>(null);
@@ -62,9 +116,8 @@ export default function AiModelsSettings() {
       .then((data) => {
         const modelList: ModelInfo[] = data.models ?? [];
         const savedModel: string = data.selected?.model ?? "";
+        const caps: string[] = data.selected?.capabilities ?? [];
 
-        // Resolve saved model name against actual Ollama names — Ollama may
-        // return "qwen3.5:latest" while the saved value is "qwen3.5" (bare).
         const resolveModel = (saved: string) => {
           if (!saved) return "";
           if (modelList.some((m) => m.name === saved)) return saved;
@@ -82,6 +135,8 @@ export default function AiModelsSettings() {
         };
         setSelected(cfg);
         setDraft(cfg);
+        setSavedCaps(caps);
+        setDraftCaps(caps);
         if (!data.available) {
           setLoadState("offline");
           return;
@@ -97,6 +152,27 @@ export default function AiModelsSettings() {
     draft.model !== selected.model ||
     draft.whisperBaseUrl !== selected.whisperBaseUrl;
 
+  async function fetchCapsForModel(model: string, baseUrl: string) {
+    if (!model) { setDraftCaps([]); return; }
+    setLoadingCaps(true);
+    try {
+      const params = new URLSearchParams({ capabilities: model, url: baseUrl });
+      const res = await fetch(`/api/ai/models?${params}`);
+      const data = await res.json();
+      setDraftCaps(data.capabilities ?? []);
+    } catch {
+      setDraftCaps([]);
+    } finally {
+      setLoadingCaps(false);
+    }
+  }
+
+  function handleModelChange(model: string) {
+    if (!model) return;
+    setDraft((d) => ({ ...d, model }));
+    fetchCapsForModel(model, draft.baseUrl);
+  }
+
   async function testUrl() {
     if (!draft.baseUrl.trim()) return;
     setTestingUrl(true);
@@ -109,7 +185,6 @@ export default function AiModelsSettings() {
         setTestResult("ok");
         const modelList: ModelInfo[] = data.models ?? [];
         setModels(modelList);
-        // Re-resolve current draft model against the refreshed list
         setDraft((d) => {
           const match = modelList.find(
             (m) => m.name.startsWith(d.model + ":") || d.model.startsWith(m.name + ":"),
@@ -149,8 +224,11 @@ export default function AiModelsSettings() {
         embedModel: data.selected?.embedModel ?? "",
         whisperBaseUrl: data.selected?.whisperBaseUrl ?? "",
       };
+      const caps: string[] = data.selected?.capabilities ?? [];
       setSelected(cfg);
       setDraft(cfg);
+      setSavedCaps(caps);
+      setDraftCaps(caps);
       setLoadState("saved");
       setTimeout(() => setLoadState(models.length > 0 ? "ready" : "offline"), 2000);
     } catch (err) {
@@ -165,7 +243,7 @@ export default function AiModelsSettings() {
 
   return (
     <div className="space-y-6">
-      {/* URL field — always visible */}
+      {/* URL field */}
       <div>
         <label className="block text-xs font-medium text-foreground/60 mb-1.5">
           Ollama base URL
@@ -222,27 +300,27 @@ export default function AiModelsSettings() {
         </p>
       </div>
 
-      {/* Model selectors — only when models are available */}
+      {/* Model selectors */}
       {models.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-2">
           {/* LLM model */}
           <div>
             <label className="block text-xs font-medium text-foreground/60 mb-1.5">
               Text model
-              <span className="text-foreground/40 font-normal ml-1">
-                (analysis, chat, prompts)
-              </span>
+              <span className="text-foreground/40 font-normal ml-1">(analysis, chat, prompts)</span>
             </label>
-            <Select
-              value={draft.model}
-              onValueChange={(v) => v && setDraft((d) => ({ ...d, model: v }))}
-            >
+            <Select value={draft.model} onValueChange={(v) => v && handleModelChange(v)}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a model…" />
               </SelectTrigger>
               <SelectContent>
                 {models
-                  .filter((m) => !m.name.startsWith("nomic-embed") && !m.name.startsWith("qwen3-embedding") && !m.name.includes("embed"))
+                  .filter(
+                    (m) =>
+                      !m.name.startsWith("nomic-embed") &&
+                      !m.name.startsWith("qwen3-embedding") &&
+                      !m.name.includes("embed"),
+                  )
                   .map((m) => (
                     <SelectItem key={m.name} value={m.name}>
                       {m.name} ({formatBytes(m.size)})
@@ -250,15 +328,24 @@ export default function AiModelsSettings() {
                   ))}
               </SelectContent>
             </Select>
+            {/* Capability badges for the draft model */}
+            <CapabilityBadges
+              caps={draftCaps}
+              loading={loadingCaps}
+            />
+            {/* Unsaved indicator when caps differ from saved */}
+            {!loadingCaps && isDirty && draft.model !== selected.model && (
+              <p className="text-[11px] text-foreground/30 mt-1">
+                Capabilities shown for selected model. Save to apply.
+              </p>
+            )}
           </div>
 
           {/* Embed model — fixed */}
           <div>
             <label className="block text-xs font-medium text-foreground/60 mb-1.5">
               Embedding model
-              <span className="text-foreground/40 font-normal ml-1">
-                (semantic search, chat context)
-              </span>
+              <span className="text-foreground/40 font-normal ml-1">(semantic search, chat context)</span>
             </label>
             <div className="w-full bg-background border border-foreground/20 text-sm rounded-lg px-3 py-2 flex items-center justify-between">
               <span className="font-mono text-foreground/70">nomic-embed-text</span>
@@ -269,12 +356,6 @@ export default function AiModelsSettings() {
             </p>
           </div>
         </div>
-      )}
-
-      {models.length > 0 && (
-        <p className="text-xs text-foreground/40 border border-foreground/10 rounded-lg px-3 py-2 leading-relaxed">
-          <span className="text-foreground/60 font-medium">Model tip:</span> Aura works best with thinking-enabled models (e.g. <span className="font-mono text-foreground/60">qwen3</span>, <span className="font-mono text-foreground/60">deepseek-r2</span>). Thinking models reason through prompts before responding, which significantly improves journaling insights and chat quality.
-        </p>
       )}
 
       {models.length === 0 && loadState === "ready" && (
@@ -293,14 +374,10 @@ export default function AiModelsSettings() {
           disabled={!isDirty || loadState === "saving"}
           className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition-colors"
         >
-          {loadState === "saving"
-            ? "Saving…"
-            : loadState === "saved"
-              ? "Saved"
-              : "Save"}
+          {loadState === "saving" ? "Saving…" : loadState === "saved" ? "Saved" : "Save"}
         </button>
         {loadState === "error" && errorMsg && (
-          <p className="text-sm text-error">{errorMsg}</p>
+          <p className="text-sm text-destructive">{errorMsg}</p>
         )}
       </div>
     </div>

@@ -16,7 +16,9 @@ model KeyStore {
   dekSalt      String   // base64 Argon2id salt used to derive KEK from password
   // Optional second copy of the DEK wrapped with BACKUP_SECRET, used by the
   // nightly backup cron (which can't log in interactively).
-  backupDek    String?
+  backupDek       String?
+  recoveryDek     String?  // base64( AES-256-GCM( DEK, recoveryKEK ) )
+  recoveryDekSalt String?  // base64 Argon2id salt used to derive recoveryKEK from recovery code
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -158,10 +160,11 @@ model AppSettings {
   journalingIntention   String[] @default([]) // e.g. ["self-reflection", "gratitude"]
   writingStyle          String?              // "prompts" | "blank"
   // AI configuration (null = fall back to env vars)
-  ollamaBaseUrl         String?  // overrides OLLAMA_BASE_URL; set during onboarding or in Settings
-  ollamaModel           String?
-  ollamaEmbedModel      String?
-  chatSystemPrompt      String?  // custom system prompt for RAG chat (null = use hardcoded default)
+  ollamaBaseUrl             String?  // overrides OLLAMA_BASE_URL; set during onboarding or in Settings
+  ollamaModel               String?
+  ollamaModelCapabilities   String[] @default([]) // cached from /api/show (e.g. ["completion","thinking","tools"])
+  ollamaEmbedModel          String?
+  chatSystemPrompt          String?  // custom system prompt for RAG chat (null = use hardcoded default)
   // Personas
   personasEnabled     Boolean  @default(false)
   activePersonaId     String?  // "builtin:<id>" for built-ins, or a Persona.id cuid for custom

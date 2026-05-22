@@ -10,7 +10,7 @@ import crypto from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { deriveKEK, generateDEK, wrapDEK } from "@/lib/crypto";
+import { deriveKEK, generateDEK, wrapDEK, generateRecoveryCode, normalizeRecoveryCode } from "@/lib/crypto";
 import { aesEncrypt } from "@/lib/crypto/aes";
 
 export async function GET() {
@@ -53,6 +53,13 @@ export async function POST(req: NextRequest) {
     backupDek = aesEncrypt(dek, backupKey).toString("base64");
   }
 
+  // Generate recovery code — a second KEK wrapping the same DEK
+  const recoveryCode = generateRecoveryCode();
+  const normalizedCode = normalizeRecoveryCode(recoveryCode);
+  const recoveryDekSalt = crypto.randomBytes(32);
+  const recoveryKek = await deriveKEK(normalizedCode, recoveryDekSalt);
+  const recoveryDek = wrapDEK(dek, recoveryKek);
+
   const passwordHash = await bcrypt.hash(password, 12);
 
   await prisma.$transaction([
@@ -62,11 +69,14 @@ export async function POST(req: NextRequest) {
         encryptedDek,
         dekSalt: dekSalt.toString("base64"),
         backupDek,
+        recoveryDek,
+        recoveryDekSalt: recoveryDekSalt.toString("base64"),
       },
     }),
     prisma.user.create({ data: { passwordHash } }),
     prisma.appSettings.create({ data: { id: "singleton" } }),
   ]);
 
-  return NextResponse.json({ ok: true });
+  // Return the recovery code once — it is never stored in plaintext
+  return NextResponse.json({ ok: true, recoveryCode });
 }

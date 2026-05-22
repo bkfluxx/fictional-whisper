@@ -31,6 +31,30 @@ export async function isOllamaAvailable(baseUrl?: string): Promise<boolean> {
   }
 }
 
+/**
+ * Returns the capability list for a model from Ollama's /api/show endpoint.
+ * e.g. ["completion", "thinking", "tools", "vision"]
+ * Returns [] if the model is not found or Ollama is unreachable.
+ */
+export async function getModelCapabilities(
+  model: string,
+  baseUrl?: string,
+): Promise<string[]> {
+  try {
+    const res = await fetch(`${baseUrl ?? DEFAULT_BASE_URL()}/api/show`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: model }),
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) return [];
+    const data = (await res.json()) as { capabilities?: string[] };
+    return data.capabilities ?? [];
+  } catch {
+    return [];
+  }
+}
+
 /** Returns the list of models pulled in this Ollama instance. */
 export async function listModels(baseUrl?: string): Promise<OllamaModelInfo[]> {
   const res = await fetch(`${baseUrl ?? DEFAULT_BASE_URL()}/api/tags`, {
@@ -94,6 +118,7 @@ export async function generateJson<T = unknown>(
       stream: false,
       format: "json",
     }),
+    signal: AbortSignal.timeout(9 * 60 * 1000),
   });
   if (!res.ok) {
     const text = await res.text().catch(() => res.status.toString());
@@ -113,11 +138,13 @@ export async function embedText(
 ): Promise<number[]> {
   const base = baseUrl ?? DEFAULT_BASE_URL();
   const embedModel = model ?? DEFAULT_EMBED_MODEL();
+  const embedTimeout = AbortSignal.timeout(60 * 1000);
 
   const res = await fetch(`${base}/api/embed`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ model: embedModel, input: text }),
+    signal: embedTimeout,
   });
   if (res.ok) {
     const data = (await res.json()) as {
@@ -133,6 +160,7 @@ export async function embedText(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ model: embedModel, prompt: text }),
+    signal: AbortSignal.timeout(60 * 1000),
   });
   if (!res2.ok) throw new Error(`Ollama embed failed (${res2.status})`);
   const data2 = (await res2.json()) as { embedding: number[] };
@@ -144,24 +172,45 @@ export interface ChatMessage {
   content: string;
 }
 
+/** Returns true if the model supports Ollama's `think` parameter. */
+function supportsThinking(model: string): boolean {
+  const n = model.toLowerCase();
+  return (
+    n.startsWith("qwen3") ||
+    n.startsWith("deepseek-r1") ||
+    n.startsWith("deepseek-r2") ||
+    n.startsWith("qwq")
+  );
+}
+
 /**
  * Multi-turn streaming chat via /api/chat.
  * Accepts a full messages array (system + history + current user message).
+ * Pass `think: false` to disable extended thinking on supported models (qwen3, etc.)
+ * for much faster responses at the cost of less reasoning depth.
+ * Non-thinking models (gemma, llama, etc.) ignore the `think` param entirely.
  */
 export async function* chatStream(
   messages: ChatMessage[],
   model?: string,
   baseUrl?: string,
   signal?: AbortSignal,
+  think = false,
 ): AsyncGenerator<string> {
+  const resolvedModel = model ?? DEFAULT_MODEL();
+  const body: Record<string, unknown> = {
+    model: resolvedModel,
+    messages,
+    stream: true,
+  };
+  // Only pass `think` for models that support it — others return 400
+  if (supportsThinking(resolvedModel)) {
+    body.think = think;
+  }
   const res = await fetch(`${baseUrl ?? DEFAULT_BASE_URL()}/api/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: model ?? DEFAULT_MODEL(),
-      messages,
-      stream: true,
-    }),
+    body: JSON.stringify(body),
     signal,
   });
   if (!res.ok || !res.body) {
@@ -182,10 +231,14 @@ export async function* chatStream(
       if (!line.trim()) continue;
       try {
         const obj = JSON.parse(line) as {
-          message?: { content?: string };
+          message?: { content?: string; thinking?: string };
           done?: boolean;
         };
-        if (obj.message?.content) yield obj.message.content;
+        // Prefix thinking tokens with \x02 so callers can separate them
+        const thinking = obj.message?.thinking || "";
+        const content = obj.message?.content || "";
+        if (thinking) yield "\x02" + thinking;
+        else if (content) yield content;
         if (obj.done) return;
       } catch {
         // skip malformed lines

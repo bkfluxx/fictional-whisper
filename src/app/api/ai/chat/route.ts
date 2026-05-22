@@ -19,7 +19,7 @@
  *   X-Entry-Draft  — base64(JSON) entry draft, only present in entry-creation mode
  */
 
-export const maxDuration = 300;
+export const maxDuration = 600;
 
 import { NextRequest } from "next/server";
 import { getSessionDEK, isDEKResult } from "@/lib/api-helpers";
@@ -33,6 +33,7 @@ import {
 } from "@/lib/ollama";
 import { getOllamaConfig } from "@/lib/ai/config";
 import { JOURNAL_TYPES, VALID_JOURNAL_TYPE_IDS } from "@/lib/journal-types";
+import { logger } from "@/lib/logger";
 
 interface EntryRow {
   id: string;
@@ -71,13 +72,19 @@ export async function POST(req: NextRequest) {
   const { dek } = auth;
 
   const { baseUrl, model, embedModel, systemPrompt } = await getOllamaConfig();
+  const modelSettings = await prisma.appSettings.findUnique({
+    where: { id: "singleton" },
+    select: { ollamaModelCapabilities: true },
+  });
+  const modelSupportsThinking = (modelSettings?.ollamaModelCapabilities ?? []).includes("thinking");
   if (!(await isOllamaAvailable(baseUrl))) {
     return new Response("Ollama is not available", { status: 503 });
   }
 
-  const { message, sessionId } = (await req.json()) as {
+  const { message, sessionId, think } = (await req.json()) as {
     message?: string;
     sessionId?: string;
+    think?: boolean;
   };
   if (!message?.trim()) {
     return new Response("message is required", { status: 400 });
@@ -222,22 +229,51 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  // ── Stream response ─────────────────────────────────────────────────────
+  // ── Stream response (NDJSON protocol) ──────────────────────────────────
+  // Each line is one of:
+  //   {"k":"t","v":"<thinking token>"}   — thinking phase token
+  //   {"k":"td","v":<seconds>}           — thinking done, duration in seconds
+  //   {"k":"c","v":"<content token>"}    — response content token
+  //   {"k":"e","v":"<error message>"}    — stream error
   let fullResponse = "";
   const currentSessionId = session.id;
 
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       const encoder = new TextEncoder();
+      const emit = (obj: Record<string, unknown>) =>
+        controller.enqueue(encoder.encode(JSON.stringify(obj) + "\n"));
+
+      let inThinking = false;
+      let thinkingStart = 0;
+
       try {
-        for await (const token of chatStream(messages, model, baseUrl, AbortSignal.timeout(3 * 60 * 1000))) {
-          fullResponse += token;
-          controller.enqueue(encoder.encode(token));
+        for await (const token of chatStream(messages, model, baseUrl, AbortSignal.timeout(9 * 60 * 1000), modelSupportsThinking ? (think ?? false) : false)) {
+          const isThinking = token.startsWith("\x02");
+          const text = isThinking ? token.slice(1) : token;
+
+          if (isThinking) {
+            if (!inThinking) {
+              inThinking = true;
+              thinkingStart = Date.now();
+            }
+            emit({ k: "t", v: text });
+          } else {
+            if (inThinking) {
+              inThinking = false;
+              emit({ k: "td", v: Math.round((Date.now() - thinkingStart) / 1000) });
+            }
+            fullResponse += text;
+            emit({ k: "c", v: text });
+          }
+        }
+        // Model finished without emitting content (pure thinking with no response)
+        if (inThinking) {
+          emit({ k: "td", v: Math.round((Date.now() - thinkingStart) / 1000) });
         }
       } catch (err) {
-        const errMsg = `\n\n[Error: ${err instanceof Error ? err.message : "Unknown error"}]`;
-        fullResponse += errMsg;
-        controller.enqueue(encoder.encode(errMsg));
+        logger.error("chat stream error", err);
+        emit({ k: "e", v: err instanceof Error ? err.message : "Unknown error" });
       } finally {
         controller.close();
         if (fullResponse.trim()) {
@@ -262,10 +298,11 @@ export async function POST(req: NextRequest) {
   });
 
   const headers: Record<string, string> = {
-    "Content-Type": "text/plain; charset=utf-8",
+    "Content-Type": "application/x-ndjson; charset=utf-8",
     "Transfer-Encoding": "chunked",
     "X-Accel-Buffering": "no",
     "X-Session-Id": currentSessionId,
+    "X-Model-Supports-Thinking": modelSupportsThinking ? "1" : "0",
   };
   if (entryDraftHeader) {
     headers["X-Entry-Draft"] = entryDraftHeader;

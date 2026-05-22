@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BookOpen } from "lucide-react";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
@@ -7,6 +8,7 @@ import { getDEK } from "@/lib/session/dek-store";
 import { decryptString } from "@/lib/crypto";
 import { getJournalType } from "@/lib/journal-types";
 import JournalView, { type DayGroup, type CategoryLabel } from "@/components/journal/JournalView";
+import EmptyState from "@/components/ui/EmptyState";
 
 function formatDay(dateStr: string): { weekday: string; date: string } {
   const d = new Date(dateStr + "T00:00:00");
@@ -133,16 +135,12 @@ export default async function JournalPage({
       </div>
 
       {entries.length === 0 ? (
-        <div className="text-center py-20">
-          <div className="text-4xl mb-3">📖</div>
-          <p className="text-foreground/40 text-sm">No entries yet.</p>
-          <Link
-            href="/journal/new"
-            className="mt-4 inline-block text-indigo-500 hover:text-indigo-400 text-sm transition-colors"
-          >
-            Write your first entry →
-          </Link>
-        </div>
+        <EmptyState
+          icon={BookOpen}
+          heading="No entries yet"
+          subtitle="Your journal is empty. Start writing to capture your thoughts and experiences."
+          action={{ label: "Write your first entry", href: "/journal/new" }}
+        />
       ) : (
         <div className="flex-1 min-h-0 overflow-hidden">
           <JournalView days={days} />

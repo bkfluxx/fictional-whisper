@@ -3,6 +3,7 @@
 import { useState } from "react";
 import PasswordChangeForm from "./PasswordChangeForm";
 import TwoFactorSettings from "./TwoFactorSettings";
+import RecoveryCodeSettings from "./RecoveryCodeSettings";
 import ExportSection from "./ExportSection";
 import ImportSection from "./ImportSection";
 import AiModelsSettings from "./AiModelsSettings";
@@ -33,13 +34,13 @@ export default function SettingsTabs() {
 
   return (
     <div>
-      {/* Tab bar */}
-      <div className="flex border-b border-border mb-8">
+      {/* Tab bar — horizontally scrollable on mobile */}
+      <div className="flex border-b border-border mb-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActive(tab.id)}
-            className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
+            className={`shrink-0 px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
               active === tab.id
                 ? "border-indigo-500 text-foreground"
                 : "border-transparent text-foreground/40 hover:text-foreground/80"
@@ -121,6 +122,17 @@ export default function SettingsTabs() {
               </p>
             </div>
             <TwoFactorSettings />
+          </div>
+
+          <div className="border-t border-border pt-6">
+            <div className="mb-5">
+              <h2 className="text-base font-medium text-foreground">Recovery code</h2>
+              <p className="text-sm text-foreground/40 mt-0.5">
+                If you forget your password, a recovery code lets you set a new one
+                without losing your journal data.
+              </p>
+            </div>
+            <RecoveryCodeSettings />
           </div>
         </section>
       )}

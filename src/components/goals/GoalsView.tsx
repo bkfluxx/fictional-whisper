@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Target } from "lucide-react";
+import EmptyState from "@/components/ui/EmptyState";
 
 type Status = "active" | "completed" | "paused";
 
@@ -340,16 +342,12 @@ export default function GoalsView() {
       {loading ? (
         <div className="text-center py-20 text-foreground/30 text-sm">Loading…</div>
       ) : goals.length === 0 && !showForm ? (
-        <div className="text-center py-20">
-          <div className="text-4xl mb-3">🎯</div>
-          <p className="text-foreground/40 text-sm">No goals yet. Set one to get started.</p>
-          <button
-            onClick={() => setShowForm(true)}
-            className="mt-4 inline-block text-indigo-500 hover:text-indigo-400 text-sm transition-colors"
-          >
-            Add your first goal →
-          </button>
-        </div>
+        <EmptyState
+          icon={Target}
+          heading="No goals yet"
+          subtitle="Set an intention to get started. Goals help you stay focused and track your progress over time."
+          action={{ label: "Add your first goal", onClick: () => setShowForm(true) }}
+        />
       ) : (
         <div className="space-y-3">
           {filtered.map((goal) =>
