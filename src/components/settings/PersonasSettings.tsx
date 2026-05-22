@@ -198,7 +198,7 @@ export default function PersonasSettings() {
           onClick={() => toggleEnabled(!enabled)}
           disabled={saving}
           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors disabled:opacity-50 ${
-            enabled ? "bg-indigo-500" : "bg-muted"
+            enabled ? "bg-primary" : "bg-muted"
           }`}
         >
           <span
@@ -225,7 +225,7 @@ export default function PersonasSettings() {
               key={p.id}
               className={`rounded-lg border px-4 py-3 transition-colors ${
                 isActive
-                  ? "border-indigo-500 bg-indigo-500/5"
+                  ? "border-primary bg-primary/5"
                   : "border-foreground/10"
               }`}
             >
@@ -312,7 +312,7 @@ export default function PersonasSettings() {
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 placeholder="e.g. Stoic Advisor"
-                className="w-full text-sm bg-card border border-foreground/10 rounded-md px-3 py-2 text-foreground placeholder:text-foreground/30 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full text-sm bg-card border border-foreground/10 rounded-md px-3 py-2 text-foreground placeholder:text-foreground/30 focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
 
@@ -323,7 +323,7 @@ export default function PersonasSettings() {
                 value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 placeholder="One-line description shown in the list"
-                className="w-full text-sm bg-card border border-foreground/10 rounded-md px-3 py-2 text-foreground placeholder:text-foreground/30 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full text-sm bg-card border border-foreground/10 rounded-md px-3 py-2 text-foreground placeholder:text-foreground/30 focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
 
@@ -334,7 +334,7 @@ export default function PersonasSettings() {
                 value={form.systemPrompt}
                 onChange={(e) => setForm((f) => ({ ...f, systemPrompt: e.target.value }))}
                 placeholder="You are a..."
-                className="w-full text-sm bg-card border border-foreground/10 rounded-md px-3 py-2 text-foreground placeholder:text-foreground/30 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-y font-mono"
+                className="w-full text-sm bg-card border border-foreground/10 rounded-md px-3 py-2 text-foreground placeholder:text-foreground/30 focus:outline-none focus:ring-1 focus:ring-primary resize-y font-mono"
               />
             </div>
 
@@ -348,7 +348,7 @@ export default function PersonasSettings() {
               <button
                 onClick={saveForm}
                 disabled={formSaving}
-                className="text-sm px-3 py-1.5 rounded-md bg-indigo-500 hover:bg-indigo-600 text-white transition-colors disabled:opacity-50"
+                className="text-sm px-3 py-1.5 rounded-md bg-primary hover:bg-primary text-white transition-colors disabled:opacity-50"
               >
                 {formSaving ? "Saving…" : "Save"}
               </button>
@@ -376,14 +376,14 @@ export default function PersonasSettings() {
             rows={5}
             value={systemPrompt}
             onChange={(e) => setSystemPrompt(e.target.value)}
-            className="w-full bg-card border border-foreground/10 rounded-lg px-3 py-2 text-sm text-foreground font-mono resize-y focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full bg-card border border-foreground/10 rounded-lg px-3 py-2 text-sm text-foreground font-mono resize-y focus:outline-none focus:ring-1 focus:ring-primary"
           />
           <p className="text-xs text-foreground/30 mt-1">{systemPrompt.length} chars</p>
         </div>
         <button
           onClick={saveSystemPrompt}
           disabled={promptSaving || systemPrompt === savedSystemPrompt}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition-colors"
+          className="px-4 py-2 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition-colors"
         >
           {promptSaving ? "Saving…" : promptSaved ? "Saved" : "Save voice"}
         </button>

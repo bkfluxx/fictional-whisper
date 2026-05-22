@@ -83,7 +83,7 @@ export default function VoiceNotesList({ entryId, refreshKey, onTranscript }: Pr
                   <button
                     onClick={() => transcribeNote(note.id)}
                     disabled={transcribing === note.id}
-                    className="text-xs text-indigo-400 hover:text-indigo-300 disabled:opacity-40 transition-colors flex items-center gap-1"
+                    className="text-xs text-primary hover:text-primary/80 disabled:opacity-40 transition-colors flex items-center gap-1"
                   >
                     {transcribing === note.id ? (
                       <>

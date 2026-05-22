@@ -460,7 +460,7 @@ export default function ChatPage() {
                   <div
                     className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
                       msg.role === "user"
-                        ? "bg-indigo-600 text-white"
+                        ? "bg-primary text-white"
                         : "bg-card text-foreground"
                     }`}
                   >
@@ -476,8 +476,8 @@ export default function ChatPage() {
 
                 {/* Entry draft card */}
                 {msg.role === "assistant" && msg.entryDraft && (
-                  <div className="mt-3 rounded-xl border border-indigo-800/60 bg-indigo-950/40 p-4 text-sm max-w-[85%]">
-                    <p className="text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-2">
+                  <div className="mt-3 rounded-xl border border-primary/20 bg-primary/[0.06] p-4 text-sm max-w-[85%]">
+                    <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-2">
                       Journal entry draft
                     </p>
                     <p className="text-foreground font-medium mb-1">{msg.entryDraft.title}</p>
@@ -502,7 +502,7 @@ export default function ChatPage() {
                           <button
                             onClick={() => saveEntryDraft(msg.entryDraft!, i)}
                             disabled={savingDraft[i]}
-                            className="text-xs px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg transition-colors"
+                            className="text-xs px-3 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white rounded-lg transition-colors"
                           >
                             {savingDraft[i] ? "Saving…" : "Save as journal entry"}
                           </button>
@@ -533,7 +533,7 @@ export default function ChatPage() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about your journal…"
               disabled={streaming || loadingMessages}
-              className="flex-1 bg-background border border-foreground/20 text-foreground text-sm rounded-xl px-4 py-2.5 placeholder-foreground/30 focus:outline-none focus:border-indigo-500 disabled:opacity-50 transition-colors"
+              className="flex-1 bg-background border border-foreground/20 text-foreground text-sm rounded-xl px-4 py-2.5 placeholder-foreground/30 focus:outline-none focus:border-primary disabled:opacity-50 transition-colors"
             />
             {modelSupportsThinking && (
               <Toggle
@@ -548,7 +548,7 @@ export default function ChatPage() {
             <button
               type="submit"
               disabled={!input.trim() || streaming || loadingMessages}
-              className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-sm font-medium rounded-xl transition-colors"
+              className="px-4 py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-sm font-medium rounded-xl transition-colors"
             >
               Send
             </button>

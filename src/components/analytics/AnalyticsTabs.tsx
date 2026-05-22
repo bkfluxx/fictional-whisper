@@ -135,7 +135,7 @@ export default function AnalyticsTabs({
             onClick={() => setActive(tab.id)}
             className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
               active === tab.id
-                ? "border-indigo-500 text-foreground"
+                ? "border-primary text-foreground"
                 : "border-transparent text-foreground/40 hover:text-foreground/80"
             }`}
           >

@@ -23,7 +23,7 @@ const STATUS_LABEL: Record<Status, string> = {
 };
 
 const STATUS_STYLE: Record<Status, string> = {
-  active: "bg-indigo-500/15 text-indigo-400",
+  active: "bg-primary/15 text-primary",
   completed: "bg-emerald-500/15 text-emerald-400",
   paused: "bg-foreground/10 text-foreground/50",
 };
@@ -69,7 +69,7 @@ function GoalForm({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="What do you want to achieve?"
-          className="w-full bg-background border border-foreground/10 rounded-lg px-3 py-2 text-sm text-foreground placeholder-foreground/30 focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
+          className="w-full bg-background border border-foreground/10 rounded-lg px-3 py-2 text-sm text-foreground placeholder-foreground/30 focus:outline-none focus:ring-1 focus:ring-primary/50"
         />
       </div>
       <div>
@@ -79,7 +79,7 @@ function GoalForm({
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Why does this matter? Any context or milestones…"
           rows={3}
-          className="w-full bg-background border border-foreground/10 rounded-lg px-3 py-2 text-sm text-foreground placeholder-foreground/30 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 resize-none"
+          className="w-full bg-background border border-foreground/10 rounded-lg px-3 py-2 text-sm text-foreground placeholder-foreground/30 focus:outline-none focus:ring-1 focus:ring-primary/50 resize-none"
         />
       </div>
       <div>
@@ -88,14 +88,14 @@ function GoalForm({
           type="date"
           value={targetDate}
           onChange={(e) => setTargetDate(e.target.value)}
-          className="bg-background border border-foreground/10 rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
+          className="bg-background border border-foreground/10 rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
         />
       </div>
       <div className="flex gap-2">
         <button
           onClick={() => onSave({ title, notes, targetDate })}
           disabled={!title.trim()}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-40"
+          className="px-4 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-40"
         >
           {initial?.id ? "Save changes" : "Add goal"}
         </button>
@@ -138,7 +138,7 @@ function GoalCard({
           className={`mt-0.5 shrink-0 w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors ${
             goal.status === "completed"
               ? "bg-emerald-500 border-emerald-500"
-              : "border-foreground/30 hover:border-indigo-400"
+              : "border-foreground/30 hover:border-primary"
           }`}
         >
           {goal.status === "completed" && (
@@ -197,7 +197,7 @@ function GoalCard({
                 <button
                   key={s}
                   onClick={() => { onStatusChange(goal.id, s); setMenuOpen(false); }}
-                  className={`w-full text-left px-3 py-1.5 text-xs transition-colors hover:bg-foreground/8 ${goal.status === s ? "text-indigo-400 font-medium" : "text-foreground/60"}`}
+                  className={`w-full text-left px-3 py-1.5 text-xs transition-colors hover:bg-foreground/8 ${goal.status === s ? "text-primary font-medium" : "text-foreground/60"}`}
                 >
                   Mark {STATUS_LABEL[s].toLowerCase()}
                 </button>
@@ -305,7 +305,7 @@ export default function GoalsView() {
         {!showForm && !editingGoal && (
           <button
             onClick={() => setShowForm(true)}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors"
+            className="px-4 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-lg transition-colors"
           >
             New goal
           </button>
@@ -328,7 +328,7 @@ export default function GoalsView() {
               onClick={() => setFilter(tab)}
               className={`px-3 py-2 text-sm font-medium border-b-2 -mb-px transition-colors capitalize ${
                 filter === tab
-                  ? "border-indigo-500 text-foreground"
+                  ? "border-primary text-foreground"
                   : "border-transparent text-foreground/40 hover:text-foreground/70"
               }`}
             >

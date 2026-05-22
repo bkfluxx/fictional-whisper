@@ -118,7 +118,7 @@ export default function TwoFactorSettings() {
         <button
           onClick={startSetup}
           disabled={busy}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition-colors"
+          className="px-4 py-2 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition-colors"
         >
           Enable 2FA
         </button>
@@ -150,14 +150,14 @@ export default function TwoFactorSettings() {
               value={code}
               onChange={(e) => { setCode(e.target.value); setError(null); }}
               placeholder="000000"
-              className="w-40 px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground text-center text-lg tracking-widest font-mono placeholder-foreground/30 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-40 px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground text-center text-lg tracking-widest font-mono placeholder-foreground/30 focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
           <div className="flex gap-2">
             <button
               onClick={confirmEnable}
               disabled={busy || code.replace(/\s/g, "").length < 6}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition-colors"
+              className="px-4 py-2 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition-colors"
             >
               {busy ? "Confirming…" : "Confirm & Enable"}
             </button>
@@ -188,7 +188,7 @@ export default function TwoFactorSettings() {
                   value={code}
                   onChange={(e) => { setCode(e.target.value); setError(null); }}
                   placeholder="000000"
-                  className="w-40 px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground text-center text-lg tracking-widest font-mono placeholder-foreground/30 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-40 px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground text-center text-lg tracking-widest font-mono placeholder-foreground/30 focus:outline-none focus:ring-1 focus:ring-primary"
                 />
               </div>
               <button

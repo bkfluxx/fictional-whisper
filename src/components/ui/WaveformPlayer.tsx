@@ -133,7 +133,7 @@ export default function WaveformPlayer({ src, barCount = 52, className = "" }: P
               loading
                 ? "bg-foreground/10 animate-pulse"
                 : i < activeCount
-                  ? "bg-indigo-400"
+                  ? "bg-primary"
                   : "bg-foreground/20"
             }`}
             style={{ height: `${Math.max(12, Math.round(h * 100))}%` }}

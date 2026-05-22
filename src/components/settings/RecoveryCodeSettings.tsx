@@ -93,7 +93,7 @@ export default function RecoveryCodeSettings() {
             autoFocus
             autoComplete="current-password"
             placeholder="Your master password"
-            className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+            className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
           />
         </div>
 
@@ -103,7 +103,7 @@ export default function RecoveryCodeSettings() {
           <button
             type="submit"
             disabled={state === "saving" || !currentPassword}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+            className="px-4 py-2 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
           >
             {state === "saving" ? "Regenerating…" : "Confirm"}
           </button>

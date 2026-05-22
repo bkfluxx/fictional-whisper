@@ -157,7 +157,7 @@ export default function GuidedSession() {
           {(draft.mood || (draft.categories && draft.categories.length > 0)) && (
             <div className="flex gap-2 flex-wrap mb-6">
               {draft.mood && (
-                <span className="text-xs px-2.5 py-1 bg-indigo-500/15 text-indigo-400 rounded-full capitalize">
+                <span className="text-xs px-2.5 py-1 bg-primary/15 text-primary rounded-full capitalize">
                   {draft.mood}
                 </span>
               )}
@@ -178,7 +178,7 @@ export default function GuidedSession() {
             <button
               onClick={saveEntry}
               disabled={saving}
-              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
+              className="px-5 py-2.5 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
             >
               {saving ? "Saving…" : "Save as entry"}
             </button>
@@ -221,7 +221,7 @@ export default function GuidedSession() {
         {canWrapUp ? (
           <button
             onClick={wrapUp}
-            className="text-sm px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors"
+            className="text-sm px-3 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors"
           >
             Wrap up →
           </button>
@@ -240,7 +240,7 @@ export default function GuidedSession() {
             <div
               className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
                 m.role === "user"
-                  ? "bg-indigo-600 text-white rounded-br-sm"
+                  ? "bg-primary text-white rounded-br-sm"
                   : "bg-card text-foreground rounded-bl-sm"
               }`}
             >
@@ -257,7 +257,7 @@ export default function GuidedSession() {
       {/* Wrap-up hint */}
       {userMessageCount === 2 && !streaming && (
         <p className="text-center text-xs text-foreground/30 pb-2">
-          When you're ready, tap <span className="text-indigo-400">Wrap up</span> to turn this into a journal entry
+          When you're ready, tap <span className="text-primary">Wrap up</span> to turn this into a journal entry
         </p>
       )}
 
@@ -277,12 +277,12 @@ export default function GuidedSession() {
             placeholder="Share what's on your mind…"
             rows={2}
             disabled={streaming}
-            className="flex-1 resize-none bg-card text-foreground text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 placeholder-foreground/30 disabled:opacity-50"
+            className="flex-1 resize-none bg-card text-foreground text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-primary/50 placeholder-foreground/30 disabled:opacity-50"
           />
           <button
             onClick={sendMessage}
             disabled={!input.trim() || streaming}
-            className="p-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition-colors disabled:opacity-30 shrink-0"
+            className="p-3 bg-primary hover:bg-primary/90 text-white rounded-xl transition-colors disabled:opacity-30 shrink-0"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />

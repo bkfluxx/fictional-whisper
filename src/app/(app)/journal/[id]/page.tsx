@@ -42,7 +42,7 @@ export default async function EntryViewPage({
         </Link>
         <Link
           href={`/journal/${entry.id}/edit`}
-          className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
+          className="text-sm text-primary hover:text-primary/80 transition-colors"
         >
           Edit
         </Link>
@@ -68,7 +68,7 @@ export default async function EntryViewPage({
             const uc = userCatMap.get(c);
             const label = jt ? `${jt.emoji} ${jt.name}` : uc ? `${uc.emoji} ${uc.name}` : c;
             return (
-              <span key={c} className="text-xs px-2 py-0.5 bg-indigo-950 text-indigo-400 rounded-full">
+              <span key={c} className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full">
                 {label}
               </span>
             );

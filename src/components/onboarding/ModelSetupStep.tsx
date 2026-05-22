@@ -107,7 +107,7 @@ function ModelPuller({
       <div className="flex items-center gap-2 min-w-[140px]">
         <div className="flex-1 h-1.5 bg-foreground/20 rounded-full overflow-hidden">
           <div
-            className="h-full bg-indigo-500 rounded-full transition-all duration-300"
+            className="h-full bg-primary rounded-full transition-all duration-300"
             style={{ width: `${progress.pct ?? 0}%` }}
           />
         </div>
@@ -121,7 +121,7 @@ function ModelPuller({
   return (
     <button
       onClick={pull}
-      className="text-xs px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors"
+      className="text-xs px-2.5 py-1 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors"
     >
       Download
     </button>
@@ -215,7 +215,7 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
                 <select
                   value={chatModel}
                   onChange={(e) => setChatModel(e.target.value)}
-                  className="w-full bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary"
                 >
                   {chatModels.map((m) => (
                     <option key={m.name} value={m.name}>
@@ -295,7 +295,7 @@ export default function ModelSetupStep({ ollamaUrl, onContinue, onBack }: Props)
         <button
           onClick={() => onContinue(chatModel, DEFAULT_EMBED_MODEL)}
           disabled={!canContinue}
-          className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white font-medium rounded-xl transition-colors"
+          className="px-6 py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white font-medium rounded-xl transition-colors"
         >
           Continue →
         </button>

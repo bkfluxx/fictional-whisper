@@ -93,9 +93,9 @@ export default function CalendarGrid({ year, month, counts }: CalendarGridProps)
               key={day}
               onClick={() => handleDayClick(day)}
               className={`relative flex flex-col items-center justify-center aspect-square rounded-lg text-sm transition-colors
-                ${isToday ? "ring-1 ring-indigo-500" : ""}
+                ${isToday ? "ring-1 ring-primary" : ""}
                 ${entryCount > 0
-                  ? "text-white hover:bg-indigo-600 font-medium"
+                  ? "text-white hover:bg-primary font-medium"
                   : "text-neutral-500 hover:bg-neutral-800 hover:text-neutral-300"
                 }`}
             >
@@ -103,7 +103,7 @@ export default function CalendarGrid({ year, month, counts }: CalendarGridProps)
               {entryCount > 0 && (
                 <span className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">
                   {[...Array(Math.min(entryCount, 3))].map((_, j) => (
-                    <span key={j} className="w-1 h-1 rounded-full bg-indigo-400" />
+                    <span key={j} className="w-1 h-1 rounded-full bg-primary" />
                   ))}
                 </span>
               )}

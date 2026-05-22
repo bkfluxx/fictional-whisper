@@ -240,14 +240,14 @@ export default function TemplatesSettings() {
           <div className="space-y-1.5 mb-3">
             {customTemplates.map((t) =>
               editing === t.id ? (
-                <div key={t.id} className="rounded-xl border border-indigo-500/40 bg-card p-4 space-y-3">
+                <div key={t.id} className="rounded-xl border border-primary/40 bg-card p-4 space-y-3">
                   <TemplateForm form={form} onChange={setForm} />
                   {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
                   <div className="flex gap-2">
                     <button
                       onClick={() => saveCustomEdit(t.id)}
                       disabled={saving}
-                      className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-medium rounded-lg transition-colors"
+                      className="px-3 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-xs font-medium rounded-lg transition-colors"
                     >
                       {saving ? "Saving…" : "Save"}
                     </button>
@@ -298,14 +298,14 @@ export default function TemplatesSettings() {
             )}
 
             {editing === "new" && (
-              <div className="rounded-xl border border-indigo-500/40 bg-card p-4 space-y-3">
+              <div className="rounded-xl border border-primary/40 bg-card p-4 space-y-3">
                 <TemplateForm form={form} onChange={setForm} />
                 {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
                 <div className="flex gap-2">
                   <button
                     onClick={addCustom}
                     disabled={saving || !form.title.trim() || !form.body.trim()}
-                    className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-medium rounded-lg transition-colors"
+                    className="px-3 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-xs font-medium rounded-lg transition-colors"
                   >
                     {saving ? "Adding…" : "Add"}
                   </button>
@@ -320,7 +320,7 @@ export default function TemplatesSettings() {
         {editing !== "new" && (
           <button
             onClick={() => startEdit("new", EMPTY_FORM)}
-            className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 transition-colors"
+            className="text-sm text-primary hover:text-primary/80 transition-colors"
           >
             + Add custom template
           </button>
@@ -343,14 +343,14 @@ export default function TemplatesSettings() {
 
             if (editing === editKey) {
               return (
-                <div key={bt.id} className="rounded-xl border border-indigo-500/40 bg-card p-4 space-y-3">
+                <div key={bt.id} className="rounded-xl border border-primary/40 bg-card p-4 space-y-3">
                   <TemplateForm form={form} onChange={setForm} />
                   {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
                   <div className="flex gap-2">
                     <button
                       onClick={() => saveBuiltinEdit(bt.id)}
                       disabled={saving}
-                      className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-medium rounded-lg transition-colors"
+                      className="px-3 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-xs font-medium rounded-lg transition-colors"
                     >
                       {saving ? "Saving…" : "Save"}
                     </button>
@@ -407,7 +407,7 @@ export default function TemplatesSettings() {
                     <button
                       onClick={() => resetBuiltin(override!.id)}
                       disabled={saving}
-                      className="text-xs px-2 py-1 text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 rounded-lg hover:bg-indigo-500/10 transition-colors disabled:opacity-40"
+                      className="text-xs px-2 py-1 text-primary hover:text-primary/80 rounded-lg hover:bg-primary/10 transition-colors disabled:opacity-40"
                     >
                       Restore
                     </button>
@@ -460,14 +460,14 @@ function TemplateForm({
           onChange={(e) => onChange({ ...form, emoji: e.target.value })}
           placeholder="📝"
           maxLength={4}
-          className="w-14 bg-background border border-foreground/20 text-foreground text-center text-lg rounded-lg px-2 py-1.5 focus:outline-none focus:border-indigo-500"
+          className="w-14 bg-background border border-foreground/20 text-foreground text-center text-lg rounded-lg px-2 py-1.5 focus:outline-none focus:border-primary"
         />
         <input
           type="text"
           value={form.title}
           onChange={(e) => onChange({ ...form, title: e.target.value })}
           placeholder="Template name"
-          className="flex-1 bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 placeholder:text-foreground/30"
+          className="flex-1 bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary placeholder:text-foreground/30"
         />
       </div>
       <input
@@ -475,14 +475,14 @@ function TemplateForm({
         value={form.description}
         onChange={(e) => onChange({ ...form, description: e.target.value })}
         placeholder="Short description (optional)"
-        className="w-full bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 placeholder:text-foreground/30"
+        className="w-full bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary placeholder:text-foreground/30"
       />
       <textarea
         rows={6}
         value={form.body}
         onChange={(e) => onChange({ ...form, body: e.target.value })}
         placeholder="Template body — use HTML headings like <h2>Section</h2>"
-        className="w-full bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 placeholder:text-foreground/30 font-mono resize-y"
+        className="w-full bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary placeholder:text-foreground/30 font-mono resize-y"
       />
     </div>
   );

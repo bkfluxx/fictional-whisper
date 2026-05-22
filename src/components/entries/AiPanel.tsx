@@ -109,7 +109,7 @@ export default function AiPanel({
           <button
             onClick={analyze}
             disabled={!entryId || analysisState === "loading"}
-            className="text-xs px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white rounded-md transition-colors"
+            className="text-xs px-2.5 py-1 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white rounded-md transition-colors"
           >
             {analysisState === "loading" ? "Analyzing…" : "Analyze"}
           </button>
@@ -186,7 +186,7 @@ export default function AiPanel({
                   <p className="text-sm text-neutral-300 leading-snug">{p}</p>
                   <button
                     onClick={() => onApplyPrompt(p)}
-                    className="text-xs text-indigo-400 hover:text-indigo-300 mt-0.5 transition-colors"
+                    className="text-xs text-primary hover:text-primary/80 mt-0.5 transition-colors"
                   >
                     Use this prompt
                   </button>

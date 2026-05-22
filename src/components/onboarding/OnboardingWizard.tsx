@@ -54,7 +54,7 @@ function ProgressBar({ current, aiPath }: { current: Step; aiPath: boolean }) {
   return (
     <div className="fixed top-0 left-0 right-0 h-0.5 bg-muted z-50">
       <div
-        className="h-full bg-indigo-500 transition-all duration-500"
+        className="h-full bg-primary transition-all duration-500"
         style={{ width: `${((idx + 1) / steps.length) * 100}%` }}
       />
     </div>
@@ -196,7 +196,7 @@ export default function OnboardingWizard() {
                 setTestState("idle");
               }}
               placeholder="http://localhost:11434"
-              className="flex-1 bg-background border border-foreground/20 text-foreground text-sm rounded-xl px-4 py-2.5 placeholder-foreground/30 focus:outline-none focus:border-indigo-500"
+              className="flex-1 bg-background border border-foreground/20 text-foreground text-sm rounded-xl px-4 py-2.5 placeholder-foreground/30 focus:outline-none focus:border-primary"
             />
             <button
               onClick={testConnection}
@@ -243,7 +243,7 @@ export default function OnboardingWizard() {
                 setStep("model-setup");
               }}
               disabled={testState !== "ok"}
-              className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white font-medium rounded-xl transition-colors"
+              className="px-6 py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white font-medium rounded-xl transition-colors"
             >
               Continue →
             </button>
@@ -333,7 +333,7 @@ export default function OnboardingWizard() {
         <button
           onClick={() => finish(profile)}
           disabled={saving}
-          className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white font-medium rounded-xl transition-colors"
+          className="px-6 py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-60 text-white font-medium rounded-xl transition-colors"
         >
           {saving ? "Saving…" : "Start journaling →"}
         </button>

@@ -54,7 +54,7 @@ export default function AboutYouStep({ onContinue, onBack }: Props) {
           onChange={(e) => setName(e.target.value)}
           placeholder="Your name or nickname"
           autoFocus
-          className="w-full bg-background border border-foreground/20 text-foreground text-sm rounded-xl px-4 py-2.5 placeholder-foreground/30 focus:outline-none focus:border-indigo-500"
+          className="w-full bg-background border border-foreground/20 text-foreground text-sm rounded-xl px-4 py-2.5 placeholder-foreground/30 focus:outline-none focus:border-primary"
         />
       </div>
 
@@ -72,7 +72,7 @@ export default function AboutYouStep({ onContinue, onBack }: Props) {
                 onClick={() => toggleIntention(item.id)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border transition-colors ${
                   active
-                    ? "bg-indigo-600 border-indigo-600 text-white"
+                    ? "bg-primary border-primary text-white"
                     : "bg-card border-foreground/20 text-foreground/80 hover:border-foreground/40"
                 }`}
               >
@@ -94,7 +94,7 @@ export default function AboutYouStep({ onContinue, onBack }: Props) {
             onClick={() => setStyle("prompts")}
             className={`p-4 rounded-xl border text-left transition-colors ${
               style === "prompts"
-                ? "bg-indigo-600/15 border-indigo-500 text-foreground"
+                ? "bg-primary/15 border-primary text-foreground"
                 : "bg-card border-foreground/20 hover:border-foreground/40"
             }`}
           >
@@ -108,7 +108,7 @@ export default function AboutYouStep({ onContinue, onBack }: Props) {
             onClick={() => setStyle("blank")}
             className={`p-4 rounded-xl border text-left transition-colors ${
               style === "blank"
-                ? "bg-indigo-600/15 border-indigo-500 text-foreground"
+                ? "bg-primary/15 border-primary text-foreground"
                 : "bg-card border-foreground/20 hover:border-foreground/40"
             }`}
           >
@@ -137,7 +137,7 @@ export default function AboutYouStep({ onContinue, onBack }: Props) {
             })
           }
           disabled={!canContinue}
-          className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white font-medium rounded-xl transition-colors"
+          className="px-6 py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white font-medium rounded-xl transition-colors"
         >
           Continue →
         </button>

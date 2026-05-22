@@ -217,14 +217,14 @@ export default function CategoriesSettings() {
           <div className="space-y-1.5 mb-3">
             {customCategories.map((cat) =>
               editing === cat.id ? (
-                <div key={cat.id} className="rounded-xl border border-indigo-500/40 bg-card p-4 space-y-3">
+                <div key={cat.id} className="rounded-xl border border-primary/40 bg-card p-4 space-y-3">
                   <CategoryForm form={form} onChange={setForm} />
                   {error && <p className="text-xs text-red-500">{error}</p>}
                   <div className="flex gap-2">
                     <button
                       onClick={() => saveCustomEdit(cat.id)}
                       disabled={saving}
-                      className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-medium rounded-lg transition-colors"
+                      className="px-3 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-xs font-medium rounded-lg transition-colors"
                     >
                       {saving ? "Saving…" : "Save"}
                     </button>
@@ -270,14 +270,14 @@ export default function CategoriesSettings() {
             )}
 
             {editing === "new" && (
-              <div className="rounded-xl border border-indigo-500/40 bg-card p-4 space-y-3">
+              <div className="rounded-xl border border-primary/40 bg-card p-4 space-y-3">
                 <CategoryForm form={form} onChange={setForm} />
                 {error && <p className="text-xs text-red-500">{error}</p>}
                 <div className="flex gap-2">
                   <button
                     onClick={addCustom}
                     disabled={saving || !form.name.trim()}
-                    className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-medium rounded-lg transition-colors"
+                    className="px-3 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-xs font-medium rounded-lg transition-colors"
                   >
                     {saving ? "Adding…" : "Add"}
                   </button>
@@ -292,7 +292,7 @@ export default function CategoriesSettings() {
         {editing !== "new" && (
           <button
             onClick={() => startEdit("new", EMPTY_FORM)}
-            className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
+            className="text-sm text-primary hover:text-primary/80 transition-colors"
           >
             + Add custom category
           </button>
@@ -314,14 +314,14 @@ export default function CategoriesSettings() {
 
             if (editing === editKey) {
               return (
-                <div key={jt.id} className="rounded-xl border border-indigo-500/40 bg-card p-4 space-y-3">
+                <div key={jt.id} className="rounded-xl border border-primary/40 bg-card p-4 space-y-3">
                   <CategoryForm form={form} onChange={setForm} />
                   {error && <p className="text-xs text-red-500">{error}</p>}
                   <div className="flex gap-2">
                     <button
                       onClick={() => saveBuiltinEdit(jt.id)}
                       disabled={saving}
-                      className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-medium rounded-lg transition-colors"
+                      className="px-3 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-xs font-medium rounded-lg transition-colors"
                     >
                       {saving ? "Saving…" : "Save"}
                     </button>
@@ -373,7 +373,7 @@ export default function CategoriesSettings() {
                     <button
                       onClick={() => resetBuiltin(override!.id)}
                       disabled={saving}
-                      className="text-xs px-2 py-1 text-indigo-400 hover:text-indigo-300 rounded-lg hover:bg-indigo-500/10 transition-colors disabled:opacity-40"
+                      className="text-xs px-2 py-1 text-primary hover:text-primary/80 rounded-lg hover:bg-primary/10 transition-colors disabled:opacity-40"
                     >
                       Restore
                     </button>
@@ -426,14 +426,14 @@ function CategoryForm({
           onChange={(e) => onChange({ ...form, emoji: e.target.value })}
           placeholder="📝"
           maxLength={4}
-          className="w-14 bg-background border border-foreground/20 text-foreground text-center text-lg rounded-lg px-2 py-1.5 focus:outline-none focus:border-indigo-500"
+          className="w-14 bg-background border border-foreground/20 text-foreground text-center text-lg rounded-lg px-2 py-1.5 focus:outline-none focus:border-primary"
         />
         <input
           type="text"
           value={form.name}
           onChange={(e) => onChange({ ...form, name: e.target.value })}
           placeholder="Category name"
-          className="flex-1 bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 placeholder:text-foreground/30"
+          className="flex-1 bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary placeholder:text-foreground/30"
         />
       </div>
       <input
@@ -441,7 +441,7 @@ function CategoryForm({
         value={form.description}
         onChange={(e) => onChange({ ...form, description: e.target.value })}
         placeholder="Description (optional)"
-        className="w-full bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 placeholder:text-foreground/30"
+        className="w-full bg-background border border-foreground/20 text-foreground text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary placeholder:text-foreground/30"
       />
     </div>
   );

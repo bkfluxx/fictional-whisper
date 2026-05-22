@@ -41,7 +41,7 @@ export default function EntryPane({ entryId, onClose }: Props) {
         {entry && (
           <Link
             href={`/journal/${entryId}/edit`}
-            className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+            className="text-xs text-primary hover:text-primary/80 transition-colors"
           >
             Edit →
           </Link>
@@ -88,7 +88,7 @@ export default function EntryPane({ entryId, onClose }: Props) {
                   const uc = userCatMap.get(c);
                   const label = jt ? `${jt.emoji} ${jt.name}` : uc ? `${uc.emoji} ${uc.name}` : c;
                   return (
-                    <span key={c} className="text-xs px-2 py-0.5 bg-indigo-950 text-indigo-400 rounded-full">
+                    <span key={c} className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full">
                       {label}
                     </span>
                   );

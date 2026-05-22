@@ -6,7 +6,7 @@ import EntryPane from "./EntryPane";
 
 const MOOD_DOT: Record<string, string> = {
   great: "bg-emerald-500",
-  good: "bg-indigo-500",
+  good: "bg-primary",
   okay: "bg-amber-400",
   tough: "bg-orange-500",
   awful: "bg-red-500",
@@ -105,7 +105,7 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                       onClick={() => handleEntryClick(e.id)}
                       className={`flex-1 rounded-xl border overflow-hidden cursor-pointer flex transition-colors ${
                         isSelected
-                          ? "border-indigo-500/40 bg-indigo-950/20"
+                          ? "border-primary/40 bg-primary/[0.05]"
                           : "border-foreground/10 bg-card hover:bg-foreground/8"
                       }`}
                     >
@@ -123,7 +123,7 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                         </div>
 
                         {e.isVoiceOnly ? (
-                          <p className="text-xs text-indigo-400/70 mt-1 italic">Voice note</p>
+                          <p className="text-xs text-primary/70 mt-1 italic">Voice note</p>
                         ) : e.preview ? (
                           <p className="text-xs text-foreground/50 mt-1 leading-relaxed line-clamp-2">
                             {e.preview}
@@ -138,7 +138,7 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                               </span>
                             )}
                             {e.categoryLabels.map((c) => (
-                              <span key={c.id} className="text-xs px-2 py-0.5 bg-indigo-500/15 text-indigo-500 rounded-full">
+                              <span key={c.id} className="text-xs px-2 py-0.5 bg-primary/15 text-primary rounded-full">
                                 {c.emoji} {c.name}
                               </span>
                             ))}
@@ -153,9 +153,9 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
 
                       {/* Full-height mic strip */}
                       {e.hasVoice && (
-                        <div className="w-10 shrink-0 flex items-center justify-center bg-indigo-500/10 border-l border-indigo-500/10">
+                        <div className="w-10 shrink-0 flex items-center justify-center bg-primary/10 border-l border-primary/10">
                           <svg
-                            className="w-4 h-4 text-indigo-400"
+                            className="w-4 h-4 text-primary"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"

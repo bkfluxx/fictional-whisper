@@ -52,7 +52,7 @@ export default function PasswordChangeForm() {
           value={current}
           onChange={(e) => setCurrent(e.target.value)}
           autoComplete="current-password"
-          className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-sm text-foreground placeholder-foreground/30 focus:outline-none focus:border-indigo-500 transition-colors"
+          className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-sm text-foreground placeholder-foreground/30 focus:outline-none focus:border-primary transition-colors"
         />
       </div>
 
@@ -63,7 +63,7 @@ export default function PasswordChangeForm() {
           value={next}
           onChange={(e) => setNext(e.target.value)}
           autoComplete="new-password"
-          className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-sm text-foreground placeholder-foreground/30 focus:outline-none focus:border-indigo-500 transition-colors"
+          className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-sm text-foreground placeholder-foreground/30 focus:outline-none focus:border-primary transition-colors"
         />
         {next.length > 0 && next.length < 8 && (
           <p className="text-xs text-warning mt-1">Minimum 8 characters</p>
@@ -78,7 +78,7 @@ export default function PasswordChangeForm() {
           onChange={(e) => setConfirm(e.target.value)}
           autoComplete="new-password"
           className={`w-full px-3 py-2 bg-background border rounded-lg text-sm text-foreground placeholder-foreground/30 focus:outline-none transition-colors ${
-            mismatch ? "border-error focus:border-error" : "border-foreground/20 focus:border-indigo-500"
+            mismatch ? "border-error focus:border-error" : "border-foreground/20 focus:border-primary"
           }`}
         />
         {mismatch && <p className="text-xs text-error mt-1">Passwords don&apos;t match</p>}
@@ -93,7 +93,7 @@ export default function PasswordChangeForm() {
       <button
         type="submit"
         disabled={!canSubmit}
-        className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors"
+        className="px-5 py-2 bg-primary hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors"
       >
         {status === "saving" ? "Updating…" : "Update password"}
       </button>

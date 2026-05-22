@@ -149,8 +149,8 @@ export default function SetupPage() {
               key={name}
               className="bg-card border border-foreground/10 rounded-xl p-4 flex flex-col gap-2"
             >
-              <div className="w-7 h-7 rounded-md bg-indigo-500/15 flex items-center justify-center shrink-0">
-                <Icon className="w-3.5 h-3.5 text-indigo-400" />
+              <div className="w-7 h-7 rounded-md bg-primary/15 flex items-center justify-center shrink-0">
+                <Icon className="w-3.5 h-3.5 text-primary" />
               </div>
               <span className="font-bold text-sm text-foreground">{name}</span>
               <p className="text-xs text-foreground/50 leading-relaxed">
@@ -198,7 +198,7 @@ export default function SetupPage() {
 
                 <button
                   onClick={handleRecoveryAcknowledged}
-                  className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg transition-colors"
+                  className="w-full py-2.5 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-colors"
                 >
                   I&apos;ve saved my recovery code →
                 </button>
@@ -230,7 +230,7 @@ export default function SetupPage() {
                     autoFocus
                     autoComplete="new-password"
                     placeholder="At least 8 characters"
-                    className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
                   {weak && (
                     <p className="text-xs text-warning mt-1">
@@ -249,7 +249,7 @@ export default function SetupPage() {
                     onChange={(e) => setConfirm(e.target.value)}
                     autoComplete="new-password"
                     placeholder="Re-enter your password"
-                    className={`w-full px-3 py-2 bg-background border rounded-lg text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
+                    className={`w-full px-3 py-2 bg-background border rounded-lg text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
                       mismatch ? "border-error" : "border-foreground/20"
                     }`}
                   />
@@ -269,7 +269,7 @@ export default function SetupPage() {
                     password.length < 8 ||
                     password !== confirm
                   }
-                  className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
+                  className="w-full py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
                 >
                   {status === "deriving"
                     ? "Setting up… (this takes a moment)"

@@ -372,7 +372,7 @@ export default function AiModelsSettings() {
         <button
           onClick={save}
           disabled={!isDirty || loadState === "saving"}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition-colors"
+          className="px-4 py-2 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition-colors"
         >
           {loadState === "saving" ? "Saving…" : loadState === "saved" ? "Saved" : "Save"}
         </button>

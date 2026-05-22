@@ -100,10 +100,10 @@ export default function SearchBar() {
           onKeyDown={handleKeyDown}
           onFocus={() => results.length > 0 && setOpen(true)}
           placeholder="Search entries…"
-          className="w-full pl-8 pr-3 py-2 text-sm bg-background border border-foreground/20 rounded-lg text-foreground placeholder-foreground/40 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+          className="w-full pl-8 pr-3 py-2 text-sm bg-background border border-foreground/20 rounded-lg text-foreground placeholder-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
         />
         {loading && (
-          <div className="absolute right-2.5 top-2.5 h-3.5 w-3.5 border-2 border-foreground/30 border-t-indigo-400 rounded-full animate-spin" />
+          <div className="absolute right-2.5 top-2.5 h-3.5 w-3.5 border-2 border-foreground/30 border-t-primary rounded-full animate-spin" />
         )}
       </div>
 

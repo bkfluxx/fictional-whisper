@@ -99,7 +99,7 @@ export default function RecoverPage() {
                   autoComplete="off"
                   spellCheck={false}
                   placeholder="XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX"
-                  className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground font-mono text-sm placeholder-foreground/20 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground font-mono text-sm placeholder-foreground/20 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
 
@@ -113,7 +113,7 @@ export default function RecoverPage() {
                   onChange={(e) => setNewPassword(e.target.value)}
                   autoComplete="new-password"
                   placeholder="At least 8 characters"
-                  className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
                 {weak && (
                   <p className="text-xs text-warning mt-1">
@@ -132,7 +132,7 @@ export default function RecoverPage() {
                   onChange={(e) => setConfirm(e.target.value)}
                   autoComplete="new-password"
                   placeholder="Re-enter your new password"
-                  className={`w-full px-3 py-2 bg-background border rounded-lg text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
+                  className={`w-full px-3 py-2 bg-background border rounded-lg text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
                     mismatch ? "border-error" : "border-foreground/20"
                   }`}
                 />
@@ -151,7 +151,7 @@ export default function RecoverPage() {
                   newPassword.length < 8 ||
                   newPassword !== confirm
                 }
-                className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
+                className="w-full py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
               >
                 {loading ? "Recovering…" : "Reset password →"}
               </button>
@@ -197,7 +197,7 @@ export default function RecoverPage() {
 
               <Link
                 href="/login"
-                className="block w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg transition-colors text-center"
+                className="block w-full py-2.5 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-colors text-center"
               >
                 Go to login →
               </Link>

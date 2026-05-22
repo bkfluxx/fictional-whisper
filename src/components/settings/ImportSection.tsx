@@ -58,7 +58,7 @@ export default function ImportSection() {
         onClick={() => inputRef.current?.click()}
         className={`flex flex-col items-center justify-center gap-2 px-6 py-8 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${
           dragging
-            ? "border-indigo-500 bg-indigo-500/10"
+            ? "border-primary bg-primary/10"
             : "border-foreground/20 hover:border-foreground/40 bg-card/50"
         }`}
       >

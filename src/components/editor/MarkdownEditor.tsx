@@ -38,7 +38,7 @@ function ToolbarButton({
       title={title}
       className={`px-1.5 py-1 rounded text-sm transition-colors ${
         active
-          ? "bg-indigo-600 text-white"
+          ? "bg-primary text-white"
           : "text-foreground/60 hover:text-foreground hover:bg-foreground/8"
       }`}
     >

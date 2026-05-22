@@ -137,7 +137,7 @@ export default function LoginPage() {
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
 
@@ -146,7 +146,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
+              className="w-full py-2 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
             >
               {loading ? "Checking…" : "Continue"}
             </button>
@@ -181,7 +181,7 @@ export default function LoginPage() {
                 value={totpCode}
                 onChange={(e) => setTotpCode(e.target.value)}
                 placeholder="000000"
-                className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground text-center text-lg tracking-widest placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono"
+                className="w-full px-3 py-2 bg-background border border-foreground/20 rounded-lg text-foreground text-center text-lg tracking-widest placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-mono"
               />
             </div>
 
@@ -190,7 +190,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading || totpCode.replace(/\s/g, "").length < 6}
-              className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
+              className="w-full py-2 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
             >
               {loading ? "Verifying…" : "Verify"}
             </button>

@@ -179,7 +179,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
                   if (debounceRef.current) clearTimeout(debounceRef.current);
                   save(body, title, tags, mood, categories);
                 }}
-                className="text-xs px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors"
+                className="text-xs px-2.5 py-1 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors"
               >
                 Save
               </button>
@@ -233,7 +233,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
             title="AI assistant"
             className={`shrink-0 p-1.5 rounded-lg transition-colors ${
               aiOpen
-                ? "bg-indigo-600 text-white"
+                ? "bg-primary text-white"
                 : "text-foreground/40 hover:text-foreground/80 hover:bg-foreground/8"
             }`}
           >
@@ -298,13 +298,13 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
             return (
               <span
                 key={id}
-                className="flex items-center gap-1 text-xs px-2 py-0.5 bg-indigo-950 border border-indigo-800 text-indigo-300 rounded-full"
+                className="flex items-center gap-1 text-xs px-2 py-0.5 bg-primary/10 border border-primary/30 text-primary rounded-full"
               >
                 {label}
                 <button
                   type="button"
                   onClick={() => toggleCategory(id)}
-                  className="ml-0.5 text-indigo-400 hover:text-white transition-colors leading-none"
+                  className="ml-0.5 text-primary hover:text-white transition-colors leading-none"
                 >
                   ×
                 </button>
@@ -334,7 +334,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
                           onClick={() => toggleCategory(uc.id)}
                           className={`flex items-center gap-2 text-xs px-2.5 py-1.5 rounded-lg transition-colors text-left ${
                             active
-                              ? "bg-indigo-600 text-white"
+                              ? "bg-primary text-white"
                               : "text-foreground/60 hover:bg-foreground/8 hover:text-foreground"
                           }`}
                         >
@@ -361,7 +361,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
                           onClick={() => toggleCategory(jt.id)}
                           className={`flex items-center gap-2 text-xs px-2.5 py-1.5 rounded-lg transition-colors text-left ${
                             active
-                              ? "bg-indigo-600 text-white"
+                              ? "bg-primary text-white"
                               : "text-foreground/60 hover:bg-foreground/8 hover:text-foreground"
                           }`}
                         >

@@ -78,7 +78,7 @@ export default function FeatureMapStep({
               <div className="text-sm font-medium text-foreground flex items-center gap-2">
                 {feature.name}
                 {feature.aiOnly && (
-                  <span className="text-xs bg-indigo-900 text-indigo-300 px-1.5 py-0.5 rounded-full">
+                  <span className="text-xs bg-primary/15 text-primary px-1.5 py-0.5 rounded-full">
                     AI
                   </span>
                 )}
@@ -108,7 +108,7 @@ export default function FeatureMapStep({
         )}
         <button
           onClick={onContinue}
-          className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl transition-colors"
+          className="px-6 py-2.5 bg-primary hover:bg-primary/90 text-white font-medium rounded-xl transition-colors"
         >
           {introMode ? "Get started →" : "Start journaling →"}
         </button>

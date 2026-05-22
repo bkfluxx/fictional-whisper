@@ -205,7 +205,7 @@ export default function AuraChatStep({
     <div className="max-w-lg mx-auto px-6 py-8 flex flex-col" style={{ minHeight: "calc(100vh - 4rem)" }}>
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-1">
-          <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-sm">
+          <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-sm">
             ✦
           </div>
           <span className="text-foreground font-medium">Aura</span>
@@ -225,7 +225,7 @@ export default function AuraChatStep({
             <div
               className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                 msg.role === "user"
-                  ? "bg-indigo-600 text-white rounded-br-sm"
+                  ? "bg-primary text-white rounded-br-sm"
                   : "bg-foreground/10 text-foreground rounded-bl-sm"
               }`}
             >
@@ -256,13 +256,13 @@ export default function AuraChatStep({
           onKeyDown={handleKeyDown}
           disabled={streaming || extracting}
           placeholder="Type a message…"
-          className="flex-1 bg-background border border-foreground/20 text-foreground text-sm rounded-xl px-4 py-2.5 placeholder-foreground/30 focus:outline-none focus:border-indigo-500 disabled:opacity-50"
+          className="flex-1 bg-background border border-foreground/20 text-foreground text-sm rounded-xl px-4 py-2.5 placeholder-foreground/30 focus:outline-none focus:border-primary disabled:opacity-50"
           autoFocus
         />
         <button
           onClick={send}
           disabled={!input.trim() || streaming || extracting}
-          className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white rounded-xl transition-colors text-sm font-medium"
+          className="px-4 py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white rounded-xl transition-colors text-sm font-medium"
         >
           Send
         </button>
@@ -276,7 +276,7 @@ export default function AuraChatStep({
           </div>
           <div className="h-1.5 w-full bg-foreground/10 rounded-full overflow-hidden">
             <div
-              className="h-full bg-indigo-500 rounded-full transition-all duration-500 ease-out"
+              className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
               style={{ width: `${progress.pct === 0 ? 8 : progress.pct}%` }}
             />
           </div>
@@ -297,7 +297,7 @@ export default function AuraChatStep({
           disabled={!canFinish || extracting}
           className={`px-6 py-2.5 rounded-xl font-medium text-sm transition-colors ${
             canFinish && !extracting
-              ? "bg-indigo-600 hover:bg-indigo-500 text-white"
+              ? "bg-primary hover:bg-primary/90 text-white"
               : "text-foreground/40 hover:text-foreground/60"
           }`}
         >
