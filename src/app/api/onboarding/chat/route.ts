@@ -70,20 +70,32 @@ export async function POST(req: NextRequest) {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
       };
 
-      try {
-        const res = await fetch(`${ollamaUrl}/api/chat`, {
+      const buildBody = (withThink: boolean) => ({
+        model,
+        messages: [
+          { role: "system", content: WHISPER_SYSTEM_PROMPT },
+          ...messages,
+        ],
+        stream: true,
+        // Limit context to 4k — onboarding needs no more, and the default
+        // 262k context on qwen3.5 requires a massive KV cache that causes
+        // the model to stall for 2+ minutes before generating the first token.
+        options: { num_ctx: 4096 },
+        ...(withThink ? { think: false } : {}),
+      });
+
+      const makeRequest = async (withThink: boolean) =>
+        fetch(`${ollamaUrl}/api/chat`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            model,
-            messages: [
-              { role: "system", content: WHISPER_SYSTEM_PROMPT },
-              ...messages,
-            ],
-            stream: true,
-          }),
-          signal: AbortSignal.timeout(120_000),
+          body: JSON.stringify(buildBody(withThink)),
+          signal: AbortSignal.timeout(300_000),
         });
+
+      try {
+        let res = await makeRequest(true);
+        // Some non-thinking models reject the `think` param — retry without it
+        if (res.status === 400) res = await makeRequest(false);
 
         if (!res.ok || !res.body) {
           send({ error: `Ollama chat failed (${res.status})` });
@@ -94,7 +106,7 @@ export async function POST(req: NextRequest) {
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let buffer = "";
-        let thinkDepth = 0; // track whether we're inside a <think> block
+        let thinkDepth = 0;
 
         while (true) {
           const { done, value } = await reader.read();
@@ -107,13 +119,14 @@ export async function POST(req: NextRequest) {
             if (!line.trim()) continue;
             try {
               const obj = JSON.parse(line) as {
-                message?: { content?: string };
+                message?: { content?: string; thinking?: string };
                 done?: boolean;
               };
+              // Skip native thinking tokens (qwen3/deepseek via Ollama's thinking field)
+              if (obj.message?.thinking) continue;
               if (obj.message?.content) {
-                let token = obj.message.content;
-                // Strip thinking-mode tokens (<think>...</think>) emitted by
-                // qwen3/deepseek-r1 series even when think:false is requested
+                const token = obj.message.content;
+                // Also strip inline <think>...</think> blocks for older model variants
                 if (token.includes("<think>")) { thinkDepth++; }
                 if (thinkDepth > 0) {
                   if (token.includes("</think>")) { thinkDepth--; }
