@@ -4,6 +4,29 @@ All notable changes to Aura will be documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] - 2026-05-22
+
+### Added
+
+- Goal / intention tracking — create goals with a title, description, and optional target date; set status (active, completed, abandoned); weekly AI digest now includes active goals in its summary
+- Recovery codes — generate a one-time emergency recovery code in Settings → Security; consuming the code decrypts and re-wraps the account key so the master password can be reset without data loss
+- Model capabilities detection — app auto-detects whether the selected Ollama model supports thinking, vision, or completion-only mode and adjusts AI features accordingly
+- Empty states for journal list, goals, analytics, and chat sidebar — consistent design with icon, heading, subtitle, and contextual CTA
+- Mobile bottom navigation bar — persistent tab bar on small screens for journal, goals, analytics, calendar, chat, and settings
+- Color palette system — CSS variable-driven palette with Olive/Green default theme; palette is fully switchable via `globals.css` without touching component code
+- Custom typography — Lora (headings) and Roboto (body) via Google Fonts; Geist Mono for code blocks
+- Content density setting — choose Comfortable / Balanced / Compact in Settings → Appearance
+
+### Changed
+
+- Replaced FlyonUI with Shadcn/ui and next-themes — cleaner component primitives, first-class dark-mode support, and no dependency on DaisyUI's CSS cascade
+- Replaced all hardcoded `indigo-*` Tailwind classes with CSS variable tokens (`bg-primary`, `text-primary`, `border-primary`, etc.) across 36 files — the entire color accent system is now theme-driven with zero hardcoded colors
+
+### Fixed
+
+- Onboarding AI chat timed out on qwen3.5 and other reasoning models — disabled thinking mode (`think: false`) and capped context to 4 k tokens (`num_ctx: 4096`); the default 262 k context window required a massive KV cache allocation that stalled the first response for 2+ minutes
+- 5 UI issues in settings and analytics (layout overflow, contrast, spacing)
+
 ## [0.4.0] - 2026-04-06
 
 ### Added
