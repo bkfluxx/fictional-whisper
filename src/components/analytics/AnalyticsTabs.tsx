@@ -42,6 +42,7 @@ interface AnalyticsTabsProps {
   currentStreak: number;
   longestStreak: number;
   uniqueDays: number;
+  thisMonthEntries: number;
   heatmapWeeks: { date: string; count: number }[][];
   monthlyData: { month: string; count: number }[];
   dowCounts: number[];
@@ -96,6 +97,7 @@ export default function AnalyticsTabs({
   currentStreak,
   longestStreak,
   uniqueDays,
+  thisMonthEntries,
   heatmapWeeks,
   monthlyData,
   dowCounts,
@@ -156,25 +158,19 @@ export default function AnalyticsTabs({
             />
           ) : (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
-                <StatCard label="Total entries" value={totalEntries} />
-                <StatCard
-                  label="Current streak"
-                  value={currentStreak > 0 ? `${currentStreak}d` : "—"}
-                />
-                <StatCard
-                  label="Longest streak"
-                  value={longestStreak > 0 ? `${longestStreak}d` : "—"}
-                />
-                <StatCard
-                  label="Days written"
-                  value={uniqueDays}
-                  sub={
-                    totalEntries > uniqueDays
-                      ? `${totalEntries - uniqueDays} days with multiple`
-                      : undefined
-                  }
-                />
+              {/* Hero stat row */}
+              <div className="grid grid-cols-3 gap-3 mb-10">
+                {[
+                  { icon: "🔥", value: currentStreak > 0 ? currentStreak : "—", unit: "day streak" },
+                  { icon: "📓", value: thisMonthEntries, unit: "this month" },
+                  { icon: "📅", value: uniqueDays, unit: "days written" },
+                ].map(({ icon, value, unit }) => (
+                  <div key={unit} className="bg-card border border-border rounded-xl p-4 text-center">
+                    <div className="text-xl mb-2">{icon}</div>
+                    <div className="text-2xl font-normal text-foreground">{value}</div>
+                    <div className="text-[10px] text-foreground/40 uppercase tracking-wider mt-0.5">{unit}</div>
+                  </div>
+                ))}
               </div>
 
               <section className="mb-10">
@@ -211,12 +207,12 @@ export default function AnalyticsTabs({
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-                <section>
-                  <h2 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-4">
+                <section className="bg-foreground rounded-2xl p-5">
+                  <h2 className="text-xs font-semibold text-background/40 uppercase tracking-widest mb-4">
                     Mood breakdown
                   </h2>
                   {moodBreakdown.length === 0 ? (
-                    <p className="text-sm text-foreground/30">No mood data yet.</p>
+                    <p className="text-sm text-background/30">No mood data yet.</p>
                   ) : (
                     moodBreakdown.map(([mood, count]) => (
                       <HorizontalBar
@@ -225,6 +221,7 @@ export default function AnalyticsTabs({
                         count={count}
                         max={moodBreakdown[0][1]}
                         color={MOOD_COLOR[mood] ?? "bg-neutral-500"}
+                        variant="dark"
                       />
                     ))
                   )}

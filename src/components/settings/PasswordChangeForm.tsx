@@ -93,7 +93,7 @@ export default function PasswordChangeForm() {
       <button
         type="submit"
         disabled={!canSubmit}
-        className="px-5 py-2 bg-primary hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors"
+        className="px-5 py-2 bg-primary hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium rounded-full transition-colors"
       >
         {status === "saving" ? "Updating…" : "Update password"}
       </button>

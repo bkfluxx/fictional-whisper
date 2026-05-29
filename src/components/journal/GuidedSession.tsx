@@ -221,7 +221,7 @@ export default function GuidedSession() {
         {canWrapUp ? (
           <button
             onClick={wrapUp}
-            className="text-sm px-3 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors"
+            className="text-sm px-3 py-1.5 bg-primary hover:bg-primary/90 text-white rounded-full transition-colors"
           >
             Wrap up →
           </button>

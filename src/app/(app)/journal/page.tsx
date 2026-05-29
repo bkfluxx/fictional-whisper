@@ -128,7 +128,7 @@ export default async function JournalPage({
         <h1 className="text-xl font-semibold text-foreground">{heading}</h1>
         <Link
           href="/journal/new"
-          className="px-4 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-lg transition-colors"
+          className="px-4 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-full transition-colors"
         >
           New entry
         </Link>

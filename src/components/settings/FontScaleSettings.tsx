@@ -84,7 +84,7 @@ export default function FontScaleSettings() {
         <button
           onClick={apply}
           disabled={!isDirty}
-          className="px-4 py-1.5 bg-primary hover:bg-primary/85 disabled:opacity-40 text-primary-foreground text-sm font-medium rounded-lg transition-colors whitespace-nowrap shrink-0"
+          className="px-4 py-1.5 bg-primary hover:bg-primary/85 disabled:opacity-40 text-primary-foreground text-sm font-medium rounded-full transition-colors whitespace-nowrap shrink-0"
         >
           Apply
         </button>

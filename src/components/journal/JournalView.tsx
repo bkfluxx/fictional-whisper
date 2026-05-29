@@ -4,14 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import EntryPane from "./EntryPane";
 
-const MOOD_DOT: Record<string, string> = {
-  great: "bg-emerald-500",
-  good: "bg-primary",
-  okay: "bg-amber-400",
-  tough: "bg-orange-500",
-  awful: "bg-red-500",
-};
-
 export interface CategoryLabel {
   id: string;
   emoji: string;
@@ -48,7 +40,6 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Close pane when switching to a small screen
   useEffect(() => {
     if (!isLarge) setSelectedId(null);
   }, [isLarge]);
@@ -63,87 +54,116 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
 
   return (
     <div className="flex h-full min-h-0 overflow-hidden">
-      {/* ── Entry list ───────────────────────────────────────────── */}
-      <div className={`overflow-y-auto px-6 py-0 shrink-0 ${selectedId ? "w-[380px]" : "flex-1"}`}>
-        <div className="relative">
-          <div className="absolute left-[15px] top-2 bottom-2 w-0.5 bg-foreground/15" />
-
-          {days.map((dayGroup) => (
-            <div key={dayGroup.day}>
-              {/* Date marker */}
-              <div className="flex items-center gap-2 py-2">
-                <div className="flex w-8 shrink-0 justify-center">
-                  <span className="relative z-10 flex size-3 items-center justify-center rounded-full bg-background ring-1 ring-foreground/20">
-                    <span className="size-1.5 rounded-full bg-foreground/40" />
-                  </span>
-                </div>
-                <span className="text-xs font-semibold text-foreground/50">{dayGroup.weekday}</span>
-                <span className="text-xs text-foreground/30">{dayGroup.date}</span>
+      {/* ── Entry list ─────────────────────────────────────────────── */}
+      <div className={`overflow-y-auto shrink-0 ${selectedId ? "w-[380px]" : "flex-1"}`}>
+        <div className="px-6 pb-8">
+          {days.map((dayGroup, dayIdx) => (
+            <div key={dayGroup.day} className={dayIdx === 0 ? "mb-1" : "pt-6 mb-1"}>
+              {/* Date section header */}
+              <div className="flex items-center gap-2 pb-3">
+                <span className="text-xs font-semibold uppercase tracking-wider text-foreground/45">
+                  {dayGroup.weekday}
+                </span>
+                <span className="text-xs text-foreground/25">·</span>
+                <span className="text-xs text-foreground/35">{dayGroup.date}</span>
               </div>
 
-              {/* Entry cards */}
-              {dayGroup.entries.map((e) => {
-                const firstCat = e.categoryLabels[0];
-                const dotColor = e.mood
-                  ? (MOOD_DOT[e.mood] ?? "bg-primary")
-                  : firstCat
-                    ? "bg-primary"
-                    : "bg-foreground/30";
-                const isSelected = selectedId === e.id;
+              {/* Cards */}
+              <div className="flex flex-col gap-2.5">
+                {dayGroup.entries.map((e, entryIdx) => {
+                  const isFirst = dayIdx === 0 && entryIdx === 0;
+                  const isSelected = selectedId === e.id;
+                  const firstCat = e.categoryLabels[0];
 
-                return (
-                  <div key={e.id} className="flex items-stretch gap-2 mb-2">
-                    {/* Timeline dot — centred with the card */}
-                    <div className="flex w-8 shrink-0 justify-center pt-3">
-                      <span className="relative z-10 flex size-5 items-center justify-center rounded-full bg-background">
-                        <span className={`size-2.5 rounded-sm ${dotColor}`} />
-                      </span>
-                    </div>
-
-                    {/* Card */}
+                  return (
                     <div
+                      key={e.id}
                       onClick={() => handleEntryClick(e.id)}
-                      className={`flex-1 rounded-xl border overflow-hidden cursor-pointer flex transition-colors ${
-                        isSelected
+                      className={`rounded-xl border overflow-hidden cursor-pointer flex transition-colors ${
+                        isFirst
+                          ? "border-transparent bg-foreground"
+                          : isSelected
                           ? "border-primary/40 bg-primary/[0.05]"
-                          : "border-foreground/10 bg-card hover:bg-foreground/8"
+                          : "border-foreground/10 bg-card hover:bg-foreground/[0.03]"
                       }`}
                     >
                       {/* Text content */}
-                      <div className="flex-1 px-4 py-3 min-w-0">
+                      <div className="flex-1 px-5 py-4 min-w-0">
                         <div className="flex items-start justify-between gap-3">
-                          <span className="text-sm font-semibold text-foreground leading-snug">
+                          <span
+                            className={`text-sm font-semibold leading-snug ${
+                              isFirst ? "text-background" : "text-foreground"
+                            }`}
+                          >
                             {e.title ?? (
-                              <span className="text-foreground/40 font-normal italic">Untitled</span>
+                              <span
+                                className={`font-normal italic ${
+                                  isFirst ? "text-background/40" : "text-foreground/40"
+                                }`}
+                              >
+                                Untitled
+                              </span>
                             )}
                           </span>
                           {firstCat && (
-                            <span className="text-base leading-none mt-0.5 shrink-0">{firstCat.emoji}</span>
+                            <span className="text-base leading-none mt-0.5 shrink-0">
+                              {firstCat.emoji}
+                            </span>
                           )}
                         </div>
 
                         {e.isVoiceOnly ? (
-                          <p className="text-xs text-primary/70 mt-1 italic">Voice note</p>
+                          <p
+                            className={`text-xs mt-1.5 italic ${
+                              isFirst ? "text-background/60" : "text-primary/70"
+                            }`}
+                          >
+                            Voice note
+                          </p>
                         ) : e.preview ? (
-                          <p className="text-xs text-foreground/50 mt-1 leading-relaxed line-clamp-2">
+                          <p
+                            className={`text-xs mt-1.5 leading-relaxed line-clamp-2 ${
+                              isFirst ? "text-background/60" : "text-foreground/50"
+                            }`}
+                          >
                             {e.preview}
                           </p>
                         ) : null}
 
                         {(e.categoryLabels.length > 0 || e.tags.length > 0 || e.mood) && (
-                          <div className="flex gap-1 mt-2 flex-wrap items-center">
+                          <div className="flex gap-1 mt-3 flex-wrap items-center">
                             {e.mood && (
-                              <span className="text-xs px-2 py-0.5 bg-foreground/10 text-foreground/60 rounded-full capitalize">
+                              <span
+                                className={`text-xs px-2 py-0.5 rounded-full capitalize ${
+                                  isFirst
+                                    ? "bg-background/15 text-background/75"
+                                    : "bg-foreground/10 text-foreground/60"
+                                }`}
+                              >
                                 {e.mood}
                               </span>
                             )}
                             {e.categoryLabels.map((c) => (
-                              <span key={c.id} className="text-xs px-2 py-0.5 bg-primary/15 text-primary rounded-full">
+                              <span
+                                key={c.id}
+                                className={`text-xs px-2 py-0.5 rounded-full ${
+                                  isFirst
+                                    ? "bg-background/15 text-background/75"
+                                    : "bg-primary/15 text-primary"
+                                }`}
+                              >
                                 {c.emoji} {c.name}
                               </span>
                             ))}
                             {e.tags.map((t) => (
-                              <span key={t.id} className="text-xs px-2 py-0.5 bg-foreground/10 text-foreground/60 rounded-full">
+                              <span
+                                key={t.id}
+                                className={`text-xs px-2 py-0.5 rounded-full ${
+                                  isFirst
+                                    ? "bg-background/15 text-background/75"
+                                    : "bg-foreground/10 text-foreground/60"
+                                }`}
+                              >
                                 #{t.name}
                               </span>
                             ))}
@@ -153,28 +173,38 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
 
                       {/* Full-height mic strip */}
                       {e.hasVoice && (
-                        <div className="w-10 shrink-0 flex items-center justify-center bg-primary/10 border-l border-primary/10">
+                        <div
+                          className={`w-10 shrink-0 flex items-center justify-center border-l ${
+                            isFirst
+                              ? "bg-background/10 border-background/10"
+                              : "bg-primary/10 border-primary/10"
+                          }`}
+                        >
                           <svg
-                            className="w-4 h-4 text-primary"
+                            className={`w-4 h-4 ${isFirst ? "text-background/60" : "text-primary"}`}
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
                             strokeWidth={2}
                           >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z"
+                            />
                           </svg>
                         </div>
                       )}
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* ── Reading pane ─────────────────────────────────────────── */}
+      {/* ── Reading pane ───────────────────────────────────────────── */}
       {selectedId && (
         <div className="flex-1 min-w-0 overflow-hidden">
           <EntryPane entryId={selectedId} onClose={() => setSelectedId(null)} />

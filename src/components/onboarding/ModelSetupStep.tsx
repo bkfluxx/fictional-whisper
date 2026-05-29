@@ -121,7 +121,7 @@ function ModelPuller({
   return (
     <button
       onClick={pull}
-      className="text-xs px-2.5 py-1 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors"
+      className="text-xs px-2.5 py-1 bg-primary hover:bg-primary/90 text-white rounded-full transition-colors"
     >
       Download
     </button>

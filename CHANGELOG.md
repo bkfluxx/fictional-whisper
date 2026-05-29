@@ -4,6 +4,24 @@ All notable changes to Aura will be documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.6.0] - 2026-05-29
+
+### Added
+
+- Today page — new default landing page at `/today`; shows a time-aware greeting (computed client-side for correct local timezone), current streak badge, prompt-of-the-day card with CTA to new entry, mini dot-calendar for the current month, and most recent entry preview card
+- Entry date picker — date input in the entry editor metadata row allows backdating entries to any past date; `entryDate` drives list order, calendar, and analytics
+- Analytics stat row — 3-card hero strip (🔥 streak / 📓 this month / 📅 days written) at the top of the Stats tab; mood breakdown section now rendered inside a dark `bg-foreground` card
+
+### Changed
+
+- Color palette switched from olive/green to warm cream/ivory — background is a parchment tone (`oklch(0.960 0.018 82)`), foreground is warm ink brown (`oklch(0.165 0.028 62)`), cards are near-white for visible white-on-cream separation
+- Journal list redesigned — vertical timeline (dots + connecting line) removed; each day group opens with a `Weekday · Date` section header in small-caps; card padding increased to `px-5 py-4`; most recent entry gets a dark inverted card (`bg-foreground text-background`)
+- Entry view polished — date displayed as small-caps uppercase header; mood shown as a pill badge; categories and tags use larger `px-3 py-1` pills; word count added to nav bar; subtle divider separates metadata from body
+- Sidebar — logo reduced to 32×32 inline with app name text; active nav item uses a full pill (`rounded-full bg-foreground text-background`) instead of a square highlight; "Today" added as the first nav item with a home icon
+- All primary CTA buttons standardised to `rounded-full` across every page and settings panel (26 occurrences)
+- Editor toolbar fades to 15% opacity while typing and restores smoothly after 1.5 s idle or immediately on mouse hover
+- Default route `/` and post-login redirect now land on `/today`
+
 ## [0.5.0] - 2026-05-22
 
 ### Added

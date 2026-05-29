@@ -65,7 +65,7 @@ export default function LoginPage() {
           setError("Sign-in failed. Please try again.");
           setStep("password");
         } else {
-          router.replace("/journal");
+          router.replace("/today");
         }
       }
     } finally {
@@ -97,7 +97,7 @@ export default function LoginPage() {
         setError("Something went wrong. Please try again.");
         setStep("password");
       } else {
-        router.replace("/journal");
+        router.replace("/today");
       }
     } finally {
       setLoading(false);
@@ -146,7 +146,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
+              className="w-full py-2 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white font-medium rounded-full transition-colors"
             >
               {loading ? "Checking…" : "Continue"}
             </button>
@@ -190,7 +190,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading || totpCode.replace(/\s/g, "").length < 6}
-              className="w-full py-2 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
+              className="w-full py-2 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white font-medium rounded-full transition-colors"
             >
               {loading ? "Verifying…" : "Verify"}
             </button>

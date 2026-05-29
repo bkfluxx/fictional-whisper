@@ -95,7 +95,7 @@ function GoalForm({
         <button
           onClick={() => onSave({ title, notes, targetDate })}
           disabled={!title.trim()}
-          className="px-4 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-40"
+          className="px-4 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-full transition-colors disabled:opacity-40"
         >
           {initial?.id ? "Save changes" : "Add goal"}
         </button>
@@ -305,7 +305,7 @@ export default function GoalsView() {
         {!showForm && !editingGoal && (
           <button
             onClick={() => setShowForm(true)}
-            className="px-4 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-lg transition-colors"
+            className="px-4 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-full transition-colors"
           >
             New goal
           </button>

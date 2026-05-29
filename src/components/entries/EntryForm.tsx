@@ -40,6 +40,11 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
   const [categories, setCategories] = useState<string[]>(
     initial?.categories ?? initialCategories ?? [],
   );
+  const [entryDate, setEntryDate] = useState(
+    initial?.entryDate
+      ? initial.entryDate.slice(0, 10)
+      : new Date().toISOString().slice(0, 10),
+  );
   const [saveState, setSaveState] = useState<SaveState>(
     initial ? "saved" : "unsaved",
   );
@@ -61,6 +66,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
       currentTags: string,
       currentMood: string,
       currentCategories: string[],
+      currentEntryDate: string,
     ) => {
       setSaveState("saving");
       const payload: EntryPayload = {
@@ -72,6 +78,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
           .filter(Boolean),
         mood: currentMood || undefined,
         categories: currentCategories,
+        entryDate: currentEntryDate,
       };
 
       try {
@@ -103,10 +110,10 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
   );
 
   const scheduleSave = useCallback(
-    (b: string, t: string, tg: string, m: string, cats: string[]) => {
+    (b: string, t: string, tg: string, m: string, cats: string[], ed: string) => {
       setSaveState("unsaved");
       if (debounceRef.current) clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => save(b, t, tg, m, cats), 2000);
+      debounceRef.current = setTimeout(() => save(b, t, tg, m, cats, ed), 2000);
     },
     [save],
   );
@@ -116,7 +123,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
       ? categories.filter((c) => c !== id)
       : [...categories, id];
     setCategories(next);
-    scheduleSave(body, title, tags, mood, next);
+    scheduleSave(body, title, tags, mood, next, entryDate);
   }
 
   useEffect(() => {
@@ -141,7 +148,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
       if ((e.metaKey || e.ctrlKey) && e.key === "s") {
         e.preventDefault();
         if (debounceRef.current) clearTimeout(debounceRef.current);
-        save(body, title, tags, mood, categories);
+        save(body, title, tags, mood, categories, entryDate);
       }
     }
     window.addEventListener("keydown", handleKeyDown);
@@ -168,7 +175,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
-              scheduleSave(body, e.target.value, tags, mood, categories);
+              scheduleSave(body, e.target.value, tags, mood, categories, entryDate);
             }}
             className="flex-1 bg-transparent text-2xl font-semibold text-foreground placeholder-foreground/30 focus:outline-none"
           />
@@ -177,9 +184,9 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
               <button
                 onClick={() => {
                   if (debounceRef.current) clearTimeout(debounceRef.current);
-                  save(body, title, tags, mood, categories);
+                  save(body, title, tags, mood, categories, entryDate);
                 }}
-                className="text-xs px-2.5 py-1 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors"
+                className="text-xs px-2.5 py-1 bg-primary hover:bg-primary/90 text-white rounded-full transition-colors"
               >
                 Save
               </button>
@@ -260,16 +267,29 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
             value={tags}
             onChange={(e) => {
               setTags(e.target.value);
-              scheduleSave(body, title, e.target.value, mood, categories);
+              scheduleSave(body, title, e.target.value, mood, categories, entryDate);
             }}
             className="bg-transparent focus:outline-none flex-1 min-w-[120px] placeholder-foreground/30"
+          />
+
+          <input
+            type="date"
+            value={entryDate}
+            max={new Date().toISOString().slice(0, 10)}
+            onChange={(e) => {
+              const d = e.target.value;
+              if (!d) return;
+              setEntryDate(d);
+              scheduleSave(body, title, tags, mood, categories, d);
+            }}
+            className="bg-transparent text-foreground/60 text-sm focus:outline-none cursor-pointer"
           />
 
           <select
             value={mood}
             onChange={(e) => {
               setMood(e.target.value);
-              scheduleSave(body, title, tags, e.target.value, categories);
+              scheduleSave(body, title, tags, e.target.value, categories, entryDate);
             }}
             className="bg-card text-foreground/60 text-sm rounded focus:outline-none"
           >
@@ -383,7 +403,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
             value={body}
             onChange={(v) => {
               setBody(v);
-              scheduleSave(v, title, tags, mood, categories);
+              scheduleSave(v, title, tags, mood, categories, entryDate);
             }}
             placeholder="Start writing…"
             entryId={entryId ?? undefined}
@@ -399,7 +419,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
             onTranscript={(text) => {
               const newBody = body ? `${body}\n\n${text}` : text;
               setBody(newBody);
-              scheduleSave(newBody, title, tags, mood, categories);
+              scheduleSave(newBody, title, tags, mood, categories, entryDate);
             }}
           />
         )}
@@ -414,12 +434,12 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
             currentMood={mood}
             onApplyMood={(m) => {
               setMood(m);
-              scheduleSave(body, title, tags, m, categories);
+              scheduleSave(body, title, tags, m, categories, entryDate);
             }}
             onApplyPrompt={(p) => {
               const newBody = body ? `${body}\n\n${p}\n` : `${p}\n`;
               setBody(newBody);
-              scheduleSave(newBody, title, tags, mood, categories);
+              scheduleSave(newBody, title, tags, mood, categories, entryDate);
             }}
           />
         </aside>

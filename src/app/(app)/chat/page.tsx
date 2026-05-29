@@ -502,7 +502,7 @@ export default function ChatPage() {
                           <button
                             onClick={() => saveEntryDraft(msg.entryDraft!, i)}
                             disabled={savingDraft[i]}
-                            className="text-xs px-3 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white rounded-lg transition-colors"
+                            className="text-xs px-3 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white rounded-full transition-colors"
                           >
                             {savingDraft[i] ? "Saving…" : "Save as journal entry"}
                           </button>

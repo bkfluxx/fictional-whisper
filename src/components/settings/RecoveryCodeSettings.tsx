@@ -103,7 +103,7 @@ export default function RecoveryCodeSettings() {
           <button
             type="submit"
             disabled={state === "saving" || !currentPassword}
-            className="px-4 py-2 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+            className="px-4 py-2 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white text-sm font-medium rounded-full transition-colors"
           >
             {state === "saving" ? "Regenerating…" : "Confirm"}
           </button>

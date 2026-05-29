@@ -224,7 +224,7 @@ export default function CategoriesSettings() {
                     <button
                       onClick={() => saveCustomEdit(cat.id)}
                       disabled={saving}
-                      className="px-3 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-xs font-medium rounded-lg transition-colors"
+                      className="px-3 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-xs font-medium rounded-full transition-colors"
                     >
                       {saving ? "Saving…" : "Save"}
                     </button>
@@ -277,7 +277,7 @@ export default function CategoriesSettings() {
                   <button
                     onClick={addCustom}
                     disabled={saving || !form.name.trim()}
-                    className="px-3 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-xs font-medium rounded-lg transition-colors"
+                    className="px-3 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-xs font-medium rounded-full transition-colors"
                   >
                     {saving ? "Adding…" : "Add"}
                   </button>
@@ -321,7 +321,7 @@ export default function CategoriesSettings() {
                     <button
                       onClick={() => saveBuiltinEdit(jt.id)}
                       disabled={saving}
-                      className="px-3 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-xs font-medium rounded-lg transition-colors"
+                      className="px-3 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-xs font-medium rounded-full transition-colors"
                     >
                       {saving ? "Saving…" : "Save"}
                     </button>
@@ -373,7 +373,7 @@ export default function CategoriesSettings() {
                     <button
                       onClick={() => resetBuiltin(override!.id)}
                       disabled={saving}
-                      className="text-xs px-2 py-1 text-primary hover:text-primary/80 rounded-lg hover:bg-primary/10 transition-colors disabled:opacity-40"
+                      className="text-xs px-2 py-1 text-primary hover:text-primary/80 rounded-full hover:bg-primary/10 transition-colors disabled:opacity-40"
                     >
                       Restore
                     </button>

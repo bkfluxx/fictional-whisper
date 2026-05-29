@@ -118,7 +118,7 @@ export default function TwoFactorSettings() {
         <button
           onClick={startSetup}
           disabled={busy}
-          className="px-4 py-2 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition-colors"
+          className="px-4 py-2 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-sm font-medium rounded-full transition-colors"
         >
           Enable 2FA
         </button>
@@ -157,7 +157,7 @@ export default function TwoFactorSettings() {
             <button
               onClick={confirmEnable}
               disabled={busy || code.replace(/\s/g, "").length < 6}
-              className="px-4 py-2 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-sm font-medium rounded-lg transition-colors"
+              className="px-4 py-2 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-sm font-medium rounded-full transition-colors"
             >
               {busy ? "Confirming…" : "Confirm & Enable"}
             </button>

@@ -128,6 +128,10 @@ export default async function AnalyticsPage() {
   const { current: currentStreak, longest: longestStreak, uniqueDays } =
     computeStreaks(entries.map((e) => e.entryDate));
 
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const thisMonthEntries = entries.filter((e) => e.entryDate >= monthStart).length;
+
   // Mood breakdown
   const moodCounts: Record<string, number> = {};
   for (const e of entries) {
@@ -154,7 +158,6 @@ export default async function AnalyticsPage() {
 
   // Monthly activity (last 12 months)
   const byMonth: Record<string, number> = {};
-  const now = new Date();
   for (let i = 11; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
     byMonth[`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`] = 0;
@@ -191,6 +194,7 @@ export default async function AnalyticsPage() {
         currentStreak={currentStreak}
         longestStreak={longestStreak}
         uniqueDays={uniqueDays}
+        thisMonthEntries={thisMonthEntries}
         heatmapWeeks={heatmapWeeks}
         monthlyData={monthlyData}
         dowCounts={dowCounts}

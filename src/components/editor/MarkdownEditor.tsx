@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -187,11 +187,23 @@ export default function MarkdownEditor({
   entryId,
   onVoiceNoteSaved,
 }: MarkdownEditorProps) {
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (typingTimer.current) clearTimeout(typingTimer.current);
+    };
+  }, []);
+
   const handleUpdate = useCallback(
     ({ editor }: { editor: Editor }) => {
       const html = editor.getHTML();
-      // Treat empty doc as empty string
       onChange(html === "<p></p>" ? "" : html);
+
+      setIsTyping(true);
+      if (typingTimer.current) clearTimeout(typingTimer.current);
+      typingTimer.current = setTimeout(() => setIsTyping(false), 1500);
     },
     [onChange],
   );
@@ -223,11 +235,14 @@ export default function MarkdownEditor({
 
   return (
     <div className="flex flex-col flex-1 min-h-0 border border-foreground/20 rounded-xl overflow-hidden">
-      <Toolbar editor={editor} entryId={entryId} onVoiceNoteSaved={onVoiceNoteSaved} />
-      <EditorContent
-        editor={editor}
-        className="flex-1 overflow-y-auto"
-      />
+      <div
+        className={`transition-opacity duration-500 hover:opacity-100 ${
+          isTyping ? "opacity-[0.15]" : "opacity-100"
+        }`}
+      >
+        <Toolbar editor={editor} entryId={entryId} onVoiceNoteSaved={onVoiceNoteSaved} />
+      </div>
+      <EditorContent editor={editor} className="flex-1 overflow-y-auto" />
     </div>
   );
 }

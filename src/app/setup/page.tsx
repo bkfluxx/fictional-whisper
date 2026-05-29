@@ -198,7 +198,7 @@ export default function SetupPage() {
 
                 <button
                   onClick={handleRecoveryAcknowledged}
-                  className="w-full py-2.5 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-colors"
+                  className="w-full py-2.5 bg-primary hover:bg-primary/90 text-white font-medium rounded-full transition-colors"
                 >
                   I&apos;ve saved my recovery code →
                 </button>
@@ -269,7 +269,7 @@ export default function SetupPage() {
                     password.length < 8 ||
                     password !== confirm
                   }
-                  className="w-full py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
+                  className="w-full py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white font-medium rounded-full transition-colors"
                 >
                   {status === "deriving"
                     ? "Setting up… (this takes a moment)"

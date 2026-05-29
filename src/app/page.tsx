@@ -9,5 +9,5 @@ export default async function Home() {
     select: { id: true },
   });
   if (!keyStore) redirect("/setup");
-  redirect("/journal");
+  redirect("/today");
 }
