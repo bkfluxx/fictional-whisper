@@ -14,7 +14,10 @@ A self-hosted, privacy-first personal journal. All data stays on your machine �
 - **Analytics** — Streak tracking, activity heatmap, mood and category breakdowns
 - **Full-text search** — HMAC-tokenised keyword search (no plaintext indexed)
 - **Encrypted backups** — Scheduled exports with a separate backup key
-- **Themes & text scale** — 12 built-in themes, adjustable font size
+- **Goal tracking** — Create goals with target dates and status (active / completed / abandoned); digest includes active goals in its weekly summary
+- **Recovery codes** — Emergency recovery code in Settings → Security allows master password reset without data loss
+- **Mobile navigation** — Persistent bottom tab bar on small screens
+- **Appearance** — 12 switchable color palettes, adjustable font size, and content density (Comfortable / Balanced / Compact)
 
 ## Stack
 
@@ -23,7 +26,7 @@ A self-hosted, privacy-first personal journal. All data stays on your machine �
 | Framework | Next.js 16 (App Router) · TypeScript |
 | Database | PostgreSQL 16 + pgvector |
 | ORM | Prisma |
-| Styling | Tailwind CSS v4 · FlyonUI |
+| Styling | Tailwind CSS v4 · Shadcn/ui · next-themes |
 | Auth | NextAuth (credentials + optional TOTP) |
 | AI | Ollama (local LLM + embeddings) |
 | Transcription | faster-whisper-server (optional) |
@@ -194,7 +197,7 @@ Database migrations run automatically on startup.
 To pin a specific version:
 
 ```yaml
-image: ghcr.io/bkfluxx/fictional-whisper:0.3.0
+image: ghcr.io/bkfluxx/fictional-whisper:0.7.0
 ```
 
 Available tags are listed on the [releases page](https://github.com/bkfluxx/fictional-whisper/releases).
