@@ -75,7 +75,7 @@ export default async function EntryViewPage({
           })}
         </span>
         {entry.mood && (
-          <span className="text-xs px-2.5 py-0.5 bg-foreground/8 text-foreground/60 rounded-full capitalize">
+          <span className="text-xs px-2.5 py-0.5 bg-tertiary/12 text-tertiary rounded-full capitalize">
             {entry.mood}
           </span>
         )}
@@ -100,7 +100,7 @@ export default async function EntryViewPage({
             );
           })}
           {entry.tags.map((t) => (
-            <span key={t.id} className="text-xs px-3 py-1 bg-foreground/8 text-foreground/55 rounded-full">
+            <span key={t.id} className="text-xs px-3 py-1 bg-tertiary/10 text-tertiary/80 rounded-full">
               #{t.name}
             </span>
           ))}

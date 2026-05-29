@@ -207,12 +207,12 @@ export default function AnalyticsTabs({
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-                <section className="bg-foreground rounded-2xl p-5">
-                  <h2 className="text-xs font-semibold text-background/40 uppercase tracking-widest mb-4">
+                <section className="bg-surface-dark rounded-2xl p-5">
+                  <h2 className="text-xs font-semibold text-surface-dark-foreground/50 uppercase tracking-widest mb-4">
                     Mood breakdown
                   </h2>
                   {moodBreakdown.length === 0 ? (
-                    <p className="text-sm text-background/30">No mood data yet.</p>
+                    <p className="text-sm text-surface-dark-foreground/40">No mood data yet.</p>
                   ) : (
                     moodBreakdown.map(([mood, count]) => (
                       <HorizontalBar

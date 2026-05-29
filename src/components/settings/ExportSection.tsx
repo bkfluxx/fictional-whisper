@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function ExportSection() {
   const [downloading, setDownloading] = useState<"json" | "markdown" | null>(null);
 
   async function download(format: "json" | "markdown") {
+    const id = toast.loading(`Exporting ${format.toUpperCase()}…`);
     setDownloading(format);
     try {
       const res = await fetch(`/api/export?format=${format}`);
@@ -19,8 +21,9 @@ export default function ExportSection() {
       a.download = match?.[1] ?? `export.${format === "markdown" ? "zip" : "json"}`;
       a.click();
       URL.revokeObjectURL(url);
+      toast.success("Export downloaded", { id });
     } catch {
-      alert("Export failed. Please try again.");
+      toast.error("Export failed — please try again", { id });
     } finally {
       setDownloading(null);
     }

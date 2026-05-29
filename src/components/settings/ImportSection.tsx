@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { toast } from "sonner";
 
 type Status = "idle" | "uploading" | "done" | "error";
 
@@ -12,6 +13,7 @@ export default function ImportSection() {
   const [dragging, setDragging] = useState(false);
 
   async function upload(file: File) {
+    const id = toast.loading("Importing entries…");
     setStatus("uploading");
     setResult(null);
     setError(null);
@@ -25,13 +27,17 @@ export default function ImportSection() {
       if (!res.ok) {
         setStatus("error");
         setError(data.error ?? "Import failed");
+        toast.error(data.error ?? "Import failed", { id });
       } else {
         setStatus("done");
         setResult(data);
+        const msg = `Imported ${data.imported} ${data.imported === 1 ? "entry" : "entries"}${data.skipped > 0 ? ` · ${data.skipped} skipped` : ""}`;
+        toast.success(msg, { id });
       }
     } catch {
       setStatus("error");
       setError("Network error — please try again");
+      toast.error("Network error — please try again", { id });
     }
   }
 

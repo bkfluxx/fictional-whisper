@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getJournalType } from "@/lib/journal-types";
 import VoiceNotesList from "@/components/entries/VoiceNotesList";
 import type { DecryptedEntry } from "@/types/entry";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface UserCat { id: string; name: string; emoji: string; }
 
@@ -61,8 +62,17 @@ export default function EntryPane({ entryId, onClose }: Props) {
       {/* Pane body */}
       <div className="flex-1 overflow-y-auto px-6 py-6">
         {loading ? (
-          <div className="flex items-center justify-center h-32 text-foreground/30 text-sm">
-            Loading…
+          <div className="space-y-4">
+            <Skeleton className="h-7 w-2/3" />
+            <Skeleton className="h-4 w-1/3" />
+            <div className="space-y-2 mt-6">
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-5/6" />
+              <Skeleton className="h-3 w-4/5" />
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-3/4" />
+            </div>
           </div>
         ) : entry ? (
           <>

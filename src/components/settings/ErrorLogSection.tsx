@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface LogPreview {
   lines: string[];
@@ -101,7 +102,11 @@ export default function ErrorLogSection() {
 
       <div className="rounded-lg border border-border bg-card/30 p-3 font-mono text-xs leading-relaxed max-h-80 overflow-y-auto">
         {loading && (
-          <div className="text-foreground/40">Loading…</div>
+          <div className="space-y-1.5 py-1">
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-5/6" />
+            <Skeleton className="h-3 w-4/5" />
+          </div>
         )}
         {!loading && isEmpty && (
           <div className="text-foreground/40">No log entries.</div>

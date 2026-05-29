@@ -63,7 +63,14 @@ function buildVars(
   // Chart hue ring
   const ch = (o: number) => Math.round((chartH + o + 720) % 360);
 
+  const tertH = Math.round((themeH + 130) % 360);
+
   const light: CssVars = {
+    "--theme-hue":               `${Math.round(themeH)}`,
+    "--tertiary":                `oklch(0.50 0.09 ${tertH})`,
+    "--tertiary-foreground":     `oklch(0.97 0.005 ${tertH})`,
+    "--surface-dark":            `oklch(0.28 0.07 ${Math.round(themeH)})`,
+    "--surface-dark-foreground": `oklch(0.96 0.008 ${Math.round(themeH)})`,
     "--background":              `oklch(0.99 ${f(bc * 0.4)} ${baseH})`,
     "--foreground":              `oklch(0.13 ${f(bc * 0.6)} ${baseH})`,
     "--card":                    `oklch(1 0 0)`,
@@ -98,6 +105,11 @@ function buildVars(
   };
 
   const dark: CssVars = {
+    "--theme-hue":               `${Math.round(themeH)}`,
+    "--tertiary":                `oklch(0.58 0.09 ${tertH})`,
+    "--tertiary-foreground":     `oklch(0.12 0.01 ${tertH})`,
+    "--surface-dark":            `oklch(0.72 0.10 ${Math.round(themeH)})`,
+    "--surface-dark-foreground": `oklch(0.10 0.03 ${Math.round(themeH)})`,
     "--background":              `oklch(0.14 ${f(bc * 0.5)} ${baseH})`,
     "--foreground":              `oklch(0.95 ${f(bc * 0.1)} ${baseH})`,
     "--card":                    `oklch(0.19 ${f(bc * 0.5)} ${baseH})`,

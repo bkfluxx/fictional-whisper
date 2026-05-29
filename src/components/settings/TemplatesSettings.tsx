@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { BUILT_IN_TEMPLATES } from "@/lib/templates";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 
 interface DbTemplate {
   id: string;
@@ -93,8 +95,11 @@ export default function TemplatesSettings() {
           : [...prev, updated];
       });
       cancelEdit();
+      toast.success("Template saved");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Save failed");
+      const msg = err instanceof Error ? err.message : "Save failed";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
@@ -176,8 +181,11 @@ export default function TemplatesSettings() {
       const updated: DbTemplate = await res.json();
       setDbRows((prev) => prev.map((r) => (r.id === id ? updated : r)));
       cancelEdit();
+      toast.success("Template saved");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Save failed");
+      const msg = err instanceof Error ? err.message : "Save failed";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
@@ -203,8 +211,11 @@ export default function TemplatesSettings() {
       const created: DbTemplate = await res.json();
       setDbRows((prev) => [...prev, created]);
       cancelEdit();
+      toast.success("Template created");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Save failed");
+      const msg = err instanceof Error ? err.message : "Save failed";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
@@ -216,15 +227,30 @@ export default function TemplatesSettings() {
       await fetch(`/api/templates/${id}`, { method: "DELETE" });
       setDbRows((prev) => prev.filter((r) => r.id !== id));
       if (editing === id) cancelEdit();
+      toast.success("Template deleted");
     } catch {
-      // silent
+      toast.error("Failed to delete template");
     } finally {
       setSaving(false);
     }
   }
 
   if (loading) {
-    return <p className="text-sm text-foreground/50">Loading templates…</p>;
+    return (
+      <div className="space-y-3">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="rounded-xl border border-foreground/10 bg-card p-4">
+            <div className="flex items-start gap-3">
+              <Skeleton className="h-8 w-8 rounded-lg shrink-0" />
+              <div className="space-y-1.5 flex-1">
+                <Skeleton className="h-4 w-1/3" />
+                <Skeleton className="h-3 w-2/3" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   }
 
   return (

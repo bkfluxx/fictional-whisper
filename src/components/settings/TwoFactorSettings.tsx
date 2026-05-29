@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type UIState = "loading" | "disabled" | "setup" | "confirming" | "enabled" | "disabling";
 
@@ -85,7 +86,13 @@ export default function TwoFactorSettings() {
   }
 
   if (state === "loading") {
-    return <p className="text-sm text-foreground/40">Loading…</p>;
+    return (
+      <div className="space-y-3">
+        <Skeleton className="h-4 w-1/2" />
+        <Skeleton className="h-4 w-2/3" />
+        <Skeleton className="h-9 w-32 mt-1" />
+      </div>
+    );
   }
 
   return (

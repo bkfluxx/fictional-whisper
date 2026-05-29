@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { BUILT_IN_PERSONAS } from "@/lib/personas";
 import { DEFAULT_SYSTEM_PROMPT } from "@/lib/ai/prompts";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 
 interface CustomPersona {
   id: string;
@@ -69,6 +71,7 @@ export default function PersonasSettings() {
       if (!res.ok) throw new Error();
       setEnabled(next);
     } catch {
+      toast.error("Failed to save. Please try again.");
       setError("Failed to save. Please try again.");
     } finally {
       setSaving(false);
@@ -86,7 +89,9 @@ export default function PersonasSettings() {
       });
       if (!res.ok) throw new Error();
       setActiveId(id);
+      toast.success("Persona activated");
     } catch {
+      toast.error("Failed to activate persona.");
       setError("Failed to activate persona.");
     } finally {
       setSaving(false);
@@ -128,8 +133,10 @@ export default function PersonasSettings() {
       if (!res.ok) { setFormError(data.error ?? "Failed to save."); return; }
       if (editingId) {
         setCustom((prev) => prev.map((p) => p.id === editingId ? { ...p, ...form, description: form.description || null } : p));
+        toast.success("Persona updated");
       } else {
         setCustom((prev) => [...prev, { ...data.persona, isBuiltIn: false }]);
+        toast.success("Persona created");
       }
       setShowForm(false);
     } catch {
@@ -145,7 +152,9 @@ export default function PersonasSettings() {
       await fetch(`/api/personas/${id}`, { method: "DELETE" });
       setCustom((prev) => prev.filter((p) => p.id !== id));
       if (activeId === id) setActiveId(null);
+      toast.success("Persona deleted");
     } catch {
+      toast.error("Failed to delete persona.");
       setError("Failed to delete persona.");
     }
   }
@@ -169,7 +178,9 @@ export default function PersonasSettings() {
       setSavedSystemPrompt(systemPrompt);
       setPromptSaved(true);
       setTimeout(() => setPromptSaved(false), 2000);
+      toast.success("System prompt saved");
     } catch {
+      toast.error("Failed to save system prompt.");
       setError("Failed to save system prompt.");
     } finally {
       setPromptSaving(false);
@@ -179,7 +190,16 @@ export default function PersonasSettings() {
   const allPersonas: AnyPersona[] = [...BUILT_IN_PERSONAS, ...custom];
 
   if (loading) {
-    return <p className="text-sm text-foreground/40">Loading…</p>;
+    return (
+      <div className="space-y-3">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="rounded-xl border border-foreground/10 bg-card p-4">
+            <Skeleton className="h-4 w-1/3 mb-2" />
+            <Skeleton className="h-3 w-2/3" />
+          </div>
+        ))}
+      </div>
+    );
   }
 
   return (

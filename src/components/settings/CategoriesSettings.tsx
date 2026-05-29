@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { JOURNAL_TYPES } from "@/lib/journal-types";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 
 interface UserCategory {
   id: string;
@@ -76,8 +78,11 @@ export default function CategoriesSettings() {
           : [...prev, updated];
       });
       cancelEdit();
+      toast.success("Category saved");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Save failed");
+      const msg = err instanceof Error ? err.message : "Save failed";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
@@ -152,8 +157,11 @@ export default function CategoriesSettings() {
       const updated: UserCategory = await res.json();
       setOverrides((prev) => prev.map((o) => (o.id === id ? updated : o)));
       cancelEdit();
+      toast.success("Category saved");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Save failed");
+      const msg = err instanceof Error ? err.message : "Save failed";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
@@ -178,8 +186,11 @@ export default function CategoriesSettings() {
       setOverrides((prev) => [...prev, created]);
       setForm(EMPTY_FORM);
       cancelEdit();
+      toast.success("Category created");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Save failed");
+      const msg = err instanceof Error ? err.message : "Save failed";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
@@ -191,15 +202,28 @@ export default function CategoriesSettings() {
       await fetch(`/api/categories/${id}`, { method: "DELETE" });
       setOverrides((prev) => prev.filter((o) => o.id !== id));
       if (editing === id) cancelEdit();
+      toast.success("Category deleted");
     } catch {
-      // silent
+      toast.error("Failed to delete category");
     } finally {
       setSaving(false);
     }
   }
 
   if (loading) {
-    return <p className="text-sm text-foreground/50">Loading categories…</p>;
+    return (
+      <div className="space-y-3">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-foreground/10 bg-card">
+            <Skeleton className="h-8 w-8 rounded-lg shrink-0" />
+            <div className="space-y-1.5 flex-1">
+              <Skeleton className="h-3.5 w-1/3" />
+              <Skeleton className="h-3 w-1/2" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   }
 
   return (

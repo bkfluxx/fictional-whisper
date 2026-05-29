@@ -11,6 +11,7 @@ services:
       CRON_SECRET: ${CRON_SECRET:-fw-cron-xK9mP2qR7vLt4nWs8jYd3hBm}
       BACKUP_SECRET: ${BACKUP_SECRET:-fw-backup-pQ6nF1rZ5cEa2wVi9kTm4jXo}
       WHISPER_BASE_URL: http://whisper:8000
+      POSTGRES_DB: aura
     volumes:
       - attachments:/app/attachments
       - backups:/app/backups

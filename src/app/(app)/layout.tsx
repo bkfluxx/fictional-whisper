@@ -8,6 +8,7 @@ import SidebarNav from "@/components/layout/SidebarNav";
 import MobileNav from "@/components/layout/MobileNav";
 import OllamaWarmup from "@/components/layout/OllamaWarmup";
 import IdleLogout from "@/components/layout/IdleLogout";
+import ToasterProvider from "@/components/layout/ToasterProvider";
 
 export default async function AppLayout({
   children,
@@ -47,6 +48,7 @@ export default async function AppLayout({
       <main className="flex-1 overflow-y-auto min-h-0 pt-14 md:pt-0">{children}</main>
       <OllamaWarmup />
       <IdleLogout />
+      <ToasterProvider />
     </div>
   );
 }

@@ -4,6 +4,24 @@ All notable changes to Aura will be documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.7.0] - 2026-05-29
+
+### Added
+
+- Loading skeletons — replaced all bare "Loading…" text across 9 components (goals, entry pane, chat history, AI models, personas, two-factor, categories, templates, error log) with animated pulse skeleton placeholders that match each section's shape
+- Toast notification system — integrated Sonner; `<ToasterProvider>` mounted once in the app layout; `toast.success/error/loading` called at every async action site (save entry, delete entry, goals CRUD, personas CRUD, categories CRUD, templates CRUD, export, import, password change, system prompt save)
+- Export and import toasts — export shows a loading toast that morphs to success/error on completion; import mirrors the same pattern; `alert()` calls removed
+
+### Changed
+
+- Entry save/delete — explicit Save button and Cmd+S now fire a `toast.success("Entry saved")` confirmation; errors surface via `toast.error` instead of silently failing
+
+### Fixed
+
+- Theme palette switcher not updating surface and tertiary colors — `buildVars()` in `theme.ts` now outputs `--theme-hue`, `--tertiary`, `--tertiary-foreground`, `--surface-dark`, and `--surface-dark-foreground` so the injected style tag takes full ownership of all accent tokens; previously only `--primary` was overridden, leaving teal artifacts from the default hue
+- Weekly digest error masking — unhandled throws from `generateText` caused Next.js to return an HTML 500 page; the client's unconditional `res.json()` call on that HTML threw into the generic catch and showed a misleading "Something went wrong — is Ollama running?" regardless of the real error; fixed with server-side try/catch returning proper JSON 502 with a descriptive message, and client-side safe JSON parsing
+- Database name inconsistency — `.env.example` and `docker-compose.dev.yml` referenced `fictional_whisper`; corrected to `aura` to match `entrypoint.sh`'s override and the actual running database
+
 ## [0.6.0] - 2026-05-29
 
 ### Added

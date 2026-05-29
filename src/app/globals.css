@@ -28,6 +28,10 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-foreground: var(--tertiary-foreground);
+  --color-surface-dark: var(--surface-dark);
+  --color-surface-dark-foreground: var(--surface-dark-foreground);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -57,7 +61,8 @@
   --card-foreground: oklch(0.165 0.028 62);
   --popover: oklch(0.996 0.005 82);
   --popover-foreground: oklch(0.165 0.028 62);
-  --primary: oklch(0.52 0.13 55);
+  --theme-hue: 55;
+  --primary: oklch(0.52 0.13 var(--theme-hue));
   --primary-foreground: oklch(0.98 0 0);
   --secondary: oklch(0.930 0.020 80);
   --secondary-foreground: oklch(0.22 0.022 62);
@@ -68,21 +73,25 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.880 0.016 80);
   --input: oklch(0.880 0.016 80);
-  --ring: oklch(0.52 0.13 55);
+  --ring: oklch(0.52 0.13 var(--theme-hue));
+  --tertiary: oklch(0.50 0.09 calc(var(--theme-hue) + 130));
+  --tertiary-foreground: oklch(0.97 0.005 calc(var(--theme-hue) + 130));
+  --surface-dark: oklch(0.28 0.07 var(--theme-hue));
+  --surface-dark-foreground: oklch(0.96 0.008 var(--theme-hue));
   --radius: 0.75rem;
-  --chart-1: oklch(0.62 0.12 55);
-  --chart-2: oklch(0.60 0.11 35);
-  --chart-3: oklch(0.65 0.07 75);
-  --chart-4: oklch(0.62 0.09 15);
-  --chart-5: oklch(0.55 0.09 330);
+  --chart-1: oklch(0.62 0.12 var(--theme-hue));
+  --chart-2: oklch(0.60 0.11 calc(var(--theme-hue) - 20));
+  --chart-3: oklch(0.65 0.07 calc(var(--theme-hue) + 20));
+  --chart-4: oklch(0.62 0.09 calc(var(--theme-hue) - 40));
+  --chart-5: oklch(0.55 0.09 calc(var(--theme-hue) + 275));
   --sidebar: oklch(0.948 0.020 82);
   --sidebar-foreground: oklch(0.165 0.028 62);
-  --sidebar-primary: oklch(0.52 0.13 55);
+  --sidebar-primary: oklch(0.52 0.13 var(--theme-hue));
   --sidebar-primary-foreground: oklch(0.98 0 0);
   --sidebar-accent: oklch(0.920 0.018 80);
   --sidebar-accent-foreground: oklch(0.165 0.028 62);
   --sidebar-border: oklch(0.880 0.016 80);
-  --sidebar-ring: oklch(0.52 0.13 55);
+  --sidebar-ring: oklch(0.52 0.13 var(--theme-hue));
 }
 
 .dark {
@@ -92,7 +101,7 @@
   --card-foreground: oklch(0.940 0.010 82);
   --popover: oklch(0.188 0.028 60);
   --popover-foreground: oklch(0.940 0.010 82);
-  --primary: oklch(0.60 0.13 55);
+  --primary: oklch(0.60 0.13 var(--theme-hue));
   --primary-foreground: oklch(0.12 0.015 60);
   --secondary: oklch(0.268 0.024 60);
   --secondary-foreground: oklch(0.85 0.008 80);
@@ -101,22 +110,26 @@
   --accent: oklch(0.268 0.024 60);
   --accent-foreground: oklch(0.940 0.010 82);
   --destructive: oklch(0.704 0.191 22.216);
+  --tertiary: oklch(0.58 0.09 calc(var(--theme-hue) + 130));
+  --tertiary-foreground: oklch(0.12 0.01 calc(var(--theme-hue) + 130));
+  --surface-dark: oklch(0.72 0.10 var(--theme-hue));
+  --surface-dark-foreground: oklch(0.10 0.03 var(--theme-hue));
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.60 0.13 55);
-  --chart-1: oklch(0.68 0.11 55);
-  --chart-2: oklch(0.65 0.10 35);
-  --chart-3: oklch(0.70 0.07 75);
-  --chart-4: oklch(0.67 0.08 15);
-  --chart-5: oklch(0.60 0.08 330);
+  --ring: oklch(0.60 0.13 var(--theme-hue));
+  --chart-1: oklch(0.68 0.11 var(--theme-hue));
+  --chart-2: oklch(0.65 0.10 calc(var(--theme-hue) - 20));
+  --chart-3: oklch(0.70 0.07 calc(var(--theme-hue) + 20));
+  --chart-4: oklch(0.67 0.08 calc(var(--theme-hue) - 40));
+  --chart-5: oklch(0.60 0.08 calc(var(--theme-hue) + 275));
   --sidebar: oklch(0.188 0.028 60);
   --sidebar-foreground: oklch(0.940 0.010 82);
-  --sidebar-primary: oklch(0.60 0.13 55);
+  --sidebar-primary: oklch(0.60 0.13 var(--theme-hue));
   --sidebar-primary-foreground: oklch(0.12 0.015 60);
   --sidebar-accent: oklch(0.268 0.024 60);
   --sidebar-accent-foreground: oklch(0.940 0.010 82);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.60 0.13 55);
+  --sidebar-ring: oklch(0.60 0.13 var(--theme-hue));
 }
 
 /* ── Density system ──────────────────────────────────────────────────────────── */

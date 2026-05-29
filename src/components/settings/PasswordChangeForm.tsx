@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 
 type Status = "idle" | "saving" | "success" | "error";
 
@@ -9,7 +10,6 @@ export default function PasswordChangeForm() {
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
   const [status, setStatus] = useState<Status>("idle");
-  const [message, setMessage] = useState("");
 
   const mismatch = next.length > 0 && confirm.length > 0 && next !== confirm;
   const canSubmit =
@@ -19,7 +19,6 @@ export default function PasswordChangeForm() {
     e.preventDefault();
     if (!canSubmit) return;
     setStatus("saving");
-    setMessage("");
     try {
       const res = await fetch("/api/settings/password", {
         method: "POST",
@@ -29,17 +28,17 @@ export default function PasswordChangeForm() {
       const data = await res.json();
       if (!res.ok) {
         setStatus("error");
-        setMessage(data.error ?? "Something went wrong");
+        toast.error(data.error ?? "Something went wrong");
       } else {
         setStatus("success");
-        setMessage("Password updated. Your session stays active.");
+        toast.success("Password updated — your session stays active");
         setCurrent("");
         setNext("");
         setConfirm("");
       }
     } catch {
       setStatus("error");
-      setMessage("Network error — please try again");
+      toast.error("Network error — please try again");
     }
   }
 
@@ -83,12 +82,6 @@ export default function PasswordChangeForm() {
         />
         {mismatch && <p className="text-xs text-error mt-1">Passwords don&apos;t match</p>}
       </div>
-
-      {message && (
-        <p className={`text-sm ${status === "success" ? "text-emerald-500" : "text-error"}`}>
-          {message}
-        </p>
-      )}
 
       <button
         type="submit"

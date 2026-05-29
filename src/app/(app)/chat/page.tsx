@@ -10,6 +10,7 @@
 import { useState, useRef, useEffect, useCallback, FormEvent } from "react";
 import { ChevronDown, BrainCircuit } from "lucide-react";
 import { Toggle } from "@/components/ui/toggle";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Message {
   id?: string;
@@ -416,8 +417,19 @@ export default function ChatPage() {
         {/* Messages */}
         <div className="flex-1 overflow-y-auto py-6 px-4 space-y-6 min-h-0 max-w-2xl w-full mx-auto">
           {loadingMessages ? (
-            <div className="flex justify-center py-12">
-              <span className="text-foreground/30 text-sm">Loading…</span>
+            <div className="space-y-6 py-4">
+              <div className="flex flex-col items-start gap-2">
+                <Skeleton className="h-9 w-64 rounded-2xl" />
+                <Skeleton className="h-9 w-48 rounded-2xl" />
+              </div>
+              <div className="flex flex-col items-end gap-2">
+                <Skeleton className="h-9 w-40 rounded-2xl" />
+              </div>
+              <div className="flex flex-col items-start gap-2">
+                <Skeleton className="h-9 w-72 rounded-2xl" />
+                <Skeleton className="h-9 w-56 rounded-2xl" />
+                <Skeleton className="h-9 w-44 rounded-2xl" />
+              </div>
             </div>
           ) : messages.length === 0 ? (
             <div className="text-center py-12">

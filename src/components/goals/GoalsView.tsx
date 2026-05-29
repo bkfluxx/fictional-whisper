@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { Target } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 
 type Status = "active" | "completed" | "paused";
 
@@ -247,10 +249,11 @@ export default function GoalsView() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, notes: notes || undefined, targetDate: targetDate || undefined }),
     });
-    if (!res.ok) return;
+    if (!res.ok) { toast.error("Failed to create goal"); return; }
     const created: Goal = await res.json();
     setGoals((prev) => [created, ...prev]);
     setShowForm(false);
+    toast.success("Goal created");
   }
 
   async function handleEdit({ title, notes, targetDate }: { title: string; notes: string; targetDate: string }) {
@@ -260,10 +263,11 @@ export default function GoalsView() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, notes: notes || undefined, targetDate: targetDate || null }),
     });
-    if (!res.ok) return;
+    if (!res.ok) { toast.error("Failed to update goal"); return; }
     const updated: Goal = await res.json();
     setGoals((prev) => prev.map((g) => (g.id === updated.id ? updated : g)));
     setEditingGoal(null);
+    toast.success("Goal updated");
   }
 
   async function handleStatusChange(id: string, status: Status) {
@@ -272,13 +276,15 @@ export default function GoalsView() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
     });
-    if (!res.ok) return;
+    if (!res.ok) { toast.error("Failed to update status"); return; }
     setGoals((prev) => prev.map((g) => (g.id === id ? { ...g, status } : g)));
   }
 
   async function handleDelete(id: string) {
-    await fetch(`/api/goals/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/goals/${id}`, { method: "DELETE" });
+    if (!res.ok) { toast.error("Failed to delete goal"); return; }
     setGoals((prev) => prev.filter((g) => g.id !== id));
+    toast.success("Goal deleted");
   }
 
   const filtered = goals.filter((g) => {
@@ -340,7 +346,19 @@ export default function GoalsView() {
 
       {/* Goal list */}
       {loading ? (
-        <div className="text-center py-20 text-foreground/30 text-sm">Loading…</div>
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="rounded-xl border border-foreground/10 bg-card p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="space-y-2 flex-1">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+                </div>
+                <Skeleton className="h-6 w-16 rounded-full" />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : goals.length === 0 && !showForm ? (
         <EmptyState
           icon={Target}

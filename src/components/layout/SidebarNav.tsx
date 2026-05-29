@@ -96,7 +96,7 @@ function NavLink({
       href={href}
       className={`flex items-center gap-2.5 px-3 py-2 rounded-full text-sm transition-colors ${
         isActive
-          ? "bg-foreground text-background font-medium"
+          ? "bg-surface-dark text-surface-dark-foreground font-medium"
           : "text-foreground/60 hover:bg-foreground/8 hover:text-foreground"
       }`}
     >

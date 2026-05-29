@@ -66,9 +66,10 @@ export default function DigestSection({ initial, all }: DigestSectionProps) {
     setError(null);
     try {
       const res = await fetch("/api/ai/digest", { method: "POST" });
-      const data = await res.json();
+      let data: Record<string, unknown> = {};
+      try { data = await res.json(); } catch { /* non-JSON response */ }
       if (!res.ok) {
-        setError(data.error ?? "Failed to generate digest");
+        setError((data.error as string) ?? "Failed to generate digest");
         return;
       }
       if (data.skipped) {
@@ -77,9 +78,9 @@ export default function DigestSection({ initial, all }: DigestSectionProps) {
       }
       const fresh: Digest = {
         id: crypto.randomUUID(),
-        weekStart: data.weekStart,
-        content: data.content,
-        entryCount: data.entryCount,
+        weekStart: data.weekStart as string,
+        content: data.content as string,
+        entryCount: data.entryCount as number,
         createdAt: new Date().toISOString(),
       };
       setLatest(fresh);

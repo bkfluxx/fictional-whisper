@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import dynamic from "next/dynamic";
 import type { DecryptedEntry, EntryPayload } from "@/types/entry";
 import { JOURNAL_TYPES } from "@/lib/journal-types";
@@ -67,6 +68,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
       currentMood: string,
       currentCategories: string[],
       currentEntryDate: string,
+      explicit = false,
     ) => {
       setSaveState("saving");
       const payload: EntryPayload = {
@@ -102,8 +104,10 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
         }
 
         setSaveState("saved");
+        if (explicit) toast.success("Entry saved");
       } catch {
         setSaveState("error");
+        toast.error("Failed to save entry");
       }
     },
     [],
@@ -148,7 +152,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
       if ((e.metaKey || e.ctrlKey) && e.key === "s") {
         e.preventDefault();
         if (debounceRef.current) clearTimeout(debounceRef.current);
-        save(body, title, tags, mood, categories, entryDate);
+        save(body, title, tags, mood, categories, entryDate, true);
       }
     }
     window.addEventListener("keydown", handleKeyDown);
@@ -184,7 +188,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
               <button
                 onClick={() => {
                   if (debounceRef.current) clearTimeout(debounceRef.current);
-                  save(body, title, tags, mood, categories, entryDate);
+                  save(body, title, tags, mood, categories, entryDate, true);
                 }}
                 className="text-xs px-2.5 py-1 bg-primary hover:bg-primary/90 text-white rounded-full transition-colors"
               >
@@ -218,6 +222,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
                   onClick={async () => {
                     setDeleting(true);
                     await fetch(`/api/entries/${entryId}`, { method: "DELETE" });
+                    toast.success("Entry deleted");
                     _router.push("/journal");
                   }}
                   disabled={deleting}

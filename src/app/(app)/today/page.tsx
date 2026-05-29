@@ -150,7 +150,7 @@ export default async function TodayPage() {
           <Greeting />
         </div>
         {streak > 0 && (
-          <div className="flex items-center gap-1.5 bg-foreground text-background rounded-full px-3.5 py-2 text-sm font-semibold shrink-0 mt-1">
+          <div className="flex items-center gap-1.5 bg-tertiary text-tertiary-foreground rounded-full px-3.5 py-2 text-sm font-semibold shrink-0 mt-1">
             <span>🔥</span>
             <span>{streak}</span>
           </div>
@@ -158,12 +158,12 @@ export default async function TodayPage() {
       </div>
 
       {/* Prompt card */}
-      <div className="relative bg-foreground rounded-2xl p-5 overflow-hidden">
-        <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-background/[0.04] pointer-events-none" />
-        <p className="text-xs font-semibold uppercase tracking-widest text-background/40 mb-2">
+      <div className="relative bg-surface-dark rounded-2xl p-5 overflow-hidden">
+        <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-surface-dark-foreground/[0.06] pointer-events-none" />
+        <p className="text-xs font-semibold uppercase tracking-widest text-surface-dark-foreground/50 mb-2">
           Today's prompt
         </p>
-        <p className="text-lg text-background/90 italic leading-snug mb-5 font-heading">
+        <p className="text-lg text-surface-dark-foreground/90 italic leading-snug mb-5 font-heading">
           "{prompt}"
         </p>
         <Link
@@ -188,7 +188,7 @@ export default async function TodayPage() {
           {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
             <div
               key={i}
-              className="text-center text-[10px] text-foreground/35 pb-1.5 font-medium"
+              className="text-center text-xs text-foreground/35 pb-1.5 font-medium"
             >
               {d}
             </div>
@@ -201,17 +201,18 @@ export default async function TodayPage() {
             const hasEntry = writtenDays.has(dateStr);
             const isToday = dateStr === todayStr;
             return (
-              <div
-                key={day}
-                className={`aspect-square rounded-full flex items-center justify-center text-[11px] font-medium transition-colors ${
-                  isToday
-                    ? "bg-primary text-primary-foreground"
-                    : hasEntry
-                      ? "bg-foreground text-background"
-                      : "text-foreground/30"
-                }`}
-              >
-                {day}
+              <div key={day} className="flex items-center justify-center py-0.5">
+                <div
+                  className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
+                    isToday
+                      ? "bg-primary text-primary-foreground"
+                      : hasEntry
+                        ? "bg-tertiary text-tertiary-foreground"
+                        : "text-foreground/40"
+                  }`}
+                >
+                  {day}
+                </div>
               </div>
             );
           })}

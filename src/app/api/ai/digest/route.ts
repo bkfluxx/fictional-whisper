@@ -179,13 +179,22 @@ export async function POST(req: NextRequest) {
     })
     .join("\n");
 
-  const raw = await generateText(
-    DIGEST_PROMPT(entryBlocks, goalBlocks),
-    DIGEST_SYSTEM,
-    model,
-    baseUrl,
-    AbortSignal.timeout(4 * 60 * 1000),
-  );
+  let raw: string;
+  try {
+    raw = await generateText(
+      DIGEST_PROMPT(entryBlocks, goalBlocks),
+      DIGEST_SYSTEM,
+      model,
+      baseUrl,
+      AbortSignal.timeout(4 * 60 * 1000),
+    );
+  } catch (err) {
+    const isTimeout = err instanceof Error && err.name === "TimeoutError";
+    return NextResponse.json(
+      { error: isTimeout ? "Ollama timed out — the model may be too slow for this many entries" : "Ollama generation failed — is Ollama running?" },
+      { status: 502 },
+    );
+  }
   const content = raw.trim();
 
   // Upsert: replace any existing digest for this week

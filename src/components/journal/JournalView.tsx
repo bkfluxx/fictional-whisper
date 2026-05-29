@@ -81,7 +81,7 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                       onClick={() => handleEntryClick(e.id)}
                       className={`rounded-xl border overflow-hidden cursor-pointer flex transition-colors ${
                         isFirst
-                          ? "border-transparent bg-foreground"
+                          ? "border-transparent bg-surface-dark"
                           : isSelected
                           ? "border-primary/40 bg-primary/[0.05]"
                           : "border-foreground/10 bg-card hover:bg-foreground/[0.03]"
@@ -92,13 +92,13 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                         <div className="flex items-start justify-between gap-3">
                           <span
                             className={`text-sm font-semibold leading-snug ${
-                              isFirst ? "text-background" : "text-foreground"
+                              isFirst ? "text-surface-dark-foreground" : "text-foreground"
                             }`}
                           >
                             {e.title ?? (
                               <span
                                 className={`font-normal italic ${
-                                  isFirst ? "text-background/40" : "text-foreground/40"
+                                  isFirst ? "text-surface-dark-foreground/40" : "text-foreground/40"
                                 }`}
                               >
                                 Untitled
@@ -115,7 +115,7 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                         {e.isVoiceOnly ? (
                           <p
                             className={`text-xs mt-1.5 italic ${
-                              isFirst ? "text-background/60" : "text-primary/70"
+                              isFirst ? "text-surface-dark-foreground/60" : "text-primary/70"
                             }`}
                           >
                             Voice note
@@ -123,7 +123,7 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                         ) : e.preview ? (
                           <p
                             className={`text-xs mt-1.5 leading-relaxed line-clamp-2 ${
-                              isFirst ? "text-background/60" : "text-foreground/50"
+                              isFirst ? "text-surface-dark-foreground/60" : "text-foreground/50"
                             }`}
                           >
                             {e.preview}
@@ -136,8 +136,8 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                               <span
                                 className={`text-xs px-2 py-0.5 rounded-full capitalize ${
                                   isFirst
-                                    ? "bg-background/15 text-background/75"
-                                    : "bg-foreground/10 text-foreground/60"
+                                    ? "bg-surface-dark-foreground/15 text-surface-dark-foreground/75"
+                                    : "bg-tertiary/12 text-tertiary"
                                 }`}
                               >
                                 {e.mood}
@@ -148,7 +148,7 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                                 key={c.id}
                                 className={`text-xs px-2 py-0.5 rounded-full ${
                                   isFirst
-                                    ? "bg-background/15 text-background/75"
+                                    ? "bg-surface-dark-foreground/15 text-surface-dark-foreground/75"
                                     : "bg-primary/15 text-primary"
                                 }`}
                               >
@@ -160,8 +160,8 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                                 key={t.id}
                                 className={`text-xs px-2 py-0.5 rounded-full ${
                                   isFirst
-                                    ? "bg-background/15 text-background/75"
-                                    : "bg-foreground/10 text-foreground/60"
+                                    ? "bg-surface-dark-foreground/15 text-surface-dark-foreground/75"
+                                    : "bg-tertiary/10 text-tertiary/80"
                                 }`}
                               >
                                 #{t.name}
@@ -176,12 +176,12 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                         <div
                           className={`w-10 shrink-0 flex items-center justify-center border-l ${
                             isFirst
-                              ? "bg-background/10 border-background/10"
+                              ? "bg-surface-dark-foreground/10 border-surface-dark-foreground/10"
                               : "bg-primary/10 border-primary/10"
                           }`}
                         >
                           <svg
-                            className={`w-4 h-4 ${isFirst ? "text-background/60" : "text-primary"}`}
+                            className={`w-4 h-4 ${isFirst ? "text-surface-dark-foreground/60" : "text-primary"}`}
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
