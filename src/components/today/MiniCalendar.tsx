@@ -47,13 +47,19 @@ export default function MiniCalendar({ entryDates, todayStr }: Props) {
   const isCurrentMonth =
     viewYear === today.getFullYear() && viewMonth === today.getMonth();
 
+  const oldest = entryDates[0];
+  const minYear = oldest ? parseInt(oldest.slice(0, 4)) : viewYear;
+  const minMonth = oldest ? parseInt(oldest.slice(5, 7)) - 1 : viewMonth;
+  const isEarliestMonth = viewYear < minYear || (viewYear === minYear && viewMonth <= minMonth);
+
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <button
             onClick={prev}
-            className="p-1 rounded-md text-foreground/40 hover:text-foreground hover:bg-foreground/8 transition-colors"
+            disabled={isEarliestMonth}
+            className="p-1 rounded-md text-foreground/40 hover:text-foreground hover:bg-foreground/8 transition-colors disabled:opacity-20 disabled:cursor-default"
             aria-label="Previous month"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">

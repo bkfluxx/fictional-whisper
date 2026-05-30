@@ -4,6 +4,14 @@ All notable changes to Aura will be documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.7.1] - 2026-05-30
+
+### Fixed
+
+- Today page calendar — prev navigation now caps at the month of the oldest journal entry; previously the calendar could be scrolled back indefinitely into empty months
+- Journal date filter — single-day links from the calendar now correctly include entries written at any time of day (filter extended to cover full 24 hours: `T00:00:00Z` – `T23:59:59Z`)
+- Journal page — date filter label shown below heading when arriving from a calendar link; empty state adapts to "No entries on this day" with a "View all entries" CTA when a date filter is active
+
 ## [0.7.0] - 2026-05-29
 
 ### Added
