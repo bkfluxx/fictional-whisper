@@ -6,6 +6,7 @@ import { getDEK } from "@/lib/session/dek-store";
 import { prisma } from "@/lib/prisma";
 import { decryptString } from "@/lib/crypto";
 import Greeting from "@/components/today/Greeting";
+import MiniCalendar from "@/components/today/MiniCalendar";
 
 const DAILY_PROMPTS = [
   "What made you feel most like yourself today?",
@@ -79,21 +80,13 @@ export default async function TodayPage() {
   if (!dek) redirect("/login");
 
   const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const monthStart = new Date(year, month, 1);
-  const monthEnd = new Date(year, month + 1, 0);
   const todayStr = now.toISOString().slice(0, 10);
   const yesterdayStr = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
 
-  const [allDates, monthEntries, recentEntries] = await Promise.all([
+  const [allDates, recentEntries] = await Promise.all([
     prisma.entry.findMany({
       select: { entryDate: true },
       orderBy: { entryDate: "asc" },
-    }),
-    prisma.entry.findMany({
-      where: { entryDate: { gte: monthStart, lte: monthEnd } },
-      select: { entryDate: true },
     }),
     prisma.entry.findMany({
       orderBy: { entryDate: "desc" },
@@ -103,10 +96,7 @@ export default async function TodayPage() {
   ]);
 
   const streak = computeStreak(allDates.map((e) => e.entryDate));
-  const writtenDays = new Set(
-    monthEntries.map((e) => e.entryDate.toISOString().slice(0, 10)),
-  );
-  const monthEntryCount = monthEntries.length;
+  const allEntryDates = allDates.map((e) => e.entryDate.toISOString().slice(0, 10));
 
   const recentEntry = recentEntries[0] ?? null;
   const recentTitle = recentEntry?.title ? decryptString(recentEntry.title, dek) : null;
@@ -126,11 +116,6 @@ export default async function TodayPage() {
         day: "numeric",
       });
   }
-
-  // Calendar grid
-  const daysInMonth = monthEnd.getDate();
-  const firstDayOfWeek = monthStart.getDay();
-  const monthName = now.toLocaleDateString("en-US", { month: "long" });
 
   const todayLabel = now.toLocaleDateString("en-US", {
     weekday: "long",
@@ -178,49 +163,7 @@ export default async function TodayPage() {
       </div>
 
       {/* Mini calendar */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-xs font-semibold uppercase tracking-widest text-foreground/40">
-            {monthName} {year}
-          </p>
-          <p className="text-xs text-primary font-medium">
-            {monthEntryCount} {monthEntryCount === 1 ? "entry" : "entries"}
-          </p>
-        </div>
-        <div className="grid grid-cols-7 gap-y-1 gap-x-0.5">
-          {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-            <div
-              key={i}
-              className="text-center text-xs text-foreground/35 pb-1.5 font-medium"
-            >
-              {d}
-            </div>
-          ))}
-          {Array.from({ length: firstDayOfWeek }).map((_, i) => (
-            <div key={`empty-${i}`} />
-          ))}
-          {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => {
-            const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-            const hasEntry = writtenDays.has(dateStr);
-            const isToday = dateStr === todayStr;
-            return (
-              <div key={day} className="flex items-center justify-center py-0.5">
-                <div
-                  className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
-                    isToday
-                      ? "bg-primary text-primary-foreground"
-                      : hasEntry
-                        ? "bg-tertiary text-tertiary-foreground"
-                        : "text-foreground/40"
-                  }`}
-                >
-                  {day}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <MiniCalendar entryDates={allEntryDates} todayStr={todayStr} />
 
       {/* Most recent entry */}
       {recentEntry && (
