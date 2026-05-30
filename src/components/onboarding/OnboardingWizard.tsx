@@ -311,7 +311,11 @@ export default function OnboardingWizard() {
   // ── Step: Done ────────────────────────────────────────────────────────────
   return (
     <div className="flex flex-col items-center justify-center min-h-screen gap-6 px-6">
-      <div className="text-5xl">✨</div>
+      <div className="flex justify-center text-foreground/60">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="w-12 h-12">
+          <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" />
+        </svg>
+      </div>
       <div className="text-center max-w-sm">
         <h2 className="text-2xl font-semibold text-foreground mb-2">Ready to write</h2>
         <p className="text-foreground/60 text-sm">

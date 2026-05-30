@@ -151,7 +151,10 @@ export default async function TodayPage() {
         </div>
         {streak > 0 && (
           <div className="flex items-center gap-1.5 bg-tertiary text-tertiary-foreground rounded-full px-3.5 py-2 text-sm font-semibold shrink-0 mt-1">
-            <span>🔥</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+              <path d="M12 2c0 6-6 8-6 13a6 6 0 0 0 12 0c0-5-6-7-6-13Z" />
+              <path d="M12 12c0 3-2 4-2 6a2 2 0 0 0 4 0c0-2-2-3-2-6Z" />
+            </svg>
             <span>{streak}</span>
           </div>
         )}
