@@ -161,12 +161,41 @@ export default function AnalyticsTabs({
               {/* Hero stat row */}
               <div className="grid grid-cols-3 gap-3 mb-10">
                 {[
-                  { icon: "🔥", value: currentStreak > 0 ? currentStreak : "—", unit: "day streak" },
-                  { icon: "📓", value: thisMonthEntries, unit: "this month" },
-                  { icon: "📅", value: uniqueDays, unit: "days written" },
+                  {
+                    icon: (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-foreground/50">
+                        <path d="M12 2c0 6-6 8-6 13a6 6 0 0 0 12 0c0-5-6-7-6-13Z" />
+                        <path d="M12 12c0 3-2 4-2 6a2 2 0 0 0 4 0c0-2-2-3-2-6Z" />
+                      </svg>
+                    ),
+                    value: currentStreak > 0 ? currentStreak : "—",
+                    unit: "day streak",
+                  },
+                  {
+                    icon: (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-foreground/50">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                      </svg>
+                    ),
+                    value: thisMonthEntries,
+                    unit: "this month",
+                  },
+                  {
+                    icon: (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-foreground/50">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                      </svg>
+                    ),
+                    value: uniqueDays,
+                    unit: "days written",
+                  },
                 ].map(({ icon, value, unit }) => (
                   <div key={unit} className="bg-card border border-border rounded-xl p-4 text-center">
-                    <div className="text-xl mb-2">{icon}</div>
+                    <div className="flex justify-center mb-2">{icon}</div>
                     <div className="text-2xl font-normal text-foreground">{value}</div>
                     <div className="text-[10px] text-foreground/40 uppercase tracking-wider mt-0.5">{unit}</div>
                   </div>
