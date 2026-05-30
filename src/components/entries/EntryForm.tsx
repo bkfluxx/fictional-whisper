@@ -316,9 +316,9 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
             const override = jt ? overridesByBuiltinId.get(id) : null;
             const uc = !jt ? userCategories.find((c) => c.id === id) : null;
             const label = jt
-              ? `${override?.emoji ?? jt.emoji} ${override?.name ?? jt.name}`
+              ? (override?.name ?? jt.name)
               : uc
-                ? `${uc.emoji} ${uc.name}`
+                ? uc.name
                 : id;
             return (
               <span
@@ -363,7 +363,6 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
                               : "text-foreground/60 hover:bg-foreground/8 hover:text-foreground"
                           }`}
                         >
-                          <span className="shrink-0">{uc.emoji}</span>
                           <span className="truncate">{uc.name}</span>
                         </button>
                       );
@@ -390,7 +389,6 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
                               : "text-foreground/60 hover:bg-foreground/8 hover:text-foreground"
                           }`}
                         >
-                          <span className="shrink-0">{override?.emoji ?? jt.emoji}</span>
                           <span className="truncate">{override?.name ?? jt.name}</span>
                         </button>
                       );

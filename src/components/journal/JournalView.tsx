@@ -106,8 +106,14 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                             )}
                           </span>
                           {firstCat && (
-                            <span className="text-base leading-none mt-0.5 shrink-0">
-                              {firstCat.emoji}
+                            <span
+                              className={`text-[10px] px-1.5 py-0.5 rounded font-medium shrink-0 ${
+                                isFirst
+                                  ? "bg-surface-dark-foreground/15 text-surface-dark-foreground/70"
+                                  : "bg-primary/10 text-primary/70"
+                              }`}
+                            >
+                              {firstCat.name}
                             </span>
                           )}
                         </div>
@@ -152,7 +158,7 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                                     : "bg-primary/15 text-primary"
                                 }`}
                               >
-                                {c.emoji} {c.name}
+                                {c.name}
                               </span>
                             ))}
                             {e.tags.map((t) => (

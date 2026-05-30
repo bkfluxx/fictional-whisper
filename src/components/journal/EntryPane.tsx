@@ -96,7 +96,7 @@ export default function EntryPane({ entryId, onClose }: Props) {
                 {entry.categories.map((c) => {
                   const jt = getJournalType(c);
                   const uc = userCatMap.get(c);
-                  const label = jt ? `${jt.emoji} ${jt.name}` : uc ? `${uc.emoji} ${uc.name}` : c;
+                  const label = jt ? jt.name : uc ? uc.name : c;
                   return (
                     <span key={c} className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full">
                       {label}
