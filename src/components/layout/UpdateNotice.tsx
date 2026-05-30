@@ -36,12 +36,10 @@ export default function UpdateNotice() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-1">
-      {CURRENT && (
-        <span className="flex items-center px-3 py-2 text-sm text-foreground/30 tabular-nums">
-          v{CURRENT}
-        </span>
-      )}
+    <div className="border-t border-border mt-1 pt-3 pb-1 px-3 flex flex-col gap-1">
+      <span className="text-xs text-foreground/30">
+        Aura{CURRENT ? ` v${CURRENT}` : ""}
+      </span>
       {update?.hasUpdate && update.latestVersion && update.releaseUrl && (
         <a
           href={update.releaseUrl}

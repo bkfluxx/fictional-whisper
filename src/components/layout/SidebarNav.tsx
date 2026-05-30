@@ -131,7 +131,6 @@ export default function SidebarNav() {
             isActive={pathname.startsWith(item.href)}
           />
         ))}
-        <UpdateNotice />
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
           className="flex items-center gap-2.5 px-3 py-2 rounded-full text-sm text-foreground/60 hover:bg-foreground/8 hover:text-foreground transition-colors w-full text-left"
@@ -142,6 +141,7 @@ export default function SidebarNav() {
           </svg>
           Log out
         </button>
+        <UpdateNotice />
       </div>
     </nav>
   );
