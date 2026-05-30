@@ -36,9 +36,9 @@ export default function UpdateNotice() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-1 px-3 py-1">
+    <div className="flex flex-col gap-1">
       {CURRENT && (
-        <span className="text-[11px] text-foreground/30 tabular-nums">
+        <span className="flex items-center px-3 py-2 text-sm text-foreground/30 tabular-nums">
           v{CURRENT}
         </span>
       )}
