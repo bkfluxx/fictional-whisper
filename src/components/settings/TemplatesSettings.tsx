@@ -285,7 +285,9 @@ export default function TemplatesSettings() {
               ) : (
                 <div key={t.id} className="flex items-center justify-between gap-4 rounded-xl border border-foreground/10 bg-card px-4 py-3">
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="text-xl shrink-0">{t.emoji}</span>
+                    <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 text-sm font-semibold">
+                      {t.title.charAt(0).toUpperCase()}
+                    </span>
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-foreground truncate">{t.title}</p>
                       {t.description && (
@@ -398,7 +400,9 @@ export default function TemplatesSettings() {
                 }`}
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <span className="text-xl shrink-0">{displayEmoji}</span>
+                  <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 text-sm font-semibold">
+                    {displayTitle.charAt(0).toUpperCase()}
+                  </span>
                   <div className="min-w-0">
                     <p className={`text-sm font-medium truncate ${isHidden ? "line-through text-foreground/50" : "text-foreground"}`}>
                       {displayTitle}
