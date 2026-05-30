@@ -33,9 +33,26 @@ export default function SettingsTabs() {
   const [active, setActive] = useState<Tab>("ai");
 
   return (
-    <div>
-      {/* Tab bar — horizontally scrollable on mobile */}
-      <div className="flex border-b border-border mb-8 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+    <div className="flex gap-8 items-start">
+      {/* Vertical nav */}
+      <nav className="hidden md:flex flex-col w-44 shrink-0 gap-0.5">
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActive(tab.id)}
+            className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+              active === tab.id
+                ? "bg-foreground/8 text-foreground font-medium"
+                : "text-foreground/50 hover:text-foreground hover:bg-foreground/5"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </nav>
+
+      {/* Mobile: horizontal scrollable tab bar */}
+      <div className="flex md:hidden border-b border-border mb-6 overflow-x-auto w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -50,6 +67,9 @@ export default function SettingsTabs() {
           </button>
         ))}
       </div>
+
+      {/* Content panel */}
+      <div className="flex-1 min-w-0">
 
       {/* Tab panels */}
       {active === "appearance" && (
@@ -231,6 +251,7 @@ export default function SettingsTabs() {
           <CategoriesSettings />
         </section>
       )}
+      </div>
     </div>
   );
 }
