@@ -33,8 +33,8 @@ export default function SettingsTabs() {
   const [active, setActive] = useState<Tab>("ai");
 
   return (
-    <div className="flex gap-8 items-start">
-      {/* Vertical nav */}
+    <div className="flex flex-col md:flex-row gap-8 items-start">
+      {/* Vertical nav — desktop only */}
       <nav className="hidden md:flex flex-col w-44 shrink-0 gap-0.5">
         {TABS.map((tab) => (
           <button
@@ -51,25 +51,24 @@ export default function SettingsTabs() {
         ))}
       </nav>
 
-      {/* Mobile: horizontal scrollable tab bar */}
-      <div className="flex md:hidden border-b border-border mb-6 overflow-x-auto w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActive(tab.id)}
-            className={`shrink-0 px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
-              active === tab.id
-                ? "border-primary text-foreground"
-                : "border-transparent text-foreground/40 hover:text-foreground/80"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Content panel */}
-      <div className="flex-1 min-w-0">
+      {/* Content column (mobile tabs sit above content on small screens) */}
+      <div className="flex-1 min-w-0 w-full">
+        {/* Mobile: horizontal scrollable tab bar */}
+        <div className="flex md:hidden border-b border-border mb-6 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActive(tab.id)}
+              className={`shrink-0 px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                active === tab.id
+                  ? "border-primary text-foreground"
+                  : "border-transparent text-foreground/40 hover:text-foreground/80"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
       {/* Tab panels */}
       {active === "appearance" && (
