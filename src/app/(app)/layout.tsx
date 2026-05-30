@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Image from "next/image";
-import SearchBar from "@/components/search/SearchBar";
 import SidebarNav from "@/components/layout/SidebarNav";
 import MobileNav from "@/components/layout/MobileNav";
 import OllamaWarmup from "@/components/layout/OllamaWarmup";
@@ -35,10 +34,6 @@ export default async function AppLayout({
         </div>
 
         <SidebarNav />
-
-        <div className="mt-auto pt-4 border-t border-border">
-          <SearchBar />
-        </div>
       </aside>
 
       {/* Mobile top bar + slide-over drawer */}
