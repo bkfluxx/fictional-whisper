@@ -64,8 +64,8 @@ export default async function JournalPage({
         ...(from || to
           ? {
               entryDate: {
-                ...(from ? { gte: new Date(from) } : {}),
-                ...(to ? { lte: new Date(to) } : {}),
+                ...(from ? { gte: new Date(from + "T00:00:00.000Z") } : {}),
+                ...(to ? { lte: new Date(to + "T23:59:59.999Z") } : {}),
               },
             }
           : {}),
@@ -119,13 +119,29 @@ export default async function JournalPage({
   }
   const days = [...grouped.values()];
 
-  const heading = categoryDef ? `${categoryDef.emoji} ${categoryDef.name}` : "Journal";
+  const heading = categoryDef ? categoryDef.name : "Journal";
+
+  const dateFilterLabel = from
+    ? from === to || !to
+      ? new Date(from + "T00:00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })
+      : `${from} – ${to}`
+    : null;
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-8 pb-4 shrink-0">
-        <h1 className="text-xl font-semibold text-foreground">{heading}</h1>
+        <div>
+          <h1 className="text-xl font-semibold text-foreground">{heading}</h1>
+          {dateFilterLabel && (
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-xs text-foreground/50">{dateFilterLabel}</span>
+              <Link href="/journal" className="text-xs text-primary hover:underline">
+                Clear
+              </Link>
+            </div>
+          )}
+        </div>
         <Link
           href="/journal/new"
           className="px-4 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-full transition-colors"
@@ -137,9 +153,9 @@ export default async function JournalPage({
       {entries.length === 0 ? (
         <EmptyState
           icon={BookOpen}
-          heading="No entries yet"
-          subtitle="Your journal is empty. Start writing to capture your thoughts and experiences."
-          action={{ label: "Write your first entry", href: "/journal/new" }}
+          heading={dateFilterLabel ? "No entries on this day" : "No entries yet"}
+          subtitle={dateFilterLabel ? "Nothing was written on this date." : "Your journal is empty. Start writing to capture your thoughts and experiences."}
+          action={dateFilterLabel ? { label: "View all entries", href: "/journal" } : { label: "Write your first entry", href: "/journal/new" }}
         />
       ) : (
         <div className="flex-1 min-h-0 overflow-hidden">
