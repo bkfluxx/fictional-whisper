@@ -4,6 +4,14 @@ All notable changes to Aura will be documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.7.3] - 2026-05-30
+
+### Fixed
+
+- Export section — added plaintext warning banner reminding users that exported files contain unencrypted journal entries
+- Mobile nav drawer — removed search bar from slide-over menu (search is accessible via the journal page)
+- Personas settings — enable/disable toggle now uses `shrink-0` and a fixed gap so it no longer clips at the screen edge on narrow mobile layouts
+
 ## [0.7.2] - 2026-05-30
 
 ### Fixed

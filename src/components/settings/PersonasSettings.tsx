@@ -207,8 +207,8 @@ export default function PersonasSettings() {
       {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
       {/* Enable / disable toggle */}
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex items-center justify-between gap-4">
+        <div className="min-w-0">
           <p className="text-sm font-medium text-foreground">Enable personas</p>
           <p className="text-xs text-foreground/40 mt-0.5">
             When on, the active persona shapes tone across chat, mood analysis, and writing prompts.
@@ -217,7 +217,7 @@ export default function PersonasSettings() {
         <button
           onClick={() => toggleEnabled(!enabled)}
           disabled={saving}
-          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors disabled:opacity-50 ${
+          className={`relative inline-flex shrink-0 h-6 w-11 items-center rounded-full transition-colors disabled:opacity-50 ${
             enabled ? "bg-primary" : "bg-muted"
           }`}
         >

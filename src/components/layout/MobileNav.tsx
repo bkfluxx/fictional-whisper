@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import SidebarNav from "@/components/layout/SidebarNav";
-import SearchBar from "@/components/search/SearchBar";
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -94,9 +93,6 @@ export default function MobileNav() {
 
         <SidebarNav />
 
-        <div className="mt-auto pt-4 border-t border-border">
-          <SearchBar />
-        </div>
       </div>
     </>
   );
