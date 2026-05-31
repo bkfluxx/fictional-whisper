@@ -40,7 +40,7 @@ export default async function AppLayout({
       <MobileNav />
 
       {/* Main content — top padding on mobile clears the fixed top bar */}
-      <main className="flex-1 overflow-y-auto min-h-0 pt-14 md:pt-0">{children}</main>
+      <main className="flex-1 overflow-y-auto min-h-0 pt-mobile-header">{children}</main>
       <OllamaWarmup />
       <IdleLogout />
       <ToasterProvider />

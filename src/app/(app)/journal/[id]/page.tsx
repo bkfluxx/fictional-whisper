@@ -46,7 +46,7 @@ export default async function EntryViewPage({
       <div className="flex items-center justify-between mb-10">
         <Link
           href="/journal"
-          className="flex items-center gap-1.5 text-sm text-foreground/40 hover:text-foreground transition-colors"
+          className="flex items-center gap-1.5 text-sm text-foreground/40 hover:text-foreground transition-colors min-h-[44px]"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
@@ -57,7 +57,7 @@ export default async function EntryViewPage({
           <span className="text-xs text-foreground/30">{wordCount} words</span>
           <Link
             href={`/journal/${entry.id}/edit`}
-            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors min-h-[44px] flex items-center"
           >
             Edit
           </Link>
@@ -92,7 +92,7 @@ export default async function EntryViewPage({
           {entry.categories.map((c) => {
             const jt = getJournalType(c);
             const uc = userCatMap.get(c);
-            const label = jt ? `${jt.emoji} ${jt.name}` : uc ? `${uc.emoji} ${uc.name}` : c;
+            const label = jt ? jt.name : uc ? uc.name : c;
             return (
               <span key={c} className="text-xs px-3 py-1 bg-primary/10 text-primary rounded-full font-medium">
                 {label}

@@ -4,6 +4,17 @@ All notable changes to Aura will be documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.7.2] - 2026-05-30
+
+### Fixed
+
+- PWA safe area — mobile top bar now absorbs `env(safe-area-inset-top)` via `viewport-fit=cover`; content no longer clips under the notch when the app is opened from a home screen bookmark
+- Chat sidebar — on mobile and tablet the sidebar now opens as a full-width overlay with a dark backdrop instead of splitting the screen; closes on backdrop tap or session selection; defaults to open only at ≥1024px
+- Entry detail view — category pill labels no longer include emoji (fixes `[?]` rendering on iOS)
+- Settings tab bar — restricted drag to horizontal-only with `touch-pan-x`; added right-edge fade gradient to hint at horizontal scroll
+- Analytics stat cards — hero and goals stat rows changed from fixed `grid-cols-3` to `grid-cols-1 sm:grid-cols-3` to prevent cramped layout on narrow screens
+- Touch targets — MobileNav hamburger and close buttons, journal "New entry" button, entry view back link and edit link all raised to 44px minimum touch target height
+
 ## [0.7.1] - 2026-05-30
 
 ### Fixed

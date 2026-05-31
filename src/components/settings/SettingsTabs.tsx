@@ -53,21 +53,25 @@ export default function SettingsTabs() {
 
       {/* Content column (mobile tabs sit above content on small screens) */}
       <div className="flex-1 min-w-0 w-full">
-        {/* Mobile: horizontal scrollable tab bar */}
-        <div className="flex md:hidden border-b border-border mb-6 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActive(tab.id)}
-              className={`shrink-0 px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
-                active === tab.id
-                  ? "border-primary text-foreground"
-                  : "border-transparent text-foreground/40 hover:text-foreground/80"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        {/* Mobile: horizontal scrollable tab bar with right-edge fade hint */}
+        <div className="md:hidden relative mb-6">
+          <div className="flex border-b border-border overflow-x-auto touch-pan-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActive(tab.id)}
+                className={`shrink-0 px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                  active === tab.id
+                    ? "border-primary text-foreground"
+                    : "border-transparent text-foreground/40 hover:text-foreground/80"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          {/* Right-edge fade to hint at horizontal scroll */}
+          <div className="absolute right-0 top-0 bottom-[1px] w-8 bg-gradient-to-l from-background to-transparent pointer-events-none" />
         </div>
 
       {/* Tab panels */}

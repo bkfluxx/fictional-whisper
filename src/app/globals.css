@@ -259,3 +259,13 @@
   pointer-events: none;
   height: 0;
 }
+
+/* Mobile top bar offset — accounts for fixed h-14 bar + iOS PWA safe area inset */
+.pt-mobile-header {
+  padding-top: calc(3.5rem + env(safe-area-inset-top));
+}
+@media (min-width: 768px) {
+  .pt-mobile-header {
+    padding-top: 0;
+  }
+}

@@ -159,7 +159,7 @@ export default function AnalyticsTabs({
           ) : (
             <>
               {/* Hero stat row */}
-              <div className="grid grid-cols-3 gap-3 mb-10">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-10">
                 {[
                   {
                     icon: (
@@ -282,7 +282,7 @@ export default function AnalyticsTabs({
                   <h2 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-4">
                     Goal progress
                   </h2>
-                  <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                     <div className="bg-card rounded-xl p-4 text-center">
                       <p className="text-2xl font-semibold text-foreground">{activeGoals.length}</p>
                       <p className="text-xs text-foreground/40 mt-0.5">Active</p>

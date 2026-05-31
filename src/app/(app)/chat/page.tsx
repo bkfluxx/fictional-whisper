@@ -120,9 +120,9 @@ export default function ChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Open sidebar by default on desktop, keep closed on mobile
+  // Open sidebar by default on desktop (lg+), keep closed on mobile/tablet
   useEffect(() => {
-    setSidebarOpen(window.innerWidth >= 768);
+    setSidebarOpen(window.innerWidth >= 1024);
   }, []);
 
   const fetchSessions = useCallback(async () => {
@@ -152,8 +152,8 @@ export default function ChatPage() {
     setMessages([]);
     setError(null);
     setLoadingMessages(true);
-    // On mobile, close sidebar so the chat area is visible
-    if (window.innerWidth < 768) setSidebarOpen(false);
+    // On mobile/tablet, close sidebar so the chat area is visible
+    if (window.innerWidth < 1024) setSidebarOpen(false);
     try {
       const res = await fetch(`/api/ai/chat/sessions/${id}/messages`);
       if (res.ok) {
@@ -330,11 +330,21 @@ export default function ChatPage() {
 
   return (
     <div className="flex h-full overflow-hidden">
+      {/* Mobile backdrop — shown when sidebar is open on small screens */}
+      {sidebarOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-20 bg-black/30"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* ── Sidebar ─────────────────────────────────────────────────────── */}
       <div
-        className={`${
-          sidebarOpen ? "w-64" : "w-0"
-        } shrink-0 transition-all duration-200 overflow-hidden border-r border-border flex flex-col bg-background`}
+        className={`shrink-0 overflow-hidden border-r border-border flex flex-col bg-background transition-all duration-200 ${
+          sidebarOpen
+            ? "fixed top-14 left-0 bottom-0 z-30 w-72 lg:static lg:top-auto lg:left-auto lg:bottom-auto lg:z-auto lg:w-64"
+            : "w-0"
+        }`}
       >
         <div className="flex items-center justify-between px-3 py-4 border-b border-border shrink-0">
           <span className="text-xs font-semibold text-foreground/40 uppercase tracking-wider">
