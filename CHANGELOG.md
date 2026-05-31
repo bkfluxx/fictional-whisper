@@ -4,6 +4,20 @@ All notable changes to Aura will be documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.7.4] - 2026-05-31
+
+### Added
+
+- Template and category SVG icons — unique Heroicons-based icons for every built-in template and journal type, rendered consistently across the New Entry picker, Templates settings, Categories settings, journal list cards, and entry detail view; eliminates `[?]` rendering on iOS
+- Formatting toolbar toggle — a "Format" strip above the editor lets users collapse the toolbar on both mobile and desktop; defaults to open on desktop, closed on mobile
+- Mobile floating footer — Mic and AI buttons appear as matching pill buttons anchored to the bottom of the editor on mobile
+- Desktop toolbar action pills — Mic and AI pill buttons live in the toolbar strip on desktop so they're always visible and accessible regardless of toolbar state
+
+### Fixed
+
+- Delete confirmation — replaced the inline header expansion (which overflowed on narrow mobile screens) with a centered modal overlay
+- AI panel — opens as a full-screen overlay on mobile instead of pushing the editor aside; includes a close button
+
 ## [0.7.3] - 2026-05-30
 
 ### Fixed

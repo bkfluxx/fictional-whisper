@@ -8,6 +8,7 @@ import type { DecryptedEntry, EntryPayload } from "@/types/entry";
 import { JOURNAL_TYPES } from "@/lib/journal-types";
 import AiPanel from "./AiPanel";
 import VoiceNotesList from "./VoiceNotesList";
+import VoiceMicButton from "@/components/editor/VoiceMicButton";
 
 interface UserCategory {
   id: string;
@@ -59,6 +60,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
   const entryIdRef = useRef<string | null>(initial?.id ?? null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
+  const insertTextRef = useRef<((text: string) => void) | null>(null);
 
   const save = useCallback(
     async (
@@ -215,54 +217,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
                 </svg>
               </button>
             )}
-            {deleteConfirm && (
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-foreground/50">Delete entry?</span>
-                <button
-                  onClick={async () => {
-                    setDeleting(true);
-                    await fetch(`/api/entries/${entryId}`, { method: "DELETE" });
-                    toast.success("Entry deleted");
-                    _router.push("/journal");
-                  }}
-                  disabled={deleting}
-                  className="text-xs px-2 py-1 bg-red-600 hover:bg-red-500 text-white rounded-lg transition-colors disabled:opacity-50"
-                >
-                  {deleting ? "Deleting…" : "Delete"}
-                </button>
-                <button
-                  onClick={() => setDeleteConfirm(false)}
-                  className="text-xs text-foreground/40 hover:text-foreground transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
           </div>
-          {/* AI panel toggle */}
-          <button
-            onClick={() => setAiOpen((o) => !o)}
-            title="AI assistant"
-            className={`shrink-0 p-1.5 rounded-lg transition-colors ${
-              aiOpen
-                ? "bg-primary text-white"
-                : "text-foreground/40 hover:text-foreground/80 hover:bg-foreground/8"
-            }`}
-          >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1.8}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"
-              />
-            </svg>
-          </button>
         </div>
 
         {/* Metadata row */}
@@ -411,6 +366,9 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
             placeholder="Start writing…"
             entryId={entryId ?? undefined}
             onVoiceNoteSaved={() => setVoiceNoteRefreshKey((k) => k + 1)}
+            onEditorReady={(fn) => { insertTextRef.current = fn; }}
+            aiOpen={aiOpen}
+            onAiToggle={() => setAiOpen((o) => !o)}
           />
         </div>
 
@@ -428,9 +386,77 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
         )}
       </div>
 
-      {/* AI sidebar */}
+      {/* Mobile floating footer — mic + AI toggle */}
+      <div
+        className="md:hidden fixed bottom-0 left-0 right-0 z-20 flex items-center justify-around px-8 py-3 bg-background/95 backdrop-blur-sm border-t border-border"
+        style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
+      >
+        <VoiceMicButton
+          pill
+          onTranscript={(text) => insertTextRef.current?.(text)}
+          entryId={entryId ?? undefined}
+          onSaved={() => setVoiceNoteRefreshKey((k) => k + 1)}
+        />
+        <button
+          onClick={() => setAiOpen((o) => !o)}
+          title="AI assistant"
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-colors ${
+            aiOpen
+              ? "bg-primary text-white"
+              : "text-foreground/50 hover:text-foreground bg-foreground/5 hover:bg-foreground/10"
+          }`}
+        >
+          <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+          </svg>
+          AI
+        </button>
+      </div>
+
+      {/* Delete confirmation modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-6">
+          <div className="bg-card border border-foreground/15 rounded-2xl p-6 w-full max-w-xs shadow-2xl">
+            <p className="text-sm font-medium text-foreground mb-1">Delete this entry?</p>
+            <p className="text-xs text-foreground/50 mb-5">This action cannot be undone.</p>
+            <div className="flex gap-2">
+              <button
+                onClick={async () => {
+                  setDeleting(true);
+                  await fetch(`/api/entries/${entryId}`, { method: "DELETE" });
+                  toast.success("Entry deleted");
+                  _router.push("/journal");
+                }}
+                disabled={deleting}
+                className="flex-1 text-sm py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl transition-colors disabled:opacity-50"
+              >
+                {deleting ? "Deleting…" : "Delete"}
+              </button>
+              <button
+                onClick={() => setDeleteConfirm(false)}
+                className="flex-1 text-sm py-2 bg-foreground/8 hover:bg-foreground/15 text-foreground rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* AI sidebar — side panel on desktop, overlay on mobile */}
       {aiOpen && (
-        <aside className="w-72 shrink-0 border-l border-border px-4 py-4">
+        <aside className="fixed inset-0 z-30 bg-background px-4 py-4 overflow-y-auto md:static md:inset-auto md:z-auto md:w-72 md:shrink-0 md:border-l md:border-border md:overflow-visible">
+          <div className="flex items-center justify-between mb-4 md:hidden">
+            <span className="text-sm font-medium text-foreground">AI assistant</span>
+            <button
+              onClick={() => setAiOpen(false)}
+              className="p-2 rounded-lg text-foreground/40 hover:text-foreground hover:bg-foreground/8 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
           <AiPanel
             entryId={entryIdRef.current}
             categories={categories}

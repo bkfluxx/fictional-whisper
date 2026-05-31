@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { JOURNAL_TYPES } from "@/lib/journal-types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import CategoryIcon from "@/components/icons/CategoryIcon";
 
 interface UserCategory {
   id: string;
@@ -260,8 +261,8 @@ export default function CategoriesSettings() {
               ) : (
                 <div key={cat.id} className="flex items-center justify-between gap-4 rounded-xl border border-foreground/10 bg-card px-4 py-3">
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 text-sm font-semibold">
-                      {cat.name.charAt(0).toUpperCase()}
+                    <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                      <CategoryIcon id={cat.id} className="w-4 h-4" />
                     </span>
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-foreground truncate">{cat.name}</p>
@@ -369,8 +370,8 @@ export default function CategoriesSettings() {
                 }`}
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 text-sm font-semibold">
-                    {displayName.charAt(0).toUpperCase()}
+                  <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                    <CategoryIcon id={jt.id} className="w-4 h-4" />
                   </span>
                   <div className="min-w-0">
                     <p className={`text-sm font-medium truncate ${isHidden ? "line-through text-foreground/50" : "text-foreground"}`}>

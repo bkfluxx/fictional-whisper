@@ -153,7 +153,7 @@ export default async function AnalyticsPage() {
     .slice(0, 8)
     .map(([id, count]) => {
       const def = JOURNAL_TYPES.find((j) => j.id === id);
-      return { name: def ? `${def.emoji} ${def.name}` : id, count };
+      return { name: def ? def.name : id, count };
     });
 
   // Monthly activity (last 12 months)

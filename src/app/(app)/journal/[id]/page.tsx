@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { decryptString } from "@/lib/crypto";
 import { getJournalType } from "@/lib/journal-types";
 import VoiceNotesList from "@/components/entries/VoiceNotesList";
+import CategoryIcon from "@/components/icons/CategoryIcon";
 
 export default async function EntryViewPage({
   params,
@@ -94,7 +95,8 @@ export default async function EntryViewPage({
             const uc = userCatMap.get(c);
             const label = jt ? jt.name : uc ? uc.name : c;
             return (
-              <span key={c} className="text-xs px-3 py-1 bg-primary/10 text-primary rounded-full font-medium">
+              <span key={c} className="inline-flex items-center gap-1 text-xs pl-2 pr-3 py-1 bg-primary/10 text-primary rounded-full font-medium">
+                <CategoryIcon id={c} className="w-3 h-3 shrink-0" />
                 {label}
               </span>
             );

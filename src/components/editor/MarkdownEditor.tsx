@@ -13,6 +13,9 @@ interface MarkdownEditorProps {
   placeholder?: string;
   entryId?: string;
   onVoiceNoteSaved?: () => void;
+  onEditorReady?: (insertText: (text: string) => void) => void;
+  aiOpen?: boolean;
+  onAiToggle?: () => void;
 }
 
 // ── Toolbar ──────────────────────────────────────────────────────────────────
@@ -51,129 +54,116 @@ function Divider() {
   return <div className="w-px h-4 bg-foreground/20 mx-0.5" />;
 }
 
-function Toolbar({ editor, entryId, onVoiceNoteSaved }: { editor: Editor | null; entryId?: string; onVoiceNoteSaved?: () => void }) {
+function Toolbar({ editor }: { editor: Editor | null }) {
   if (!editor) return null;
 
-  function handleTranscript(text: string) {
-    editor!
-      .chain()
-      .focus()
-      .insertContent({ type: "paragraph", content: [{ type: "text", text }] })
-      .run();
-  }
-
   return (
-    <div className="flex items-center gap-0.5 flex-wrap px-3 py-2 border-b border-foreground/10 bg-card/50">
-      <ToolbarButton
-        onClick={() => editor.chain().focus().toggleBold().run()}
-        active={editor.isActive("bold")}
-        title="Bold"
-      >
-        <strong>B</strong>
-      </ToolbarButton>
-      <ToolbarButton
-        onClick={() => editor.chain().focus().toggleItalic().run()}
-        active={editor.isActive("italic")}
-        title="Italic"
-      >
-        <em>I</em>
-      </ToolbarButton>
-      <ToolbarButton
-        onClick={() => editor.chain().focus().toggleStrike().run()}
-        active={editor.isActive("strike")}
-        title="Strikethrough"
-      >
-        <s>S</s>
-      </ToolbarButton>
-      <ToolbarButton
-        onClick={() => editor.chain().focus().toggleCode().run()}
-        active={editor.isActive("code")}
-        title="Inline code"
-      >
-        <code className="text-xs font-mono">`c`</code>
-      </ToolbarButton>
+    <div className="flex items-center gap-0.5 px-3 py-2 border-b border-foreground/10 bg-card/50">
+      <div className="flex items-center gap-0.5 flex-wrap flex-1 min-w-0">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          active={editor.isActive("bold")}
+          title="Bold"
+        >
+          <strong>B</strong>
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          active={editor.isActive("italic")}
+          title="Italic"
+        >
+          <em>I</em>
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+          active={editor.isActive("strike")}
+          title="Strikethrough"
+        >
+          <s>S</s>
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleCode().run()}
+          active={editor.isActive("code")}
+          title="Inline code"
+        >
+          <code className="text-xs font-mono">`c`</code>
+        </ToolbarButton>
 
-      <Divider />
+        <Divider />
 
-      <ToolbarButton
-        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-        active={editor.isActive("heading", { level: 1 })}
-        title="Heading 1"
-      >
-        H1
-      </ToolbarButton>
-      <ToolbarButton
-        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        active={editor.isActive("heading", { level: 2 })}
-        title="Heading 2"
-      >
-        H2
-      </ToolbarButton>
-      <ToolbarButton
-        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-        active={editor.isActive("heading", { level: 3 })}
-        title="Heading 3"
-      >
-        H3
-      </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+          active={editor.isActive("heading", { level: 1 })}
+          title="Heading 1"
+        >
+          H1
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          active={editor.isActive("heading", { level: 2 })}
+          title="Heading 2"
+        >
+          H2
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          active={editor.isActive("heading", { level: 3 })}
+          title="Heading 3"
+        >
+          H3
+        </ToolbarButton>
 
-      <Divider />
+        <Divider />
 
-      <ToolbarButton
-        onClick={() => editor.chain().focus().toggleBulletList().run()}
-        active={editor.isActive("bulletList")}
-        title="Bullet list"
-      >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
-        </svg>
-      </ToolbarButton>
-      <ToolbarButton
-        onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        active={editor.isActive("orderedList")}
-        title="Ordered list"
-      >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h1v4M4 6H3m1 4H3m0 0h2M3 14h2l-2 3h2M8 8h13M8 14h13" />
-        </svg>
-      </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          active={editor.isActive("bulletList")}
+          title="Bullet list"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+          </svg>
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          active={editor.isActive("orderedList")}
+          title="Ordered list"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h1v4M4 6H3m1 4H3m0 0h2M3 14h2l-2 3h2M8 8h13M8 14h13" />
+          </svg>
+        </ToolbarButton>
 
-      <Divider />
+        <Divider />
 
-      <ToolbarButton
-        onClick={() => editor.chain().focus().toggleBlockquote().run()}
-        active={editor.isActive("blockquote")}
-        title="Blockquote"
-      >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-        </svg>
-      </ToolbarButton>
-      <ToolbarButton
-        onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-        active={editor.isActive("codeBlock")}
-        title="Code block"
-      >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-        </svg>
-      </ToolbarButton>
-      <ToolbarButton
-        onClick={() => editor.chain().focus().setHorizontalRule().run()}
-        active={false}
-        title="Horizontal rule"
-      >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M4 12h16" />
-        </svg>
-      </ToolbarButton>
-
-      <Divider />
-      <VoiceMicButton
-        onTranscript={handleTranscript}
-        entryId={entryId}
-        onSaved={onVoiceNoteSaved}
-      />
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          active={editor.isActive("blockquote")}
+          title="Blockquote"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+          </svg>
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+          active={editor.isActive("codeBlock")}
+          title="Code block"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+          </svg>
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setHorizontalRule().run()}
+          active={false}
+          title="Horizontal rule"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 12h16" />
+          </svg>
+        </ToolbarButton>
+      </div>
     </div>
   );
 }
@@ -186,9 +176,18 @@ export default function MarkdownEditor({
   placeholder,
   entryId,
   onVoiceNoteSaved,
+  onEditorReady,
+  aiOpen,
+  onAiToggle,
 }: MarkdownEditorProps) {
   const [isTyping, setIsTyping] = useState(false);
+  const [toolbarOpen, setToolbarOpen] = useState(false);
   const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onEditorReadyRef = useRef(onEditorReady);
+
+  useEffect(() => {
+    if (window.innerWidth >= 768) setToolbarOpen(true);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -220,10 +219,23 @@ export default function MarkdownEditor({
     onUpdate: handleUpdate,
     editorProps: {
       attributes: {
-        class: "fw-prose outline-none min-h-full px-6 py-4",
+        class: "fw-prose outline-none min-h-full px-6 py-4 pb-20 md:pb-4",
       },
     },
   });
+
+  const handleTranscript = useCallback((text: string) => {
+    editor?.chain().focus().insertContent({ type: "paragraph", content: [{ type: "text", text }] }).run();
+  }, [editor]);
+
+  // Expose insertText to parent for the mobile floating footer mic button
+  useEffect(() => {
+    if (!editor || !onEditorReadyRef.current) return;
+    onEditorReadyRef.current((text: string) => {
+      editor.chain().focus().insertContent({ type: "paragraph", content: [{ type: "text", text }] }).run();
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor]);
 
   // Sync when value changes externally (e.g. template applied)
   useEffect(() => {
@@ -235,12 +247,57 @@ export default function MarkdownEditor({
 
   return (
     <div className="flex flex-col flex-1 min-h-0 border border-foreground/20 rounded-xl overflow-hidden">
+      {/* Toolbar strip — Format toggle on the left, action pills on the right (desktop) */}
+      <div className="flex items-center justify-between px-3 py-1.5 border-b border-foreground/10 bg-card/50">
+        <button
+          type="button"
+          onMouseDown={(e) => { e.preventDefault(); setToolbarOpen((v) => !v); }}
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs transition-colors ${
+            toolbarOpen
+              ? "bg-primary/10 text-primary"
+              : "text-foreground/40 hover:text-foreground hover:bg-foreground/8"
+          }`}
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
+          </svg>
+          Format
+        </button>
+        {/* Action pills — desktop only (mobile has floating footer) */}
+        <div className="hidden md:flex items-center gap-2">
+          <VoiceMicButton
+            pill
+            onTranscript={handleTranscript}
+            entryId={entryId}
+            onSaved={onVoiceNoteSaved}
+          />
+          {onAiToggle && (
+            <button
+              type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={onAiToggle}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-colors ${
+                aiOpen
+                  ? "bg-primary text-white"
+                  : "text-foreground/50 hover:text-foreground bg-foreground/5 hover:bg-foreground/10"
+              }`}
+            >
+              <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+              </svg>
+              AI
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Toolbar — toggle-controlled on all screen sizes */}
       <div
         className={`transition-opacity duration-500 hover:opacity-100 ${
           isTyping ? "opacity-[0.15]" : "opacity-100"
-        }`}
+        } ${toolbarOpen ? "block" : "hidden"}`}
       >
-        <Toolbar editor={editor} entryId={entryId} onVoiceNoteSaved={onVoiceNoteSaved} />
+        <Toolbar editor={editor} />
       </div>
       <EditorContent editor={editor} className="flex-1 overflow-y-auto" />
     </div>

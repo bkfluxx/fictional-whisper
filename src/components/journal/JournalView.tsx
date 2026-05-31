@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import EntryPane from "./EntryPane";
+import CategoryIcon from "@/components/icons/CategoryIcon";
 
 export interface CategoryLabel {
   id: string;
@@ -152,12 +153,13 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                             {e.categoryLabels.map((c) => (
                               <span
                                 key={c.id}
-                                className={`text-xs px-2 py-0.5 rounded-full ${
+                                className={`inline-flex items-center gap-1 text-xs pl-1.5 pr-2 py-0.5 rounded-full ${
                                   isFirst
                                     ? "bg-surface-dark-foreground/15 text-surface-dark-foreground/75"
                                     : "bg-primary/15 text-primary"
                                 }`}
                               >
+                                <CategoryIcon id={c.id} className="w-3 h-3 shrink-0" />
                                 {c.name}
                               </span>
                             ))}

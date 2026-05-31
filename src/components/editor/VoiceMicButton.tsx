@@ -8,6 +8,7 @@ interface VoiceMicButtonProps {
   onTranscript: (text: string) => void;
   entryId?: string;
   onSaved?: () => void;
+  pill?: boolean;
 }
 
 function formatDuration(ms: number) {
@@ -16,7 +17,7 @@ function formatDuration(ms: number) {
   return `${m}:${String(s % 60).padStart(2, "0")}`;
 }
 
-export default function VoiceMicButton({ onTranscript, entryId, onSaved }: VoiceMicButtonProps) {
+export default function VoiceMicButton({ onTranscript, entryId, onSaved, pill }: VoiceMicButtonProps) {
   const [state, setState] = useState<RecordState>("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [duration, setDuration] = useState(0); // ms elapsed while recording
@@ -165,12 +166,16 @@ export default function VoiceMicButton({ onTranscript, entryId, onSaved }: Voice
         onMouseDown={(e) => e.preventDefault()}
         onClick={startRecording}
         title="Record voice note"
-        className="px-1.5 py-1 rounded text-sm text-foreground/60 hover:text-foreground hover:bg-foreground/8 transition-colors ml-auto"
+        className={pill
+          ? "flex items-center gap-2 px-4 py-2 rounded-full text-sm text-foreground/50 hover:text-foreground bg-foreground/5 hover:bg-foreground/10 transition-colors"
+          : "px-1.5 py-1 rounded text-sm text-foreground/60 hover:text-foreground hover:bg-foreground/8 transition-colors ml-auto"
+        }
       >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
           <path strokeLinecap="round" strokeLinejoin="round"
             d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" />
         </svg>
+        {pill && "Mic"}
       </button>
     );
   }
@@ -178,7 +183,7 @@ export default function VoiceMicButton({ onTranscript, entryId, onSaved }: Voice
   // ── Recording: timer + stop ─────────────────────────────────────────────────
   if (state === "recording") {
     return (
-      <div className="ml-auto flex items-center gap-2">
+      <div className={pill ? "flex items-center gap-2" : "ml-auto flex items-center gap-2"}>
         <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0" />
         <span className="text-xs text-red-500 tabular-nums">{formatDuration(duration)}</span>
         <button
@@ -186,7 +191,10 @@ export default function VoiceMicButton({ onTranscript, entryId, onSaved }: Voice
           onMouseDown={(e) => e.preventDefault()}
           onClick={stopRecording}
           title="Stop recording"
-          className="px-2 py-1 rounded text-xs bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
+          className={pill
+            ? "px-3 py-1.5 rounded-full text-xs bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
+            : "px-2 py-1 rounded text-xs bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
+          }
         >
           Stop
         </button>

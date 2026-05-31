@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { AnyTemplate, BuiltInTemplate } from "@/lib/templates";
 import { BUILT_IN_TEMPLATES, BUILT_IN_TEMPLATE_GROUPS } from "@/lib/templates";
 import type { JournalTemplate } from "@prisma/client";
+import TemplateIcon from "@/components/icons/TemplateIcon";
 
 // Maps journaling intentions to built-in template IDs
 const INTENTION_TEMPLATE_MAP: Record<string, string[]> = {
@@ -54,7 +55,7 @@ function TemplateCard({ template }: { template: AnyTemplate }) {
       className="group flex flex-col gap-2 p-4 bg-card border border-border rounded-xl hover:border-foreground/30 hover:bg-foreground/8 transition-all"
     >
       <div className="flex items-center gap-2">
-        <span className="text-xl">{template.emoji}</span>
+        <TemplateIcon id={template.id} className="w-4 h-4 shrink-0 text-foreground/40" />
         <span className="text-sm font-medium text-foreground group-hover:text-primary/80 transition-colors">
           {template.title}
         </span>
