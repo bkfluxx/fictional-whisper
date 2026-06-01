@@ -81,16 +81,20 @@ export default async function TodayPage() {
 
   const now = new Date();
   const todayStr = now.toISOString().slice(0, 10);
-  const yesterdayStr = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
 
-  const [allDates, recentEntries] = await Promise.all([
+  const [allDates, todayEntries] = await Promise.all([
     prisma.entry.findMany({
       select: { entryDate: true },
       orderBy: { entryDate: "asc" },
     }),
     prisma.entry.findMany({
-      orderBy: { entryDate: "desc" },
-      take: 1,
+      where: {
+        entryDate: {
+          gte: new Date(todayStr + "T00:00:00.000Z"),
+          lte: new Date(todayStr + "T23:59:59.999Z"),
+        },
+      },
+      orderBy: { createdAt: "desc" },
       include: { tags: { select: { name: true } } },
     }),
   ]);
@@ -98,24 +102,13 @@ export default async function TodayPage() {
   const streak = computeStreak(allDates.map((e) => e.entryDate));
   const allEntryDates = allDates.map((e) => e.entryDate.toISOString().slice(0, 10));
 
-  const recentEntry = recentEntries[0] ?? null;
-  const recentTitle = recentEntry?.title ? decryptString(recentEntry.title, dek) : null;
-  const recentPreview = recentEntry
-    ? textPreview(decryptString(recentEntry.body, dek))
-    : null;
-
-  let recentLabel = "";
-  if (recentEntry) {
-    const d = recentEntry.entryDate.toISOString().slice(0, 10);
-    if (d === todayStr) recentLabel = "Today";
-    else if (d === yesterdayStr) recentLabel = "Yesterday";
-    else
-      recentLabel = recentEntry.entryDate.toLocaleDateString("en-US", {
-        weekday: "long",
-        month: "short",
-        day: "numeric",
-      });
-  }
+  const todayDecrypted = todayEntries.map((e) => ({
+    id: e.id,
+    isPrivate: e.isPrivate,
+    mood: e.mood,
+    title: e.title ? decryptString(e.title, dek) : null,
+    preview: textPreview(decryptString(e.body, dek)),
+  }));
 
   const todayLabel = now.toLocaleDateString("en-US", {
     weekday: "long",
@@ -168,40 +161,44 @@ export default async function TodayPage() {
       {/* Mini calendar */}
       <MiniCalendar entryDates={allEntryDates} todayStr={todayStr} />
 
-      {/* Most recent entry */}
-      {recentEntry && (
+      {/* Today's entries */}
+      {todayDecrypted.length > 0 && (
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-foreground/40 mb-3">
-            {recentLabel}
+            Today · {todayDecrypted.length} {todayDecrypted.length === 1 ? "entry" : "entries"}
           </p>
-          <Link
-            href={`/journal/${recentEntry.id}`}
-            className="block bg-card border border-border rounded-xl px-5 py-4 hover:bg-foreground/[0.02] transition-colors"
-          >
-            <div className="flex items-center gap-2 mb-1.5">
-              {recentEntry.mood && (
-                <span className="text-xs text-foreground/50 capitalize">
-                  {recentEntry.mood}
-                </span>
-              )}
-              <span className="text-xs text-foreground/35">
-                {recentEntry.entryDate.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                })}
-              </span>
-            </div>
-            <p className="text-sm font-semibold text-foreground mb-1">
-              {recentTitle ?? (
-                <span className="italic font-normal text-foreground/40">Untitled</span>
-              )}
-            </p>
-            {recentPreview && (
-              <p className="text-xs text-foreground/50 leading-relaxed line-clamp-2">
-                {recentPreview}
-              </p>
-            )}
-          </Link>
+          <div className="space-y-2">
+            {todayDecrypted.map((entry) => (
+              <Link
+                key={entry.id}
+                href={`/journal/${entry.id}`}
+                className="block bg-card border border-border rounded-xl px-5 py-4 hover:bg-foreground/[0.02] transition-colors"
+              >
+                {entry.mood && (
+                  <span className="text-xs text-foreground/50 capitalize block mb-1">
+                    {entry.mood}
+                  </span>
+                )}
+                <div className="flex items-center gap-2 mb-1">
+                  <p className={`text-sm font-semibold text-foreground ${entry.isPrivate ? "blur-sm select-none" : ""}`}>
+                    {entry.title ?? (
+                      <span className="italic font-normal text-foreground/40">Untitled</span>
+                    )}
+                  </p>
+                  {entry.isPrivate && (
+                    <svg className="w-3.5 h-3.5 shrink-0 text-foreground/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                    </svg>
+                  )}
+                </div>
+                {entry.preview && (
+                  <p className={`text-xs text-foreground/50 leading-relaxed line-clamp-2 ${entry.isPrivate ? "blur-sm select-none" : ""}`}>
+                    {entry.preview}
+                  </p>
+                )}
+              </Link>
+            ))}
+          </div>
         </div>
       )}
     </div>

@@ -33,6 +33,7 @@ export default async function EditEntryPage({
     mood: entry.mood,
     categories: entry.categories,
     tags: entry.tags,
+    isPrivate: entry.isPrivate,
   };
 
   return (

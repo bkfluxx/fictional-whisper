@@ -46,6 +46,8 @@ model Entry {
   tags        Tag[]         @relation("EntryTags")
   attachments Attachment[]
   tokens      SearchToken[]
+  // Privacy flag — if true, content is blurred in list and reading views until revealed
+  isPrivate   Boolean       @default(false)
   // AI-generated fields (Phase 2). summary is encrypted; aiMood is a plain slug.
   summary     String?
   aiMood      String?

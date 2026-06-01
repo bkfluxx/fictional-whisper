@@ -72,7 +72,7 @@ export default async function JournalPage({
       },
       include: {
         tags: { select: { id: true, name: true } },
-        _count: { select: { attachments: true } },
+        attachments: { select: { mimeType: true } },
       },
       orderBy: { entryDate: "desc" },
       take: 100,
@@ -95,7 +95,7 @@ export default async function JournalPage({
     const title = e.title ? decryptString(e.title, dek) : null;
     const body = decryptString(e.body, dek);
     const preview = textPreview(body);
-    const hasVoice = e._count.attachments > 0;
+    const hasVoice = e.attachments.some((a) => a.mimeType.startsWith("audio/"));
 
     // Resolve each category ID to a label — built-in types first, then user categories
     const categoryLabels: CategoryLabel[] = e.categories.map((id) => {
@@ -115,6 +115,7 @@ export default async function JournalPage({
       mood: e.mood,
       categoryLabels,
       tags: e.tags,
+      isPrivate: e.isPrivate,
     });
   }
   const days = [...grouped.values()];

@@ -48,6 +48,7 @@ export async function GET(req: NextRequest) {
     mood: e.mood,
     categories: e.categories,
     tags: e.tags,
+    isPrivate: e.isPrivate,
   }));
 
   return NextResponse.json(stubs);
@@ -74,6 +75,7 @@ export async function POST(req: NextRequest) {
       body: encryptString(body.body, dek),
       mood: body.mood ?? null,
       categories: body.categories ?? [],
+      isPrivate: body.isPrivate ?? false,
       tags: {
         connectOrCreate: allTags.map((name) => ({
           where: { name },
@@ -102,6 +104,7 @@ export async function POST(req: NextRequest) {
       mood: entry.mood,
       categories: entry.categories,
       tags: entry.tags,
+      isPrivate: entry.isPrivate,
     },
     { status: 201 },
   );

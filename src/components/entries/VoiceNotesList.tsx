@@ -23,7 +23,10 @@ export default function VoiceNotesList({ entryId, refreshKey, onTranscript }: Pr
   const load = useCallback(async () => {
     try {
       const res = await fetch(`/api/entries/${entryId}/attachments`);
-      if (res.ok) setNotes(await res.json());
+      if (res.ok) {
+        const all: VoiceNote[] = await res.json();
+        setNotes(all.filter((a) => a.mimeType.startsWith("audio/")));
+      }
     } catch {
       // silent — list just stays empty
     }

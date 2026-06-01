@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { decryptString } from "@/lib/crypto";
 import { getJournalType } from "@/lib/journal-types";
 import VoiceNotesList from "@/components/entries/VoiceNotesList";
+import PrivateReveal from "@/components/entries/PrivateReveal";
 import CategoryIcon from "@/components/icons/CategoryIcon";
 
 export default async function EntryViewPage({
@@ -80,12 +81,15 @@ export default async function EntryViewPage({
             {entry.mood}
           </span>
         )}
+        {entry.isPrivate && (
+          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 bg-foreground/8 text-foreground/50 rounded-full">
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+            </svg>
+            Private
+          </span>
+        )}
       </div>
-
-      {/* Title */}
-      <h1 className="text-3xl font-heading font-normal text-foreground leading-snug mb-6">
-        {title ?? <span className="text-foreground/30 italic">Untitled</span>}
-      </h1>
 
       {/* Categories + tags */}
       {(entry.categories.length > 0 || entry.tags.length > 0) && (
@@ -111,8 +115,8 @@ export default async function EntryViewPage({
 
       <div className="border-t border-border mb-8" />
 
-      {/* Body */}
-      <div className="fw-prose max-w-none" dangerouslySetInnerHTML={{ __html: body }} />
+      {/* Title + body — blurred behind reveal if private */}
+      <PrivateReveal isPrivate={entry.isPrivate} title={title} html={body} />
 
       {entry._count.attachments > 0 && (
         <div className="mt-10 pt-8 border-t border-border">

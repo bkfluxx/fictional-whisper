@@ -45,21 +45,35 @@ export async function POST(
   }
 
   const audio = formData.get("audio");
-  if (!audio || !(audio instanceof Blob)) {
-    return NextResponse.json({ error: "Missing audio field" }, { status: 400 });
+  const image = formData.get("image");
+  const fileBlob = audio instanceof Blob ? audio : image instanceof Blob ? image : null;
+  const fileKind: "audio" | "image" = audio instanceof Blob ? "audio" : "image";
+
+  if (!fileBlob) {
+    return NextResponse.json({ error: "Missing audio or image field" }, { status: 400 });
   }
 
-  if (audio.size > MAX_SIZE) {
-    return NextResponse.json({ error: "Audio exceeds 10 MB limit" }, { status: 413 });
+  if (fileBlob.size > MAX_SIZE) {
+    return NextResponse.json({ error: "File exceeds 10 MB limit" }, { status: 413 });
+  }
+
+  if (fileKind === "image" && !fileBlob.type.startsWith("image/")) {
+    return NextResponse.json({ error: "Invalid image type" }, { status: 400 });
   }
 
   try {
-    const plain = Buffer.from(await audio.arrayBuffer());
+    const plain = Buffer.from(await fileBlob.arrayBuffer());
     const encrypted = aesEncrypt(plain, dek);
 
-    const mimeType = audio.type || "audio/webm";
-    const ext = mimeType.includes("ogg") ? "ogg" : mimeType.includes("mp4") ? "m4a" : "webm";
-    const filename = `voice-note-${Date.now()}.${ext}`;
+    let filename: string;
+    const mimeType = fileBlob.type || (fileKind === "audio" ? "audio/webm" : "image/png");
+    if (fileKind === "image") {
+      const ext = mimeType.split("/")[1]?.replace("jpeg", "jpg") ?? "png";
+      filename = `image-${Date.now()}.${ext}`;
+    } else {
+      const ext = mimeType.includes("ogg") ? "ogg" : mimeType.includes("mp4") ? "m4a" : "webm";
+      filename = `voice-note-${Date.now()}.${ext}`;
+    }
 
     const attachment = await prisma.attachment.create({
       data: { entryId: id, filename, mimeType, data: encrypted },
@@ -68,7 +82,7 @@ export async function POST(
 
     return NextResponse.json(attachment, { status: 201 });
   } catch (err) {
-    logger.error("Failed to save voice note attachment", err);
+    logger.error("Failed to save attachment", err);
     return NextResponse.json({ error: "Failed to save attachment" }, { status: 500 });
   }
 }

@@ -71,6 +71,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const fromStr: string | undefined = body.from;
   const toStr: string | undefined = body.to;
+  const includePrivate: boolean = body.includePrivate === true;
 
   if (!fromStr || !toStr) {
     return NextResponse.json(
@@ -102,7 +103,10 @@ export async function POST(req: NextRequest) {
   }
 
   const entries = await prisma.entry.findMany({
-    where: { entryDate: { gte: rangeFrom, lte: rangeTo } },
+    where: {
+      entryDate: { gte: rangeFrom, lte: rangeTo },
+      ...(includePrivate ? {} : { isPrivate: false }),
+    },
     select: { entryDate: true, title: true, body: true, mood: true },
     orderBy: { entryDate: "asc" },
   });

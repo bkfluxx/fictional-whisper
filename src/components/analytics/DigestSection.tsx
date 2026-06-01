@@ -60,12 +60,17 @@ export default function DigestSection({ initial, all }: DigestSectionProps) {
   const [latest, setLatest] = useState<Digest | null>(initial);
   const [history, setHistory] = useState<Digest[]>(all);
   const [error, setError] = useState<string | null>(null);
+  const [includePrivate, setIncludePrivate] = useState(false);
 
   async function generate() {
     setGenerating(true);
     setError(null);
     try {
-      const res = await fetch("/api/ai/digest", { method: "POST" });
+      const res = await fetch("/api/ai/digest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ includePrivate }),
+      });
       let data: Record<string, unknown> = {};
       try { data = await res.json(); } catch { /* non-JSON response */ }
       if (!res.ok) {
@@ -113,7 +118,7 @@ export default function DigestSection({ initial, all }: DigestSectionProps) {
 
   return (
     <section className="mb-10">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-2">
         <h2 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest">
           Weekly digest
         </h2>
@@ -124,6 +129,20 @@ export default function DigestSection({ initial, all }: DigestSectionProps) {
         >
           {generating ? "Generating…" : hasThisWeek ? "Regenerate" : "Generate this week"}
         </button>
+      </div>
+
+      <div className="flex items-center gap-2.5 mb-4">
+        <button
+          onClick={() => setIncludePrivate((v) => !v)}
+          className={`relative inline-flex shrink-0 h-6 w-11 items-center rounded-full transition-colors ${
+            includePrivate ? "bg-primary" : "bg-muted"
+          }`}
+        >
+          <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+            includePrivate ? "translate-x-6" : "translate-x-1"
+          }`} />
+        </button>
+        <span className="text-xs text-foreground/50">Include private entries</span>
       </div>
 
       {error && (

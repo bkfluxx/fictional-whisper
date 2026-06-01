@@ -20,6 +20,7 @@ export interface EntryListItem {
   mood: string | null;
   categoryLabels: CategoryLabel[];
   tags: { id: string; name: string }[];
+  isPrivate: boolean;
 }
 
 export interface DayGroup {
@@ -92,7 +93,7 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                       <div className="flex-1 px-5 py-4 min-w-0">
                         <div className="flex items-start justify-between gap-3">
                           <span
-                            className={`text-sm font-semibold leading-snug ${
+                            className={`text-sm font-semibold leading-snug ${e.isPrivate ? "blur-sm select-none" : ""} ${
                               isFirst ? "text-surface-dark-foreground" : "text-foreground"
                             }`}
                           >
@@ -106,7 +107,14 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                               </span>
                             )}
                           </span>
-                          {firstCat && (
+                          {e.isPrivate ? (
+                            <svg
+                              className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${isFirst ? "text-surface-dark-foreground/50" : "text-foreground/40"}`}
+                              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                            </svg>
+                          ) : firstCat ? (
                             <span
                               className={`text-[10px] px-1.5 py-0.5 rounded font-medium shrink-0 ${
                                 isFirst
@@ -116,7 +124,7 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                             >
                               {firstCat.name}
                             </span>
-                          )}
+                          ) : null}
                         </div>
 
                         {e.isVoiceOnly ? (
@@ -129,7 +137,7 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                           </p>
                         ) : e.preview ? (
                           <p
-                            className={`text-xs mt-1.5 leading-relaxed line-clamp-2 ${
+                            className={`text-xs mt-1.5 leading-relaxed line-clamp-2 ${e.isPrivate ? "blur-sm select-none" : ""} ${
                               isFirst ? "text-surface-dark-foreground/60" : "text-foreground/50"
                             }`}
                           >
@@ -138,7 +146,7 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                         ) : null}
 
                         {(e.categoryLabels.length > 0 || e.tags.length > 0 || e.mood) && (
-                          <div className="flex gap-1 mt-3 flex-wrap items-center">
+                          <div className={`flex gap-1 mt-3 flex-wrap items-center ${e.isPrivate ? "blur-sm select-none" : ""}`}>
                             {e.mood && (
                               <span
                                 className={`text-xs px-2 py-0.5 rounded-full capitalize ${

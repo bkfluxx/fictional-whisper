@@ -56,12 +56,16 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
   const [deleting, setDeleting] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(initial?.isPrivate ?? false);
+  const isPrivateRef = useRef(initial?.isPrivate ?? false);
   const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
   const entryIdRef = useRef<string | null>(initial?.id ?? null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLTextAreaElement>(null);
   const insertTextRef = useRef<((text: string) => void) | null>(null);
+  const triggerImagePickerRef = useRef<(() => void) | null>(null);
+  const [imageUploading, setImageUploading] = useState(false);
 
   const resizeTitle = useCallback(() => {
     const el = titleRef.current;
@@ -93,6 +97,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
         mood: currentMood || undefined,
         categories: currentCategories,
         entryDate: currentEntryDate,
+        isPrivate: isPrivateRef.current,
       };
 
       try {
@@ -133,6 +138,54 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
     },
     [save],
   );
+
+  const togglePrivate = useCallback(async () => {
+    const next = !isPrivateRef.current;
+    isPrivateRef.current = next;
+    setIsPrivate(next);
+    // If the entry doesn't exist yet, isPrivateRef will be picked up on first save
+    if (!entryIdRef.current) return;
+    try {
+      const res = await fetch(`/api/entries/${entryIdRef.current}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isPrivate: next }),
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      isPrivateRef.current = !next;
+      setIsPrivate(!next);
+      toast.error("Failed to update privacy");
+    }
+  }, []);
+
+  const handleImageInsert = useCallback(async (file: File): Promise<string | null> => {
+    let id = entryIdRef.current;
+    if (!id) {
+      // Force-save first so we have an entry to attach to
+      await save(body, title, tags, mood, categories, entryDate, false);
+      id = entryIdRef.current;
+      if (!id) {
+        toast.error("Save the entry before attaching images");
+        return null;
+      }
+    }
+    setImageUploading(true);
+    try {
+      const form = new FormData();
+      form.append("image", file);
+      const res = await fetch(`/api/entries/${id}/attachments`, { method: "POST", body: form });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      return `/api/entries/${id}/attachments/${data.id}`;
+    } catch {
+      toast.error("Failed to upload image");
+      return null;
+    } finally {
+      setImageUploading(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [body, title, tags, mood, categories, entryDate, save]);
 
   function toggleCategory(id: string) {
     const next = categories.includes(id)
@@ -386,8 +439,12 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
             entryId={entryId ?? undefined}
             onVoiceNoteSaved={() => setVoiceNoteRefreshKey((k) => k + 1)}
             onEditorReady={(fn) => { insertTextRef.current = fn; }}
+            onImageInsert={handleImageInsert}
+            onImagePickerReady={(fn) => { triggerImagePickerRef.current = fn; }}
             aiOpen={aiOpen}
             onAiToggle={() => setAiOpen((o) => !o)}
+            isPrivate={isPrivate}
+            onPrivateToggle={togglePrivate}
           />
         </div>
 
@@ -405,7 +462,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
         )}
       </div>
 
-      {/* Mobile floating footer — mic + AI toggle */}
+      {/* Mobile floating footer — mic + Private + AI toggle */}
       <div
         className="md:hidden fixed bottom-0 left-0 right-0 z-20 flex items-center justify-around px-8 py-3 bg-background/95 backdrop-blur-sm border-t border-border"
         style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
@@ -417,8 +474,30 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
           onSaved={() => setVoiceNoteRefreshKey((k) => k + 1)}
         />
         <button
+          onClick={() => triggerImagePickerRef.current?.()}
+          disabled={imageUploading}
+          className="flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-colors text-foreground/50 hover:text-foreground bg-foreground/5 hover:bg-foreground/10 disabled:opacity-40"
+        >
+          <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+          </svg>
+          {imageUploading ? "Uploading…" : "Image"}
+        </button>
+        <button
+          onClick={togglePrivate}
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-colors ${
+            isPrivate
+              ? "bg-foreground/20 text-foreground"
+              : "text-foreground/50 hover:text-foreground bg-foreground/5 hover:bg-foreground/10"
+          }`}
+        >
+          <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+          </svg>
+          Private
+        </button>
+        <button
           onClick={() => setAiOpen((o) => !o)}
-          title="AI assistant"
           className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-colors ${
             aiOpen
               ? "bg-primary text-white"

@@ -36,6 +36,7 @@ export async function GET(
     mood: entry.mood,
     categories: entry.categories,
     tags: entry.tags,
+    isPrivate: entry.isPrivate,
   };
 
   return NextResponse.json(result);
@@ -73,6 +74,7 @@ export async function PATCH(
         : {}),
       ...(body.mood !== undefined ? { mood: body.mood } : {}),
       ...(body.categories !== undefined ? { categories: body.categories } : {}),
+      ...(body.isPrivate !== undefined ? { isPrivate: body.isPrivate } : {}),
       ...(allTags.length > 0
         ? {
             tags: {
@@ -114,6 +116,7 @@ export async function PATCH(
     mood: updated.mood,
     categories: updated.categories,
     tags: updated.tags,
+    isPrivate: updated.isPrivate,
   });
 }
 

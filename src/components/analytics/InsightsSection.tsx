@@ -99,6 +99,7 @@ export default function InsightsSection({ initial }: InsightsSectionProps) {
   const [insight, setInsight] = useState<Insight | null>(initial);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [includePrivate, setIncludePrivate] = useState(false);
 
   const [from, setFrom] = useState(
     initial ? initial.rangeFrom.slice(0, 10) : thirtyDaysAgoStr(),
@@ -119,7 +120,7 @@ export default function InsightsSection({ initial }: InsightsSectionProps) {
       const res = await fetch("/api/ai/insights", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ from, to }),
+        body: JSON.stringify({ from, to, includePrivate }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -178,6 +179,20 @@ export default function InsightsSection({ initial }: InsightsSectionProps) {
                 : "Generate insights"}
           </button>
         </div>
+      </div>
+
+      <div className="flex items-center gap-2.5 mb-5">
+        <button
+          onClick={() => setIncludePrivate((v) => !v)}
+          className={`relative inline-flex shrink-0 h-6 w-11 items-center rounded-full transition-colors ${
+            includePrivate ? "bg-primary" : "bg-muted"
+          }`}
+        >
+          <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+            includePrivate ? "translate-x-6" : "translate-x-1"
+          }`} />
+        </button>
+        <span className="text-xs text-foreground/50">Include private entries</span>
       </div>
 
       {error && (

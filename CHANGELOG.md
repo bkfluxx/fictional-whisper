@@ -4,6 +4,23 @@ All notable changes to Aura will be documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.7.6] - 2026-06-01
+
+### Added
+
+- Private entries — entries can be marked private via a lock pill button (desktop toolbar + mobile footer); private entries are blurred in the journal list, reading pane, full reading page, and Today page with a tap-to-reveal interaction; private entries are excluded from weekly digest and AI insights by default with an "Include private entries" toggle on those pages
+- Image uploads — images can be attached to entries via a file picker (desktop + mobile) or by pasting directly from the clipboard (Cmd+V / long-press paste); images are encrypted at rest alongside the entry body and render inline in the editor and reading view
+
+### Changed
+
+- Today page — the "recent entry" card below the calendar now shows all entries written today (newest first) with an entry count, rather than the single most recent entry across all dates
+
+### Fixed
+
+- Voice notes section — no longer shows image attachments as blank audio players; filtered to `audio/*` mime types only
+- Journal list — mic icon no longer appears on entries that have image attachments but no voice notes
+- Image paste on iOS — clipboard items iterated correctly so a multi-representation pasteboard doesn't trigger duplicate uploads
+
 ## [0.7.5] - 2026-05-31
 
 ### Added

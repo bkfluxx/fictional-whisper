@@ -122,6 +122,9 @@ export async function POST(req: NextRequest) {
   if (auth instanceof NextResponse) return auth;
   const { dek } = auth;
 
+  const body = await req.json().catch(() => ({}));
+  const includePrivate: boolean = body?.includePrivate === true;
+
   const { baseUrl, model } = await getOllamaConfig();
   if (!(await isOllamaAvailable(baseUrl))) {
     return NextResponse.json(
@@ -137,7 +140,10 @@ export async function POST(req: NextRequest) {
 
   const [entries, activeGoals] = await Promise.all([
     prisma.entry.findMany({
-      where: { entryDate: { gte: start, lte: end } },
+      where: {
+        entryDate: { gte: start, lte: end },
+        ...(includePrivate ? {} : { isPrivate: false }),
+      },
       select: { entryDate: true, title: true, body: true, mood: true },
       orderBy: { entryDate: "asc" },
     }),

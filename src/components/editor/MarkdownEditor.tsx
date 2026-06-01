@@ -4,6 +4,7 @@ import { useEffect, useCallback, useState, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
+import ImageExtension from "@tiptap/extension-image";
 import type { Editor } from "@tiptap/react";
 import VoiceMicButton from "./VoiceMicButton";
 
@@ -16,6 +17,10 @@ interface MarkdownEditorProps {
   onEditorReady?: (insertText: (text: string) => void) => void;
   aiOpen?: boolean;
   onAiToggle?: () => void;
+  isPrivate?: boolean;
+  onPrivateToggle?: () => void;
+  onImageInsert?: (file: File) => Promise<string | null>;
+  onImagePickerReady?: (trigger: () => void) => void;
 }
 
 // ── Toolbar ──────────────────────────────────────────────────────────────────
@@ -179,11 +184,20 @@ export default function MarkdownEditor({
   onEditorReady,
   aiOpen,
   onAiToggle,
+  isPrivate,
+  onPrivateToggle,
+  onImageInsert,
+  onImagePickerReady,
 }: MarkdownEditorProps) {
   const [isTyping, setIsTyping] = useState(false);
   const [toolbarOpen, setToolbarOpen] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
   const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onEditorReadyRef = useRef(onEditorReady);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const onImageInsertRef = useRef(onImageInsert);
+  useEffect(() => { onImageInsertRef.current = onImageInsert; }, [onImageInsert]);
+  const editorRef = useRef<Editor | null>(null);
 
   useEffect(() => {
     if (window.innerWidth >= 768) setToolbarOpen(true);
@@ -214,6 +228,7 @@ export default function MarkdownEditor({
       Placeholder.configure({
         placeholder: placeholder ?? "Write something…",
       }),
+      ImageExtension.configure({ inline: false, allowBase64: false }),
     ],
     content: value || "",
     onUpdate: handleUpdate,
@@ -221,12 +236,49 @@ export default function MarkdownEditor({
       attributes: {
         class: "fw-prose outline-none min-h-full px-6 py-4 pb-20 md:pb-4",
       },
+      handlePaste: (_view, event) => {
+        const items = event.clipboardData?.items;
+        if (!items || !onImageInsertRef.current) return false;
+        // Take the first image item we find — stop immediately regardless of
+        // whether getAsFile() succeeds, so iOS multi-representation clipboards
+        // don't trigger a second upload.
+        const imageItem = Array.from(items).find((i) => i.type.startsWith("image/"));
+        if (!imageItem) return false;
+        const file = imageItem.getAsFile();
+        if (file) {
+          event.preventDefault();
+          uploadImage(file);
+        }
+        return true;
+      },
     },
   });
+
+  const uploadImage = useCallback(async (file: File) => {
+    if (!onImageInsertRef.current) return;
+    setImageUploading(true);
+    try {
+      const url = await onImageInsertRef.current(file);
+      if (url && editorRef.current) {
+        editorRef.current.chain().focus().setImage({ src: url }).createParagraphNear().run();
+      }
+    } finally {
+      setImageUploading(false);
+    }
+  }, []);
 
   const handleTranscript = useCallback((text: string) => {
     editor?.chain().focus().insertContent({ type: "paragraph", content: [{ type: "text", text }] }).run();
   }, [editor]);
+
+  useEffect(() => { editorRef.current = editor ?? null; }, [editor]);
+
+  useEffect(() => {
+    if (onImagePickerReady) {
+      onImagePickerReady(() => imageInputRef.current?.click());
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Expose insertText to parent for the mobile floating footer mic button
   useEffect(() => {
@@ -247,6 +299,17 @@ export default function MarkdownEditor({
 
   return (
     <div className="flex flex-col flex-1 min-h-0 border border-foreground/20 rounded-xl overflow-hidden">
+      <input
+        ref={imageInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) uploadImage(file);
+          e.target.value = "";
+        }}
+      />
       {/* Toolbar strip — Format toggle on the left, action pills on the right (desktop) */}
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-foreground/10 bg-card/50">
         <button
@@ -271,6 +334,37 @@ export default function MarkdownEditor({
             entryId={entryId}
             onSaved={onVoiceNoteSaved}
           />
+          {onImageInsert && (
+            <button
+              type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => imageInputRef.current?.click()}
+              disabled={imageUploading}
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-colors text-foreground/50 hover:text-foreground bg-foreground/5 hover:bg-foreground/10 disabled:opacity-40"
+            >
+              <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+              </svg>
+              {imageUploading ? "Uploading…" : "Image"}
+            </button>
+          )}
+          {onPrivateToggle && (
+            <button
+              type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={onPrivateToggle}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-colors ${
+                isPrivate
+                  ? "bg-foreground/20 text-foreground"
+                  : "text-foreground/50 hover:text-foreground bg-foreground/5 hover:bg-foreground/10"
+              }`}
+            >
+              <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+              </svg>
+              Private
+            </button>
+          )}
           {onAiToggle && (
             <button
               type="button"
