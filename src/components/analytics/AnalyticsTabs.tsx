@@ -283,15 +283,15 @@ export default function AnalyticsTabs({
                     Goal progress
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                    <div className="bg-card rounded-xl p-4 text-center">
+                    <div className="bg-card border border-border rounded-xl p-4 text-center">
                       <p className="text-2xl font-semibold text-foreground">{activeGoals.length}</p>
                       <p className="text-xs text-foreground/40 mt-0.5">Active</p>
                     </div>
-                    <div className="bg-card rounded-xl p-4 text-center">
+                    <div className="bg-card border border-border rounded-xl p-4 text-center">
                       <p className="text-2xl font-semibold text-primary">{completedGoals.length}</p>
                       <p className="text-xs text-foreground/40 mt-0.5">Completed</p>
                     </div>
-                    <div className="bg-card rounded-xl p-4 text-center">
+                    <div className="bg-card border border-border rounded-xl p-4 text-center">
                       <p className="text-2xl font-semibold text-foreground">{completionRate}%</p>
                       <p className="text-xs text-foreground/40 mt-0.5">Completion rate</p>
                     </div>
@@ -322,7 +322,7 @@ export default function AnalyticsTabs({
                         return (
                           <div
                             key={g.id}
-                            className="flex items-center gap-3 bg-card rounded-lg px-3 py-2.5"
+                            className="flex items-center gap-3 bg-card rounded-lg px-3 py-2.5 min-h-[44px]"
                           >
                             <div
                               className={`w-2 h-2 rounded-full shrink-0 ${

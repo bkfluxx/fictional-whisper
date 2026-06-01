@@ -27,7 +27,7 @@ export default async function AppLayout({
   return (
     <div className="flex h-screen bg-background text-foreground overflow-hidden">
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex w-56 shrink-0 border-r border-border flex-col py-4 px-3">
+      <aside className="hidden md:flex w-56 shrink-0 border-r border-sidebar-border bg-sidebar flex-col py-4 px-3">
         <div className="flex items-center gap-2.5 px-3 mb-5">
           <Image src="/logo.jpg" alt="Aura" width={32} height={32} className="rounded-lg shrink-0" priority unoptimized />
           <span className="text-sm font-semibold text-foreground">Aura</span>

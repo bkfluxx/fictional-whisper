@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Lora, Roboto, Geist_Mono } from "next/font/google";
+import { Lora, Inter, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
@@ -10,10 +10,9 @@ const lora = Lora({
   display: "swap",
 });
 
-const roboto = Roboto({
-  variable: "--font-roboto",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "700"],
   display: "swap",
 });
 
@@ -42,7 +41,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${lora.variable} ${roboto.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${lora.variable} ${inter.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">

@@ -55,24 +55,24 @@ export default function MiniCalendar({ entryDates, todayStr }: Props) {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <button
             onClick={prev}
             disabled={isEarliestMonth}
-            className="p-1 rounded-md text-foreground/40 hover:text-foreground hover:bg-foreground/8 transition-colors disabled:opacity-20 disabled:cursor-default"
+            className="w-9 h-9 flex items-center justify-center rounded-md text-foreground/40 hover:text-foreground hover:bg-foreground/8 transition-colors disabled:opacity-20 disabled:cursor-default"
             aria-label="Previous month"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
               <path d="M15 18l-6-6 6-6" />
             </svg>
           </button>
-          <p className="text-xs font-semibold uppercase tracking-widest text-foreground/40 w-32 text-center">
+          <p className="text-xs font-semibold uppercase tracking-widest text-foreground/40 shrink-0 text-center px-1">
             {monthName}
           </p>
           <button
             onClick={next}
             disabled={isCurrentMonth}
-            className="p-1 rounded-md text-foreground/40 hover:text-foreground hover:bg-foreground/8 transition-colors disabled:opacity-20 disabled:cursor-default"
+            className="w-9 h-9 flex items-center justify-center rounded-md text-foreground/40 hover:text-foreground hover:bg-foreground/8 transition-colors disabled:opacity-20 disabled:cursor-default"
             aria-label="Next month"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
@@ -101,13 +101,13 @@ export default function MiniCalendar({ entryDates, todayStr }: Props) {
           const hasEntry = entrySet.has(dateStr);
           const isToday = dateStr === todayStr;
 
-          const cell = (
+          const circle = (
             <div
-              className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
                 isToday
                   ? "bg-primary text-primary-foreground"
                   : hasEntry
-                    ? "bg-tertiary text-tertiary-foreground hover:opacity-80 cursor-pointer"
+                    ? "bg-tertiary text-tertiary-foreground hover:opacity-80"
                     : "text-foreground/40"
               }`}
             >
@@ -115,15 +115,18 @@ export default function MiniCalendar({ entryDates, todayStr }: Props) {
             </div>
           );
 
-          return (
-            <div key={day} className="flex items-center justify-center py-0.5">
-              {hasEntry && !isToday ? (
-                <Link href={`/journal?from=${dateStr}&to=${dateStr}`} title={dateStr}>
-                  {cell}
-                </Link>
-              ) : (
-                cell
-              )}
+          return hasEntry && !isToday ? (
+            <Link
+              key={day}
+              href={`/journal?from=${dateStr}&to=${dateStr}`}
+              title={dateStr}
+              className="flex items-center justify-center py-1"
+            >
+              {circle}
+            </Link>
+          ) : (
+            <div key={day} className="flex items-center justify-center py-1">
+              {circle}
             </div>
           );
         })}

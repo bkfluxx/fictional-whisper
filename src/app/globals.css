@@ -6,7 +6,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: var(--font-roboto);
+  --font-sans: var(--font-inter);
   --font-heading: var(--font-lora);
   --font-mono: var(--font-geist-mono);
 
@@ -52,46 +52,46 @@
   --radius-2xl: calc(var(--radius) + 16px);
 }
 
-/* ── Default palette: Warm Cream · Ivory · Amber ────────────────────────────── */
-/* Light reference: bg=#F5F0E8 (oklch 0.960 0.018 82), ink=#2c2518 (oklch 0.165 0.028 62) */
+/* ── Default palette: Warm — cream bg, amber primary ─────────────────────────── */
+/* Matches the "warm" preset in theme.ts: baseH 78, baseC 0.025, themeH 55, bgL 0.965 */
 :root {
-  --background: oklch(0.960 0.018 82);
-  --foreground: oklch(0.165 0.028 62);
-  --card: oklch(0.996 0.005 82);
-  --card-foreground: oklch(0.165 0.028 62);
-  --popover: oklch(0.996 0.005 82);
-  --popover-foreground: oklch(0.165 0.028 62);
+  --background: oklch(0.965 0.010 78);
+  --foreground: oklch(0.130 0.015 78);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.130 0.015 78);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.130 0.015 78);
   --theme-hue: 55;
-  --primary: oklch(0.52 0.13 var(--theme-hue));
+  --primary: oklch(0.520 0.140 55);
   --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.930 0.020 80);
-  --secondary-foreground: oklch(0.22 0.022 62);
-  --muted: oklch(0.920 0.018 80);
-  --muted-foreground: oklch(0.48 0.014 72);
-  --accent: oklch(0.920 0.018 80);
-  --accent-foreground: oklch(0.22 0.022 62);
+  --secondary: oklch(0.950 0.013 78);
+  --secondary-foreground: oklch(0.200 0.013 78);
+  --muted: oklch(0.940 0.010 78);
+  --muted-foreground: oklch(0.480 0.008 78);
+  --accent: oklch(0.940 0.010 78);
+  --accent-foreground: oklch(0.200 0.013 78);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.880 0.016 80);
-  --input: oklch(0.880 0.016 80);
-  --ring: oklch(0.52 0.13 var(--theme-hue));
-  --tertiary: oklch(0.50 0.09 calc(var(--theme-hue) + 130));
-  --tertiary-foreground: oklch(0.97 0.005 calc(var(--theme-hue) + 130));
-  --surface-dark: oklch(0.28 0.07 var(--theme-hue));
-  --surface-dark-foreground: oklch(0.96 0.008 var(--theme-hue));
+  --border: oklch(0.905 0.008 78);
+  --input: oklch(0.905 0.008 78);
+  --ring: oklch(0.520 0.140 55);
+  --tertiary: oklch(0.50 0.09 185);
+  --tertiary-foreground: oklch(0.97 0.005 185);
+  --surface-dark: oklch(0.28 0.07 55);
+  --surface-dark-foreground: oklch(0.96 0.008 55);
   --radius: 0.75rem;
-  --chart-1: oklch(0.62 0.12 var(--theme-hue));
-  --chart-2: oklch(0.60 0.11 calc(var(--theme-hue) - 20));
-  --chart-3: oklch(0.65 0.07 calc(var(--theme-hue) + 20));
-  --chart-4: oklch(0.62 0.09 calc(var(--theme-hue) - 40));
-  --chart-5: oklch(0.55 0.09 calc(var(--theme-hue) + 275));
-  --sidebar: oklch(0.948 0.020 82);
-  --sidebar-foreground: oklch(0.165 0.028 62);
-  --sidebar-primary: oklch(0.52 0.13 var(--theme-hue));
+  --chart-1: oklch(0.62 0.119 70);
+  --chart-2: oklch(0.70 0.098 110);
+  --chart-3: oklch(0.55 0.112 40);
+  --chart-4: oklch(0.78 0.084 150);
+  --chart-5: oklch(0.50 0.126 220);
+  --sidebar: oklch(0.950 0.009 78);
+  --sidebar-foreground: oklch(0.130 0.015 78);
+  --sidebar-primary: oklch(0.520 0.140 55);
   --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.920 0.018 80);
-  --sidebar-accent-foreground: oklch(0.165 0.028 62);
-  --sidebar-border: oklch(0.880 0.016 80);
-  --sidebar-ring: oklch(0.52 0.13 var(--theme-hue));
+  --sidebar-accent: oklch(0.940 0.010 78);
+  --sidebar-accent-foreground: oklch(0.130 0.015 78);
+  --sidebar-border: oklch(0.905 0.008 78);
+  --sidebar-ring: oklch(0.520 0.140 55);
 }
 
 .dark {
@@ -159,7 +159,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-roboto), Arial, sans-serif;
+    font-family: var(--font-inter), system-ui, sans-serif;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-lora), Georgia, serif;
@@ -172,7 +172,7 @@
 .fw-prose {
   color: var(--foreground);
   line-height: 1.75;
-  font-size: 0.9375rem;
+  font-size: 1rem;
 }
 
 .fw-prose > * + * { margin-top: 0.75em; }
@@ -237,6 +237,7 @@
   padding: 1em;
   overflow-x: auto;
   margin: 0.75em 0;
+  max-width: 100%;
 }
 .fw-prose pre code {
   background: none;
@@ -258,6 +259,35 @@
   opacity: 0.3;
   pointer-events: none;
   height: 0;
+}
+
+/* Prevent iOS auto-zoom on input focus — iOS zooms whenever font-size < 16px */
+/* TipTap editor is a contenteditable div, handled via .fw-prose above.
+   Entry title textarea overrides this with an inline style. */
+@media (max-width: 767px) {
+  input, select, textarea {
+    font-size: 1rem;
+  }
+}
+
+/* Press micro-interaction — buttons get smooth press/release; links snap (avoids
+   overriding their transition-colors from Tailwind utilities) */
+button:not(:disabled) {
+  transition: transform 0.1s ease;
+}
+button:not(:disabled):active,
+a:active {
+  transform: scale(0.97);
+}
+
+/* Respect OS reduced-motion preference — disable all transitions and animations */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Mobile top bar offset — accounts for fixed h-14 bar + iOS PWA safe area inset */

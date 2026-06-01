@@ -60,7 +60,17 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
   const entryIdRef = useRef<string | null>(initial?.id ?? null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLTextAreaElement>(null);
   const insertTextRef = useRef<((text: string) => void) | null>(null);
+
+  const resizeTitle = useCallback(() => {
+    const el = titleRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  }, []);
+
+  useEffect(() => { resizeTitle(); }, [title, resizeTitle]);
 
   const save = useCallback(
     async (
@@ -173,19 +183,23 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
     <div className="flex h-full">
       {/* Main editor column */}
       <div className="flex flex-col flex-1 min-w-0 px-6 py-4 gap-4">
-        {/* Header row */}
-        <div className="flex items-center gap-4">
-          <input
-            type="text"
+        {/* Header row — stacks on mobile so title gets full width */}
+        <div className="flex flex-col gap-1 md:flex-row md:items-start md:gap-4">
+          <textarea
+            ref={titleRef}
             placeholder="Title (optional)"
             value={title}
+            rows={1}
             onChange={(e) => {
               setTitle(e.target.value);
               scheduleSave(body, e.target.value, tags, mood, categories, entryDate);
+              resizeTitle();
             }}
-            className="flex-1 bg-transparent text-2xl font-semibold text-foreground placeholder-foreground/30 focus:outline-none"
+            style={{ fontSize: '1.875rem' }}
+            aria-label="Entry title"
+            className="flex-1 min-w-0 w-full bg-transparent font-semibold text-foreground placeholder-foreground/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:rounded resize-none overflow-hidden leading-tight"
           />
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 md:shrink-0">
             {saveState === "unsaved" && (
               <button
                 onClick={() => {
@@ -197,19 +211,19 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
                 Save
               </button>
             )}
-            <span className="text-xs text-foreground/40">
+            <span aria-live="polite" className="text-xs text-foreground/40">
               {saveState === "saving"
                 ? "Saving…"
                 : saveState === "saved"
                   ? "Saved"
                   : saveState === "error"
-                    ? "Error saving"
+                    ? "Error"
                     : null}
             </span>
             {entryId && !deleteConfirm && (
               <button
                 onClick={() => setDeleteConfirm(true)}
-                title="Delete entry"
+                aria-label="Delete entry"
                 className="text-foreground/30 hover:text-red-400 transition-colors p-1"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
@@ -220,48 +234,53 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
           </div>
         </div>
 
-        {/* Metadata row */}
-        <div className="flex flex-wrap gap-3 text-sm text-foreground/60">
+        {/* Metadata row — stacks on mobile */}
+        <div className="flex flex-col gap-2 md:flex-row md:flex-wrap md:items-center md:gap-3 text-sm text-foreground/60">
           <input
             placeholder="Tags (comma-separated)"
+            aria-label="Tags"
             value={tags}
             onChange={(e) => {
               setTags(e.target.value);
               scheduleSave(body, title, e.target.value, mood, categories, entryDate);
             }}
-            className="bg-transparent focus:outline-none flex-1 min-w-[120px] placeholder-foreground/30"
+            className="bg-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:rounded w-full md:flex-1 md:min-w-[120px] placeholder-foreground/30"
           />
 
-          <input
-            type="date"
-            value={entryDate}
-            max={new Date().toISOString().slice(0, 10)}
-            onChange={(e) => {
-              const d = e.target.value;
-              if (!d) return;
-              setEntryDate(d);
-              scheduleSave(body, title, tags, mood, categories, d);
-            }}
-            className="bg-transparent text-foreground/60 text-sm focus:outline-none cursor-pointer"
-          />
+          <div className="flex items-center gap-3">
+            <input
+              type="date"
+              value={entryDate}
+              max={new Date().toISOString().slice(0, 10)}
+              onChange={(e) => {
+                const d = e.target.value;
+                if (!d) return;
+                setEntryDate(d);
+                scheduleSave(body, title, tags, mood, categories, d);
+              }}
+              aria-label="Entry date"
+              className="bg-transparent text-foreground/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:rounded cursor-pointer"
+            />
 
-          <select
-            value={mood}
-            onChange={(e) => {
-              setMood(e.target.value);
-              scheduleSave(body, title, tags, e.target.value, categories, entryDate);
-            }}
-            className="bg-card text-foreground/60 text-sm rounded focus:outline-none"
-          >
-            <option value="">Mood</option>
-            <option value="joyful">Joyful</option>
-            <option value="content">Content</option>
-            <option value="neutral">Neutral</option>
-            <option value="reflective">Reflective</option>
-            <option value="anxious">Anxious</option>
-            <option value="frustrated">Frustrated</option>
-            <option value="sad">Sad</option>
-          </select>
+            <select
+              value={mood}
+              onChange={(e) => {
+                setMood(e.target.value);
+                scheduleSave(body, title, tags, e.target.value, categories, entryDate);
+              }}
+              aria-label="Mood"
+              className="bg-card text-foreground/60 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            >
+              <option value="">Mood</option>
+              <option value="joyful">Joyful</option>
+              <option value="content">Content</option>
+              <option value="neutral">Neutral</option>
+              <option value="reflective">Reflective</option>
+              <option value="anxious">Anxious</option>
+              <option value="frustrated">Frustrated</option>
+              <option value="sad">Sad</option>
+            </select>
+          </div>
         </div>
 
         {/* Category chips + popover picker */}
@@ -294,13 +313,13 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
           <button
             type="button"
             onClick={() => setPickerOpen((o) => !o)}
-            className="text-xs px-2 py-0.5 text-foreground/30 hover:text-foreground/80 border border-border hover:border-foreground/30 rounded-full transition-colors"
+            className="text-xs px-2 py-1.5 text-foreground/30 hover:text-foreground/80 border border-border hover:border-foreground/30 rounded-full transition-colors"
           >
             + category
           </button>
 
           {pickerOpen && (
-            <div className="absolute top-full left-0 mt-1.5 z-20 bg-card border border-foreground/20 rounded-xl p-2 shadow-2xl w-72 max-h-72 overflow-y-auto">
+            <div className="absolute top-full left-0 mt-1.5 z-20 bg-card border border-foreground/20 rounded-xl p-2 shadow-2xl w-72 max-h-72 overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-150">
               {customCategories.length > 0 && (
                 <>
                   <p className="text-xs text-foreground/40 px-2 pt-1 pb-0.5 uppercase tracking-wider font-medium">My categories</p>
@@ -415,9 +434,10 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
 
       {/* Delete confirmation modal */}
       {deleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-6">
-          <div className="bg-card border border-foreground/15 rounded-2xl p-6 w-full max-w-xs shadow-2xl">
-            <p className="text-sm font-medium text-foreground mb-1">Delete this entry?</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-6 animate-in fade-in duration-150">
+          <div role="dialog" aria-modal="true" aria-labelledby="delete-dialog-title" className="bg-card border border-foreground/15 rounded-2xl p-6 w-full max-w-xs shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+
+            <p id="delete-dialog-title" className="text-sm font-medium text-foreground mb-1">Delete this entry?</p>
             <p className="text-xs text-foreground/50 mb-5">This action cannot be undone.</p>
             <div className="flex gap-2">
               <button

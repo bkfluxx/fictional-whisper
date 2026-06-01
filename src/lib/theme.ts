@@ -15,6 +15,7 @@
  */
 
 export type PaletteId =
+  | "warm"
   | "olive"
   | "ocean"
   | "rose"
@@ -54,6 +55,7 @@ function buildVars(
   themeC: number,
   themeH: number,
   chartH: number,
+  bgL = 0.99,
 ): { light: CssVars; dark: CssVars } {
   const bc = baseC;
   const darkPL = f(Math.min(themeL + 0.06, 0.75));
@@ -71,7 +73,7 @@ function buildVars(
     "--tertiary-foreground":     `oklch(0.97 0.005 ${tertH})`,
     "--surface-dark":            `oklch(0.28 0.07 ${Math.round(themeH)})`,
     "--surface-dark-foreground": `oklch(0.96 0.008 ${Math.round(themeH)})`,
-    "--background":              `oklch(0.99 ${f(bc * 0.4)} ${baseH})`,
+    "--background":              `oklch(${f(bgL)} ${f(bc * 0.4)} ${baseH})`,
     "--foreground":              `oklch(0.13 ${f(bc * 0.6)} ${baseH})`,
     "--card":                    `oklch(1 0 0)`,
     "--card-foreground":         `oklch(0.13 ${f(bc * 0.6)} ${baseH})`,
@@ -94,7 +96,7 @@ function buildVars(
     "--chart-3":                 `oklch(0.55 ${f(themeC * 0.80)} ${ch(-30)})`,
     "--chart-4":                 `oklch(0.78 ${f(themeC * 0.60)} ${ch(80)})`,
     "--chart-5":                 `oklch(0.50 ${f(themeC * 0.90)} ${ch(150)})`,
-    "--sidebar":                 `oklch(0.97 ${f(bc * 0.35)} ${baseH})`,
+    "--sidebar":                 `oklch(${f(Math.max(bgL - 0.015, 0.90))} ${f(bc * 0.35)} ${baseH})`,
     "--sidebar-foreground":      `oklch(0.13 ${f(bc * 0.6)} ${baseH})`,
     "--sidebar-primary":         `oklch(${f(themeL)} ${f(themeC)} ${themeH})`,
     "--sidebar-primary-foreground": pfg,
@@ -155,15 +157,17 @@ interface PresetDef {
   themeC: number;
   themeH: number;
   chartH: number;
+  bgL?: number;
 }
 
 const PRESET_DEFS: Record<Exclude<PaletteId, "custom">, PresetDef> = {
-  olive:  { baseH: 120, baseC: 0.04, themeL: 0.50, themeC: 0.14, themeH: 142, chartH: 152 },
-  ocean:  { baseH: 260, baseC: 0.02, themeL: 0.54, themeC: 0.22, themeH: 264, chartH: 220 },
-  rose:   { baseH: 10,  baseC: 0.04, themeL: 0.60, themeC: 0.22, themeH: 350, chartH: 27  },
-  amber:  { baseH: 85,  baseC: 0.05, themeL: 0.68, themeC: 0.18, themeH: 60,  chartH: 95  },
-  teal:   { baseH: 185, baseC: 0.04, themeL: 0.62, themeC: 0.16, themeH: 200, chartH: 155 },
-  violet: { baseH: 295, baseC: 0.03, themeL: 0.54, themeC: 0.24, themeH: 303, chartH: 285 },
+  warm:   { baseH: 78,  baseC: 0.025, themeL: 0.52, themeC: 0.14, themeH: 55,  chartH: 70,  bgL: 0.965 },
+  olive:  { baseH: 120, baseC: 0.04,  themeL: 0.50, themeC: 0.14, themeH: 142, chartH: 152 },
+  ocean:  { baseH: 260, baseC: 0.02,  themeL: 0.54, themeC: 0.22, themeH: 264, chartH: 220 },
+  rose:   { baseH: 10,  baseC: 0.04,  themeL: 0.60, themeC: 0.22, themeH: 350, chartH: 27  },
+  amber:  { baseH: 85,  baseC: 0.05,  themeL: 0.68, themeC: 0.18, themeH: 60,  chartH: 95  },
+  teal:   { baseH: 185, baseC: 0.04,  themeL: 0.62, themeC: 0.16, themeH: 200, chartH: 155 },
+  violet: { baseH: 295, baseC: 0.03,  themeL: 0.54, themeC: 0.24, themeH: 303, chartH: 285 },
 };
 
 export interface PalettePreset {
@@ -174,6 +178,12 @@ export interface PalettePreset {
 }
 
 export const PALETTE_PRESETS: PalettePreset[] = [
+  {
+    id: "warm",
+    label: "Warm",
+    description: "Cream · Amber · Gold",
+    swatches: ["oklch(0.965 0.010 78)", "oklch(0.52 0.14 55)", "oklch(0.62 0.119 70)"],
+  },
   {
     id: "olive",
     label: "Olive",
@@ -266,7 +276,7 @@ export function applyColorPalette(state: ColorThemeState) {
     vars = buildVars(baseH, 0.04, Math.max(themeL, 0.35), Math.max(themeC, 0.08), themeH, chartH);
   } else {
     const d = PRESET_DEFS[state.preset];
-    vars = buildVars(d.baseH, d.baseC, d.themeL, d.themeC, d.themeH, d.chartH);
+    vars = buildVars(d.baseH, d.baseC, d.themeL, d.themeC, d.themeH, d.chartH, d.bgL);
   }
 
   const css = buildCssString(vars);
@@ -310,5 +320,5 @@ export function loadSavedColorTheme(): ColorThemeState {
     const saved = localStorage.getItem(COLOR_THEME_KEY);
     if (saved) return JSON.parse(saved) as ColorThemeState;
   } catch (_) { /* */ }
-  return { preset: "olive" };
+  return { preset: "warm" };
 }

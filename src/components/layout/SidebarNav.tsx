@@ -110,7 +110,7 @@ export default function SidebarNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-col gap-0.5 flex-1 min-h-0 overflow-y-auto">
+    <nav className="flex flex-col gap-1 flex-1 min-h-0 overflow-y-auto">
       {MAIN_NAV.map((item) => {
         const isActive =
           item.href === "/journal"

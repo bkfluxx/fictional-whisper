@@ -128,26 +128,28 @@ function GoalCard({
   const days = goal.targetDate ? daysUntil(goal.targetDate) : null;
 
   return (
-    <div className={`bg-card border rounded-xl p-4 transition-opacity ${
+    <div className={`bg-card border border-border rounded-xl p-4 transition-opacity ${
       goal.status === "completed" ? "opacity-60" : ""
-    } border-foreground/10`}>
+    }`}>
       <div className="flex items-start gap-3">
-        {/* Checkbox */}
+        {/* Checkbox — 44px tap area, 20px visual */}
         <button
           onClick={() =>
             onStatusChange(goal.id, goal.status === "completed" ? "active" : "completed")
           }
-          className={`mt-0.5 shrink-0 w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors ${
+          className="shrink-0 -mt-1 -ml-1 w-9 h-9 flex items-center justify-center"
+        >
+          <span className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors ${
             goal.status === "completed"
               ? "bg-emerald-500 border-emerald-500"
               : "border-foreground/30 hover:border-primary"
-          }`}
-        >
-          {goal.status === "completed" && (
-            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-            </svg>
-          )}
+          }`}>
+            {goal.status === "completed" && (
+              <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+              </svg>
+            )}
+          </span>
         </button>
 
         <div className="flex-1 min-w-0">
@@ -155,7 +157,7 @@ function GoalCard({
             <span className={`text-sm font-medium text-foreground ${goal.status === "completed" ? "line-through" : ""}`}>
               {goal.title}
             </span>
-            <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${STATUS_STYLE[goal.status]}`}>
+            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_STYLE[goal.status]}`}>
               {STATUS_LABEL[goal.status]}
             </span>
           </div>
@@ -184,7 +186,9 @@ function GoalCard({
         <div className="relative shrink-0">
           <button
             onClick={() => setMenuOpen((o) => !o)}
-            className="p-1 text-foreground/30 hover:text-foreground transition-colors rounded"
+            aria-label="Goal options"
+            aria-expanded={menuOpen}
+            className="w-9 h-9 flex items-center justify-center -mt-1 -mr-1 text-foreground/30 hover:text-foreground transition-colors rounded-lg"
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <circle cx="12" cy="5" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="12" cy="19" r="1.5" />
@@ -192,7 +196,7 @@ function GoalCard({
           </button>
           {menuOpen && (
             <div
-              className="absolute right-0 top-6 z-10 bg-background border border-foreground/10 rounded-xl shadow-xl py-1 w-40"
+              className="absolute right-0 top-6 z-10 bg-background border border-foreground/10 rounded-xl shadow-xl py-1 w-40 animate-in fade-in slide-in-from-top-1 duration-100"
               onBlur={() => setMenuOpen(false)}
             >
               {(["active", "paused", "completed"] as Status[]).map((s) => (
@@ -327,12 +331,12 @@ export default function GoalsView() {
 
       {/* Filter tabs */}
       {goals.length > 0 && (
-        <div className="flex gap-1 mb-5 border-b border-foreground/10">
+        <div className="flex gap-1 mb-5 border-b border-foreground/10 overflow-x-auto">
           {(["active", "all", "completed"] as FilterTab[]).map((tab) => (
             <button
               key={tab}
               onClick={() => setFilter(tab)}
-              className={`px-3 py-2 text-sm font-medium border-b-2 -mb-px transition-colors capitalize ${
+              className={`shrink-0 px-3 py-2 text-sm font-medium border-b-2 -mb-px transition-colors capitalize ${
                 filter === tab
                   ? "border-primary text-foreground"
                   : "border-transparent text-foreground/40 hover:text-foreground/70"

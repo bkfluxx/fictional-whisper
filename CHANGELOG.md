@@ -4,6 +4,37 @@ All notable changes to Aura will be documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.7.5] - 2026-05-31
+
+### Added
+
+- Transition animations — page content fades in on navigation; formatting toolbar smoothly collapses/expands; delete modal and category picker slide+fade in; goals menu fades from top; all buttons and link-buttons scale to 0.97 on press; all animations respect `prefers-reduced-motion`
+- iOS zoom prevention — global CSS rule pins all inputs, selects, and textareas to `font-size: 1rem` on mobile, preventing iOS Safari from auto-zooming on focus
+
+### Changed
+
+- Entry title — replaced single-line `<input>` with an auto-resizing `<textarea>` that wraps naturally for long titles; bumped size to `text-3xl` for clearer visual hierarchy
+- Entry metadata row — tags input takes full width on mobile; date and mood are grouped on a row below; collapses to side-by-side on desktop
+- Design standardisation — all card borders unified to `border-border` semantic token (was mixed `border-foreground/10`); analytics goals stat cards gain consistent borders; chat page heading raised to `text-xl` to match all other pages; chat send button changed to `rounded-full` pill to match primary button convention throughout the app
+- Goals page — status badge bumped from `text-[10px]` to `text-xs`; checkbox and menu button tap targets raised to 44px; filter tabs are horizontally scrollable with `shrink-0` on each tab
+
+### Fixed
+
+- iOS tap-zoom — editor prose font bumped from 15px to 16px (`.fw-prose`); all form inputs across goals, settings, onboarding, guided session, personas, and templates pages now render at 16px minimum on mobile
+- `+ category` button — increased vertical padding from `py-0.5` (~26px) to `py-1.5` for a comfortable tap target
+- Analytics goals list rows — added `min-h-[44px]` to goal rows
+- Entry prose — `max-width: 100%` on `.fw-prose pre` prevents wide code blocks from breaking the mobile layout
+- Settings tab bar fade gradient — narrowed from `w-8` to `w-6`
+
+### Accessibility
+
+- `prefers-reduced-motion` — global CSS rule collapses all transition and animation durations to near-zero when the OS preference is set
+- Focus rings — title textarea, tags input, date, and mood select in the entry form now show a visible `primary/40` ring on keyboard focus via `focus-visible`
+- `aria-label` — added to entry title textarea, tags input, date input, mood select, delete button, and goals menu button
+- `aria-live="polite"` — save state span ("Saving…" / "Saved" / "Error") now announced by screen readers
+- `role="dialog"` + `aria-modal` + `aria-labelledby` — delete confirmation modal correctly identified as a dialog by assistive technology
+- `aria-expanded` — goals menu button reflects open/closed state
+
 ## [0.7.4] - 2026-05-31
 
 ### Added

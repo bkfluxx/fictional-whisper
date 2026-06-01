@@ -415,7 +415,7 @@ export default function ChatPage() {
             </svg>
           </button>
           <div>
-            <h1 className="text-base font-semibold text-foreground leading-none">
+            <h1 className="text-xl font-semibold text-foreground leading-none">
               {activeSessionId
                 ? (sessions.find((s) => s.id === activeSessionId)?.title ?? "Chat")
                 : "New chat"}
@@ -570,7 +570,7 @@ export default function ChatPage() {
             <button
               type="submit"
               disabled={!input.trim() || streaming || loadingMessages}
-              className="px-4 py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-sm font-medium rounded-xl transition-colors"
+              className="px-4 py-2.5 bg-primary hover:bg-primary/90 disabled:opacity-40 text-white text-sm font-medium rounded-full transition-colors"
             >
               Send
             </button>

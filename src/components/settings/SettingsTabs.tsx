@@ -71,7 +71,7 @@ export default function SettingsTabs() {
             ))}
           </div>
           {/* Right-edge fade to hint at horizontal scroll */}
-          <div className="absolute right-0 top-0 bottom-[1px] w-8 bg-gradient-to-l from-background to-transparent pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-[1px] w-6 bg-gradient-to-l from-background to-transparent pointer-events-none" />
         </div>
 
       {/* Tab panels */}

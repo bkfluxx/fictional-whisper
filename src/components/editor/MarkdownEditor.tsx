@@ -291,13 +291,11 @@ export default function MarkdownEditor({
         </div>
       </div>
 
-      {/* Toolbar — toggle-controlled on all screen sizes */}
-      <div
-        className={`transition-opacity duration-500 hover:opacity-100 ${
-          isTyping ? "opacity-[0.15]" : "opacity-100"
-        } ${toolbarOpen ? "block" : "hidden"}`}
-      >
-        <Toolbar editor={editor} />
+      {/* Toolbar — smooth collapse on all screen sizes */}
+      <div className={`grid transition-all duration-200 ease-in-out ${toolbarOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+        <div className={`overflow-hidden transition-opacity duration-500 hover:opacity-100 ${isTyping ? "opacity-[0.15]" : "opacity-100"}`}>
+          <Toolbar editor={editor} />
+        </div>
       </div>
       <EditorContent editor={editor} className="flex-1 overflow-y-auto" />
     </div>

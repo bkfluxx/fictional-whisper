@@ -85,7 +85,7 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                           ? "border-transparent bg-surface-dark"
                           : isSelected
                           ? "border-primary/40 bg-primary/[0.05]"
-                          : "border-foreground/10 bg-card hover:bg-foreground/[0.03]"
+                          : "border-border bg-card hover:bg-foreground/[0.03]"
                       }`}
                     >
                       {/* Text content */}

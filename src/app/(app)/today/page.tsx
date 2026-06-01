@@ -125,7 +125,7 @@ export default async function TodayPage() {
   const prompt = getDailyPrompt();
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-8 space-y-8">
+    <div className="max-w-2xl mx-auto px-6 py-8 space-y-8 animate-in fade-in duration-300">
       {/* Greeting header */}
       <div className="flex items-start justify-between">
         <div>
@@ -158,7 +158,10 @@ export default async function TodayPage() {
           href="/journal/new"
           className="block w-full bg-primary text-primary-foreground text-sm font-semibold text-center py-3 rounded-xl hover:bg-primary/90 transition-colors"
         >
-          Start writing ✦
+          Start writing&nbsp;
+          <svg className="inline-block w-3.5 h-3.5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+          </svg>
         </Link>
       </div>
 
