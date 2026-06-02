@@ -37,6 +37,7 @@ export async function GET(
     categories: entry.categories,
     tags: entry.tags,
     isPrivate: entry.isPrivate,
+    entryType: entry.entryType,
   };
 
   return NextResponse.json(result);

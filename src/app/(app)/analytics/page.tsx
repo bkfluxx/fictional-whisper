@@ -9,12 +9,23 @@ import AnalyticsTabs from "@/components/analytics/AnalyticsTabs";
 
 // ─── Data helpers ─────────────────────────────────────────────────────────────
 
+function localDateStr(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function localMonthStr(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
 function computeStreaks(dates: Date[]): {
   current: number;
   longest: number;
   uniqueDays: number;
 } {
-  const daySet = new Set(dates.map((d) => d.toISOString().slice(0, 10)));
+  const daySet = new Set(dates.map(localDateStr));
   const days = [...daySet].sort();
   if (days.length === 0) return { current: 0, longest: 0, uniqueDays: 0 };
 
@@ -22,8 +33,8 @@ function computeStreaks(dates: Date[]): {
   let run = 1;
   for (let i = 1; i < days.length; i++) {
     const gap =
-      (new Date(days[i] + "T00:00:00Z").getTime() -
-        new Date(days[i - 1] + "T00:00:00Z").getTime()) /
+      (new Date(days[i] + "T00:00:00").getTime() -
+        new Date(days[i - 1] + "T00:00:00").getTime()) /
       86400000;
     if (gap === 1) {
       run++;
@@ -33,8 +44,10 @@ function computeStreaks(dates: Date[]): {
     }
   }
 
-  const todayStr = new Date().toISOString().slice(0, 10);
-  const yesterdayStr = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const todayStr = localDateStr(new Date());
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = localDateStr(yesterday);
   const anchor = daySet.has(todayStr)
     ? todayStr
     : daySet.has(yesterdayStr)
@@ -63,23 +76,23 @@ function buildHeatmapWeeks(
 ): { date: string; count: number }[][] {
   const counts: Record<string, number> = {};
   for (const d of dates) {
-    const key = d.toISOString().slice(0, 10);
+    const key = localDateStr(d);
     counts[key] = (counts[key] ?? 0) + 1;
   }
 
   const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
   const start = new Date(today.getTime() - 52 * 7 * 86400000);
-  start.setUTCDate(start.getUTCDate() - start.getUTCDay());
+  start.setDate(start.getDate() - start.getDay());
 
   const weeks: { date: string; count: number }[][] = [];
   const cur = new Date(start);
   while (cur <= today) {
     const week: { date: string; count: number }[] = [];
     for (let d = 0; d < 7; d++) {
-      const key = cur.toISOString().slice(0, 10);
+      const key = localDateStr(cur);
       week.push({ date: key, count: counts[key] ?? 0 });
-      cur.setUTCDate(cur.getUTCDate() + 1);
+      cur.setDate(cur.getDate() + 1);
     }
     weeks.push(week);
   }
@@ -163,7 +176,7 @@ export default async function AnalyticsPage() {
     byMonth[`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`] = 0;
   }
   for (const e of entries) {
-    const key = e.entryDate.toISOString().slice(0, 7);
+    const key = localMonthStr(e.entryDate);
     if (key in byMonth) byMonth[key]++;
   }
   const monthlyData = Object.entries(byMonth).map(([month, count]) => ({
@@ -176,6 +189,11 @@ export default async function AnalyticsPage() {
   for (const e of entries) dowCounts[e.entryDate.getDay()]++;
 
   const heatmapWeeks = buildHeatmapWeeks(entries.map((e) => e.entryDate));
+
+  // Mood timeline — all entries that have a mood, sorted by date
+  const moodTimeline = entries
+    .filter((e) => e.mood)
+    .map((e) => ({ date: localDateStr(e.entryDate), mood: e.mood! }));
 
   // Goals
   const goals = goalRows.map((g) => ({
@@ -199,6 +217,7 @@ export default async function AnalyticsPage() {
         monthlyData={monthlyData}
         dowCounts={dowCounts}
         moodBreakdown={moodBreakdown}
+        moodTimeline={moodTimeline}
         categoryBreakdown={categoryBreakdown}
         digests={digests}
         latestInsight={latestInsight}

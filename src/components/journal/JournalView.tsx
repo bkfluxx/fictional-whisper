@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import EntryPane from "./EntryPane";
 import CategoryIcon from "@/components/icons/CategoryIcon";
+import { MoodFaceIcon } from "@/components/ui/MoodIcon";
+import { getMoodLabel, getMoodBgClass, getMoodTextClass } from "@/lib/moods";
 
 export interface CategoryLabel {
   id: string;
@@ -21,6 +23,7 @@ export interface EntryListItem {
   categoryLabels: CategoryLabel[];
   tags: { id: string; name: string }[];
   isPrivate: boolean;
+  entryType: string;
 }
 
 export interface DayGroup {
@@ -77,6 +80,32 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                   const isSelected = selectedId === e.id;
                   const firstCat = e.categoryLabels[0];
 
+                  // ── Mood snapshot card ──────────────────────────────────
+                  if (e.entryType === "mood") {
+                    return (
+                      <div
+                        key={e.id}
+                        onClick={() => handleEntryClick(e.id)}
+                        className={`rounded-xl border cursor-pointer flex items-center gap-3 px-4 py-3 transition-colors ${
+                          isSelected
+                            ? "border-primary/40 bg-primary/[0.05]"
+                            : "border-border bg-card hover:bg-foreground/[0.03]"
+                        }`}
+                      >
+                        {e.mood && (
+                          <span
+                            className={`inline-flex items-center gap-1.5 text-sm px-2.5 py-1 rounded-full font-medium ${getMoodBgClass(e.mood)} ${getMoodTextClass(e.mood)}`}
+                          >
+                            <MoodFaceIcon value={e.mood} size={14} />
+                            {getMoodLabel(e.mood)}
+                          </span>
+                        )}
+                        <span className="text-xs text-foreground/30 ml-auto">Mood snapshot</span>
+                      </div>
+                    );
+                  }
+
+                  // ── Regular journal card ────────────────────────────────
                   return (
                     <div
                       key={e.id}
@@ -149,13 +178,14 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                           <div className={`flex gap-1 mt-3 flex-wrap items-center ${e.isPrivate ? "blur-sm select-none" : ""}`}>
                             {e.mood && (
                               <span
-                                className={`text-xs px-2 py-0.5 rounded-full capitalize ${
+                                className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${
                                   isFirst
                                     ? "bg-surface-dark-foreground/15 text-surface-dark-foreground/75"
-                                    : "bg-tertiary/12 text-tertiary"
+                                    : `${getMoodBgClass(e.mood)} ${getMoodTextClass(e.mood)}`
                                 }`}
                               >
-                                {e.mood}
+                                <MoodFaceIcon value={e.mood} size={12} />
+                                {getMoodLabel(e.mood)}
                               </span>
                             )}
                             {e.categoryLabels.map((c) => (

@@ -50,6 +50,12 @@ services:
       # OLLAMA_MODEL: qwen3:5b
       # OLLAMA_EMBED_MODEL: nomic-embed-text
 
+      # ── Timezone ────────────────────────────────────────────────────────
+      # Sets the server-side timezone for date calculations (entry dates,
+      # streaks, "Today" page boundaries). Use a tz database name:
+      #   https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+      TZ: America/New_York
+
       # ── Voice transcription ─────────────────────────────────────────────
       # Uncomment if you enable the whisper service below
       # WHISPER_BASE_URL: http://whisper:8000

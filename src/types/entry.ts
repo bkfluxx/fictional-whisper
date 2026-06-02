@@ -10,6 +10,7 @@ export interface DecryptedEntry {
   categories: string[];
   tags: { id: string; name: string }[];
   isPrivate: boolean;
+  entryType: string;
 }
 
 /** Minimal entry data for list views — body is not included. */
@@ -23,6 +24,7 @@ export interface EntryStub {
   categories: string[];
   tags: { id: string; name: string }[];
   isPrivate: boolean;
+  entryType: string;
 }
 
 /** Payload for creating or updating an entry. */
@@ -34,4 +36,5 @@ export interface EntryPayload {
   categories?: string[];
   tags?: string[]; // tag names
   isPrivate?: boolean;
+  entryType?: string;
 }

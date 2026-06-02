@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import type { DecryptedEntry, EntryPayload } from "@/types/entry";
 import { JOURNAL_TYPES } from "@/lib/journal-types";
 import AiPanel from "./AiPanel";
+import MoodPicker from "./MoodPicker";
 import VoiceNotesList from "./VoiceNotesList";
 import VoiceMicButton from "@/components/editor/VoiceMicButton";
 
@@ -315,24 +316,13 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
               className="bg-transparent text-foreground/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:rounded cursor-pointer"
             />
 
-            <select
+            <MoodPicker
               value={mood}
-              onChange={(e) => {
-                setMood(e.target.value);
-                scheduleSave(body, title, tags, e.target.value, categories, entryDate);
+              onChange={(m) => {
+                setMood(m);
+                scheduleSave(body, title, tags, m, categories, entryDate);
               }}
-              aria-label="Mood"
-              className="bg-card text-foreground/60 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-            >
-              <option value="">Mood</option>
-              <option value="joyful">Joyful</option>
-              <option value="content">Content</option>
-              <option value="neutral">Neutral</option>
-              <option value="reflective">Reflective</option>
-              <option value="anxious">Anxious</option>
-              <option value="frustrated">Frustrated</option>
-              <option value="sad">Sad</option>
-            </select>
+            />
           </div>
         </div>
 

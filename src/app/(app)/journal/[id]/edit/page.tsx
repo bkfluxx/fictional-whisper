@@ -34,6 +34,7 @@ export default async function EditEntryPage({
     categories: entry.categories,
     tags: entry.tags,
     isPrivate: entry.isPrivate,
+    entryType: entry.entryType,
   };
 
   return (

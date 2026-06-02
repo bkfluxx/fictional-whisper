@@ -49,6 +49,7 @@ export async function GET(req: NextRequest) {
     categories: e.categories,
     tags: e.tags,
     isPrivate: e.isPrivate,
+    entryType: e.entryType,
   }));
 
   return NextResponse.json(stubs);
@@ -61,21 +62,28 @@ export async function POST(req: NextRequest) {
   const { dek } = auth;
 
   const body: EntryPayload = await req.json();
-  if (!body.body) {
+  const isMoodSnapshot = body.entryType === "mood";
+
+  if (!isMoodSnapshot && !body.body) {
     return NextResponse.json({ error: "body is required" }, { status: 400 });
   }
 
-  const inlineTags = extractInlineTags(body.body);
+  const plainBody = body.body ?? "";
+  const inlineTags = extractInlineTags(plainBody);
   const allTags = [...new Set([...(body.tags ?? []), ...inlineTags])];
 
   const entry = await prisma.entry.create({
     data: {
-      entryDate: body.entryDate ? new Date(body.entryDate) : new Date(),
+      // Append T00:00:00 (no Z) so bare date strings are parsed as local midnight
+      entryDate: body.entryDate
+        ? new Date(/^\d{4}-\d{2}-\d{2}$/.test(body.entryDate) ? body.entryDate + "T00:00:00" : body.entryDate)
+        : new Date(),
       title: body.title ? encryptString(body.title, dek) : null,
-      body: encryptString(body.body, dek),
+      body: encryptString(plainBody, dek),
       mood: body.mood ?? null,
       categories: body.categories ?? [],
       isPrivate: body.isPrivate ?? false,
+      entryType: isMoodSnapshot ? "mood" : "journal",
       tags: {
         connectOrCreate: allTags.map((name) => ({
           where: { name },
@@ -86,13 +94,14 @@ export async function POST(req: NextRequest) {
     include: { tags: { select: { id: true, name: true } } },
   });
 
-  const plainBody = body.body;
-  setImmediate(() => {
-    indexEntry(entry.id, plainBody, process.env.SEARCH_HMAC_SECRET!).catch(
-      (e) => logger.error("Failed to index entry", e),
-    );
-    embedEntryText(entry.id, plainBody).catch((e) => logger.error("Failed to embed entry", e));
-  });
+  if (!isMoodSnapshot && plainBody.trim()) {
+    setImmediate(() => {
+      indexEntry(entry.id, plainBody, process.env.SEARCH_HMAC_SECRET!).catch(
+        (e) => logger.error("Failed to index entry", e),
+      );
+      embedEntryText(entry.id, plainBody).catch((e) => logger.error("Failed to embed entry", e));
+    });
+  }
 
   return NextResponse.json(
     {
@@ -105,6 +114,7 @@ export async function POST(req: NextRequest) {
       categories: entry.categories,
       tags: entry.tags,
       isPrivate: entry.isPrivate,
+      entryType: entry.entryType,
     },
     { status: 201 },
   );

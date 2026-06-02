@@ -4,6 +4,23 @@ All notable changes to Aura will be documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.7.7] - 2026-06-01
+
+### Added
+
+- Mood check-in widget — quick two-tap flow on the Today page (pick group → pick emotion) logs a mood snapshot without opening the editor; shows last logged mood as a hint
+- Mood snapshots — dedicated `entryType: "mood"` stored as a first-class entry; renders as a compact pill card in the journal list and Today page entries, with its own detail view (centered face icon + label + timestamp)
+- Mood trend chart — 30-day smooth spline area chart on the Analytics Stats tab showing daily average mood score (Bright=5 → Tense=1); hover any dot for the mood label and date; sits above the existing mood dot grid
+- Timezone support — `TZ: America/New_York` added to both docker-compose files so all date boundaries, streak calculations, and entry grouping use Eastern time rather than UTC
+
+### Fixed
+
+- Delete confirmation for mood snapshots now uses the same modal overlay pattern as journal entries (blurred backdrop, red Delete button, Cancel button) on both the detail page and the split-pane reading view
+- Journal list date grouping — entries were bucketed under the wrong date when the UTC date differed from the local (Eastern) date; all grouping now uses local date methods
+- Today page query boundaries — `gte`/`lte` range for today's entries now uses local midnight rather than UTC midnight
+- Streak calculation — uses local date arithmetic throughout (today page and analytics) so streaks don't break at UTC midnight
+- Analytics heatmap and monthly breakdowns — all date keys now derived from local date methods
+
 ## [0.7.6] - 2026-06-01
 
 ### Added

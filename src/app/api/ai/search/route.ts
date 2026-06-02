@@ -25,6 +25,7 @@ interface RawRow {
   mood: string | null;
   categories: string[];
   isPrivate: boolean;
+  entryType: string;
 }
 
 export async function GET(req: NextRequest) {
@@ -51,7 +52,7 @@ export async function GET(req: NextRequest) {
   const vecLiteral = `[${queryVec.join(",")}]`;
 
   const rows = await prisma.$queryRaw<RawRow[]>`
-    SELECT id, "createdAt", "updatedAt", "entryDate", title, mood, "categories", "isPrivate"
+    SELECT id, "createdAt", "updatedAt", "entryDate", title, mood, "categories", "isPrivate", "entryType"
     FROM "Entry"
     WHERE embedding IS NOT NULL
     ORDER BY embedding <=> ${vecLiteral}::vector
@@ -86,6 +87,7 @@ export async function GET(req: NextRequest) {
     categories: r.categories,
     tags: tagMap.get(r.id) ?? [],
     isPrivate: r.isPrivate,
+    entryType: r.entryType,
   }));
 
   return NextResponse.json(stubs);

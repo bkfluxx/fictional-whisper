@@ -7,6 +7,8 @@ import { prisma } from "@/lib/prisma";
 import { decryptString } from "@/lib/crypto";
 import Greeting from "@/components/today/Greeting";
 import MiniCalendar from "@/components/today/MiniCalendar";
+import MoodCheckIn from "@/components/today/MoodCheckIn";
+import { MoodPill } from "@/components/ui/MoodIcon";
 
 const DAILY_PROMPTS = [
   "What made you feel most like yourself today?",
@@ -38,10 +40,19 @@ function getDailyPrompt(): string {
   return DAILY_PROMPTS[dayOfYear % DAILY_PROMPTS.length];
 }
 
+function localDateStr(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 function computeStreak(dates: Date[]): number {
-  const daySet = new Set(dates.map((d) => d.toISOString().slice(0, 10)));
-  const todayStr = new Date().toISOString().slice(0, 10);
-  const yesterdayStr = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const daySet = new Set(dates.map(localDateStr));
+  const todayStr = localDateStr(new Date());
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = localDateStr(yesterday);
   const anchor = daySet.has(todayStr)
     ? todayStr
     : daySet.has(yesterdayStr)
@@ -62,6 +73,10 @@ function computeStreak(dates: Date[]): number {
   return streak;
 }
 
+function localTimeStr(d: Date): string {
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
 function textPreview(html: string, maxLen = 120): string {
   const noHeadings = html.replace(/<h[1-6][^>]*>.*?<\/h[1-6]>/gi, " ");
   const text = noHeadings
@@ -80,7 +95,7 @@ export default async function TodayPage() {
   if (!dek) redirect("/login");
 
   const now = new Date();
-  const todayStr = now.toISOString().slice(0, 10);
+  const todayStr = localDateStr(now);
 
   const [allDates, todayEntries] = await Promise.all([
     prisma.entry.findMany({
@@ -90,8 +105,9 @@ export default async function TodayPage() {
     prisma.entry.findMany({
       where: {
         entryDate: {
-          gte: new Date(todayStr + "T00:00:00.000Z"),
-          lte: new Date(todayStr + "T23:59:59.999Z"),
+          // No Z suffix — parsed as local time so boundaries respect TZ setting
+          gte: new Date(todayStr + "T00:00:00"),
+          lte: new Date(todayStr + "T23:59:59.999"),
         },
       },
       orderBy: { createdAt: "desc" },
@@ -100,15 +116,19 @@ export default async function TodayPage() {
   ]);
 
   const streak = computeStreak(allDates.map((e) => e.entryDate));
-  const allEntryDates = allDates.map((e) => e.entryDate.toISOString().slice(0, 10));
+  const allEntryDates = allDates.map((e) => localDateStr(e.entryDate));
 
   const todayDecrypted = todayEntries.map((e) => ({
     id: e.id,
     isPrivate: e.isPrivate,
     mood: e.mood,
+    entryType: e.entryType,
+    time: localTimeStr(e.createdAt),
     title: e.title ? decryptString(e.title, dek) : null,
-    preview: textPreview(decryptString(e.body, dek)),
+    preview: e.entryType === "mood" ? "" : textPreview(decryptString(e.body, dek)),
   }));
+
+  const lastMood = todayDecrypted.find((e) => e.mood)?.mood ?? null;
 
   const todayLabel = now.toLocaleDateString("en-US", {
     weekday: "long",
@@ -158,6 +178,9 @@ export default async function TodayPage() {
         </Link>
       </div>
 
+      {/* Mood check-in */}
+      <MoodCheckIn todayStr={todayStr} lastMood={lastMood} />
+
       {/* Mini calendar */}
       <MiniCalendar entryDates={allEntryDates} todayStr={todayStr} />
 
@@ -168,36 +191,46 @@ export default async function TodayPage() {
             Today · {todayDecrypted.length} {todayDecrypted.length === 1 ? "entry" : "entries"}
           </p>
           <div className="space-y-2">
-            {todayDecrypted.map((entry) => (
-              <Link
-                key={entry.id}
-                href={`/journal/${entry.id}`}
-                className="block bg-card border border-border rounded-xl px-5 py-4 hover:bg-foreground/[0.02] transition-colors"
-              >
-                {entry.mood && (
-                  <span className="text-xs text-foreground/50 capitalize block mb-1">
-                    {entry.mood}
-                  </span>
-                )}
-                <div className="flex items-center gap-2 mb-1">
-                  <p className={`text-sm font-semibold text-foreground ${entry.isPrivate ? "blur-sm select-none" : ""}`}>
-                    {entry.title ?? (
-                      <span className="italic font-normal text-foreground/40">Untitled</span>
+            {todayDecrypted.map((entry) => {
+              if (entry.entryType === "mood") {
+                return (
+                  <Link
+                    key={entry.id}
+                    href={`/journal/${entry.id}`}
+                    className="flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 hover:bg-foreground/[0.02] transition-colors"
+                  >
+                    {entry.mood && <MoodPill value={entry.mood} />}
+                    <span className="text-xs text-foreground/30 ml-auto">Mood snapshot</span>
+                  </Link>
+                );
+              }
+              return (
+                <Link
+                  key={entry.id}
+                  href={`/journal/${entry.id}`}
+                  className="block bg-card border border-border rounded-xl px-5 py-4 hover:bg-foreground/[0.02] transition-colors"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className={`text-sm font-semibold text-foreground ${entry.isPrivate ? "blur-sm select-none" : ""}`}>
+                      {entry.title ?? (
+                        <span className="italic font-normal text-foreground/40">Untitled</span>
+                      )}
+                    </p>
+                    {entry.isPrivate && (
+                      <svg className="w-3.5 h-3.5 shrink-0 text-foreground/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                      </svg>
                     )}
-                  </p>
-                  {entry.isPrivate && (
-                    <svg className="w-3.5 h-3.5 shrink-0 text-foreground/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-                    </svg>
+                    {entry.mood && <MoodPill value={entry.mood} className="ml-auto" />}
+                  </div>
+                  {entry.preview && (
+                    <p className={`text-xs text-foreground/50 leading-relaxed line-clamp-2 ${entry.isPrivate ? "blur-sm select-none" : ""}`}>
+                      {entry.preview}
+                    </p>
                   )}
-                </div>
-                {entry.preview && (
-                  <p className={`text-xs text-foreground/50 leading-relaxed line-clamp-2 ${entry.isPrivate ? "blur-sm select-none" : ""}`}>
-                    {entry.preview}
-                  </p>
-                )}
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </div>
       )}

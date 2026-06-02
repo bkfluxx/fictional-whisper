@@ -8,7 +8,11 @@ import MonthlyBars from "@/components/analytics/MonthlyBars";
 import ActivityHeatmap from "@/components/analytics/ActivityHeatmap";
 import DigestSection from "@/components/analytics/DigestSection";
 import InsightsSection from "@/components/analytics/InsightsSection";
+import MoodTimeline from "@/components/analytics/MoodTimeline";
+import MoodTrendChart from "@/components/analytics/MoodTrendChart";
 import EmptyState from "@/components/ui/EmptyState";
+import { MoodFaceIcon } from "@/components/ui/MoodIcon";
+import { getMoodColor, getMoodLabel, getMoodBgClass, getMoodTextClass } from "@/lib/moods";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -47,6 +51,7 @@ interface AnalyticsTabsProps {
   monthlyData: { month: string; count: number }[];
   dowCounts: number[];
   moodBreakdown: [string, number][];
+  moodTimeline: { date: string; mood: string }[];
   categoryBreakdown: { name: string; count: number }[];
   // Goals
   goals: GoalSummary[];
@@ -60,25 +65,6 @@ interface AnalyticsTabsProps {
 
 const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const MOOD_EMOJI: Record<string, string> = {
-  joyful: "😄",
-  content: "😌",
-  neutral: "😐",
-  reflective: "🤔",
-  anxious: "😰",
-  frustrated: "😤",
-  sad: "😢",
-};
-
-const MOOD_COLOR: Record<string, string> = {
-  joyful: "bg-yellow-400",
-  content: "bg-emerald-500",
-  neutral: "bg-neutral-500",
-  reflective: "bg-blue-500",
-  anxious: "bg-orange-400",
-  frustrated: "bg-red-500",
-  sad: "bg-blue-600",
-};
 
 // ─── Tab definition ───────────────────────────────────────────────────────────
 
@@ -102,6 +88,7 @@ export default function AnalyticsTabs({
   monthlyData,
   dowCounts,
   moodBreakdown,
+  moodTimeline,
   categoryBreakdown,
   goals,
   digests,
@@ -235,6 +222,24 @@ export default function AnalyticsTabs({
                 </section>
               </div>
 
+              {/* Mood trend spline + dot timeline */}
+              {moodTimeline.length > 0 && (
+                <section className="mb-10">
+                  <h2 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-4">
+                    Mood trend — last 30 days
+                  </h2>
+                  <MoodTrendChart data={moodTimeline} days={30} />
+                  {moodTimeline.length > 0 && (
+                    <div className="mt-6">
+                      <h3 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-3">
+                        All logged moods
+                      </h3>
+                      <MoodTimeline data={moodTimeline} />
+                    </div>
+                  )}
+                </section>
+              )}
+
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
                 <section className="bg-surface-dark rounded-2xl p-5">
                   <h2 className="text-xs font-semibold text-surface-dark-foreground/50 uppercase tracking-widest mb-4">
@@ -246,10 +251,11 @@ export default function AnalyticsTabs({
                     moodBreakdown.map(([mood, count]) => (
                       <HorizontalBar
                         key={mood}
-                        label={`${MOOD_EMOJI[mood] ?? "•"} ${mood}`}
+                        label={getMoodLabel(mood)}
+                        labelPrefix={<MoodFaceIcon value={mood} size={14} className="inline-block mr-1 opacity-80" />}
                         count={count}
                         max={moodBreakdown[0][1]}
-                        color={MOOD_COLOR[mood] ?? "bg-neutral-500"}
+                        color={getMoodColor(mood)}
                         variant="dark"
                       />
                     ))

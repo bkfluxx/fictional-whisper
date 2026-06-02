@@ -14,9 +14,10 @@ import ColorThemeSettings from "./ColorThemeSettings";
 import DensitySettings from "./DensitySettings";
 import CategoriesSettings from "./CategoriesSettings";
 import PersonasSettings from "./PersonasSettings";
+import MoodSettings from "./MoodSettings";
 import ErrorLogSection from "./ErrorLogSection";
 
-type Tab = "appearance" | "security" | "import-export" | "ai" | "personas" | "templates" | "categories" | "advanced";
+type Tab = "appearance" | "security" | "import-export" | "ai" | "personas" | "templates" | "categories" | "moods" | "advanced";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "ai", label: "AI settings" },
@@ -25,6 +26,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "security", label: "Security" },
   { id: "templates", label: "Templates" },
   { id: "categories", label: "Categories" },
+  { id: "moods", label: "Moods" },
   { id: "import-export", label: "Import / Export" },
   { id: "advanced", label: "Advanced" },
 ];
@@ -252,6 +254,18 @@ export default function SettingsTabs() {
             </p>
           </div>
           <CategoriesSettings />
+        </section>
+      )}
+
+      {active === "moods" && (
+        <section>
+          <div className="mb-5">
+            <h2 className="text-base font-medium text-foreground">Moods</h2>
+            <p className="text-sm text-foreground/40 mt-0.5">
+              Extend the built-in emotion library with your own labels.
+            </p>
+          </div>
+          <MoodSettings />
         </section>
       )}
       </div>

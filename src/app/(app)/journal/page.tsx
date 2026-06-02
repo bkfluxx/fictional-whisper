@@ -32,6 +32,13 @@ function formatDay(dateStr: string): { weekday: string; date: string } {
   };
 }
 
+function localDateStr(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 function textPreview(html: string, maxLen = 140): string {
   // Strip heading tags AND their content — headings are template scaffolding,
   // not entry body text worth previewing.
@@ -86,7 +93,7 @@ export default async function JournalPage({
   // Build decrypted day groups for the client component
   const grouped = new Map<string, DayGroup>();
   for (const e of entries) {
-    const key = e.entryDate.toISOString().slice(0, 10);
+    const key = localDateStr(e.entryDate);
     if (!grouped.has(key)) {
       const { weekday, date } = formatDay(key);
       grouped.set(key, { day: key, weekday, date, entries: [] });
@@ -116,6 +123,7 @@ export default async function JournalPage({
       categoryLabels,
       tags: e.tags,
       isPrivate: e.isPrivate,
+      entryType: e.entryType,
     });
   }
   const days = [...grouped.values()];

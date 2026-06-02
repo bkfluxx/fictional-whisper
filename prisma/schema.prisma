@@ -48,6 +48,8 @@ model Entry {
   tokens      SearchToken[]
   // Privacy flag — if true, content is blurred in list and reading views until revealed
   isPrivate   Boolean       @default(false)
+  // Entry type — "journal" (default) or "mood" (mood-snapshot, no body content)
+  entryType   String        @default("journal")
   // AI-generated fields (Phase 2). summary is encrypted; aiMood is a plain slug.
   summary     String?
   aiMood      String?
@@ -146,6 +148,15 @@ model UserCategory {
   builtinId   String?  @unique  // e.g. "brain-dump"; null = user-defined
   hidden      Boolean  @default(false)
   createdAt   DateTime @default(now())
+}
+
+// User-defined emotions that appear alongside built-in moods in the picker.
+model CustomEmotion {
+  id        String   @id @default(cuid())
+  label     String
+  value     String   @unique  // stored in entry.mood — must be unique
+  groupId   String             // one of the 5 built-in group ids
+  createdAt DateTime @default(now())
 }
 
 model AppSettings {

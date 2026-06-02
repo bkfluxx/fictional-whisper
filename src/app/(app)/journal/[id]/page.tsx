@@ -9,6 +9,9 @@ import { getJournalType } from "@/lib/journal-types";
 import VoiceNotesList from "@/components/entries/VoiceNotesList";
 import PrivateReveal from "@/components/entries/PrivateReveal";
 import CategoryIcon from "@/components/icons/CategoryIcon";
+import { MoodPill, MoodFaceIcon } from "@/components/ui/MoodIcon";
+import { getMoodLabel, getMoodGroup } from "@/lib/moods";
+import DeleteEntryButton from "@/components/entries/DeleteEntryButton";
 
 export default async function EntryViewPage({
   params,
@@ -32,6 +35,51 @@ export default async function EntryViewPage({
 
   if (!entry) notFound();
 
+  // ── Mood snapshot view ────────────────────────────────────────────────────
+  if (entry.entryType === "mood") {
+    const moodGroup = entry.mood ? getMoodGroup(entry.mood) : null;
+    const moodLabel = entry.mood ? getMoodLabel(entry.mood) : null;
+    const loggedAt = entry.createdAt.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+    const loggedDate = entry.entryDate.toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+
+    return (
+      <div className="max-w-2xl mx-auto px-6 py-8">
+        <div className="flex items-center justify-between mb-10">
+          <Link
+            href="/journal"
+            className="flex items-center gap-1.5 text-sm text-foreground/40 hover:text-foreground transition-colors min-h-[44px]"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+            </svg>
+            Journal
+          </Link>
+          <DeleteEntryButton entryId={entry.id} />
+        </div>
+
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          {entry.mood && moodGroup && (
+            <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-6 ${moodGroup.colorClass}`}>
+              <MoodFaceIcon value={entry.mood} size={52} className={moodGroup.textClass} />
+            </div>
+          )}
+          <h1 className="text-2xl font-semibold text-foreground capitalize mb-1">{moodLabel ?? "Unknown"}</h1>
+          <p className="text-sm text-foreground/40">{loggedDate}</p>
+          <p className="text-xs text-foreground/30 mt-0.5">Logged at {loggedAt}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Regular entry view ────────────────────────────────────────────────────
   const userCatMap = new Map(userCategories.map((c) => [c.id, c]));
   const title = entry.title ? decryptString(entry.title, dek) : null;
   const body = decryptString(entry.body, dek);
@@ -76,11 +124,7 @@ export default async function EntryViewPage({
             day: "numeric",
           })}
         </span>
-        {entry.mood && (
-          <span className="text-xs px-2.5 py-0.5 bg-tertiary/12 text-tertiary rounded-full capitalize">
-            {entry.mood}
-          </span>
-        )}
+        {entry.mood && <MoodPill value={entry.mood} />}
         {entry.isPrivate && (
           <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 bg-foreground/8 text-foreground/50 rounded-full">
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

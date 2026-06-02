@@ -1,0 +1,1 @@
+ALTER TABLE "Entry" ADD COLUMN "entryType" TEXT NOT NULL DEFAULT 'journal';
