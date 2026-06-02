@@ -46,7 +46,10 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
   const [entryDate, setEntryDate] = useState(
     initial?.entryDate
       ? initial.entryDate.slice(0, 10)
-      : new Date().toISOString().slice(0, 10),
+      : (() => {
+          const d = new Date();
+          return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        })(),
   );
   const [saveState, setSaveState] = useState<SaveState>(
     initial ? "saved" : "unsaved",
@@ -305,7 +308,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
             <input
               type="date"
               value={entryDate}
-              max={new Date().toISOString().slice(0, 10)}
+              max={(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; })()}
               onChange={(e) => {
                 const d = e.target.value;
                 if (!d) return;

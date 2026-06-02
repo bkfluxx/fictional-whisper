@@ -4,6 +4,14 @@ All notable changes to Aura will be documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.7.8] - 2026-06-02
+
+### Fixed
+
+- Entry date on edit — edit form now shows the Eastern local date (matching the journal list) instead of the UTC date; old entries stored at UTC midnight no longer appear one day ahead in the editor
+- Date picker default — new entries now default to the browser's local date instead of the UTC date, preventing off-by-one near midnight
+- Date change on existing entries — PATCH handler was parsing bare `YYYY-MM-DD` date strings as UTC midnight; now correctly stores Eastern local midnight, matching the POST handler
+
 ## [0.7.7] - 2026-06-01
 
 ### Added

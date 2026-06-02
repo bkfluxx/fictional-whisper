@@ -7,6 +7,13 @@ import { decryptString } from "@/lib/crypto";
 import EntryForm from "@/components/entries/EntryForm";
 import type { DecryptedEntry } from "@/types/entry";
 
+function localDateStr(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 export default async function EditEntryPage({
   params,
 }: {
@@ -27,7 +34,7 @@ export default async function EditEntryPage({
     id: entry.id,
     createdAt: entry.createdAt.toISOString(),
     updatedAt: entry.updatedAt.toISOString(),
-    entryDate: entry.entryDate.toISOString(),
+    entryDate: localDateStr(entry.entryDate),
     title: entry.title ? decryptString(entry.title, dek) : null,
     body: decryptString(entry.body, dek),
     mood: entry.mood,

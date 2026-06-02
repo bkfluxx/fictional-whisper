@@ -66,7 +66,13 @@ export async function PATCH(
   const updated = await prisma.entry.update({
     where: { id },
     data: {
-      ...(body.entryDate ? { entryDate: new Date(body.entryDate) } : {}),
+      ...(body.entryDate ? {
+        entryDate: new Date(
+          /^\d{4}-\d{2}-\d{2}$/.test(body.entryDate)
+            ? body.entryDate + "T00:00:00"
+            : body.entryDate,
+        ),
+      } : {}),
       ...(body.title !== undefined
         ? { title: body.title ? encryptString(body.title, dek) : null }
         : {}),
