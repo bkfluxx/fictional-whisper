@@ -3,14 +3,14 @@
 import { getMoodGroup, getMoodLabel } from "@/lib/moods";
 import { MoodFaceIcon } from "@/components/ui/MoodIcon";
 
-// ─── Per-group pill colors tuned for the dark surface-dark background ─────────
+// ─── Per-group pill colors for the default (light) surface ────────────────────
 
 const GROUP_PILL: Record<string, { bg: string; text: string; ring: string }> = {
-  bright: { bg: "bg-amber-400/20",   text: "text-amber-300",   ring: "ring-amber-400/30"   },
-  calm:   { bg: "bg-emerald-400/20", text: "text-emerald-300", ring: "ring-emerald-400/30" },
-  low:    { bg: "bg-sky-400/20",     text: "text-sky-300",     ring: "ring-sky-400/30"     },
-  tense:  { bg: "bg-rose-400/20",    text: "text-rose-300",    ring: "ring-rose-400/30"    },
-  mixed:  { bg: "bg-white/8",        text: "text-white/45",    ring: "ring-white/15"       },
+  bright: { bg: "bg-amber-500/10",   text: "text-amber-600 dark:text-amber-400",   ring: "ring-amber-500/20"   },
+  calm:   { bg: "bg-emerald-500/10", text: "text-emerald-600 dark:text-emerald-400", ring: "ring-emerald-500/20" },
+  low:    { bg: "bg-sky-500/10",     text: "text-sky-600 dark:text-sky-400",       ring: "ring-sky-500/20"     },
+  tense:  { bg: "bg-rose-500/10",    text: "text-rose-600 dark:text-rose-400",     ring: "ring-rose-500/20"    },
+  mixed:  { bg: "bg-foreground/5",   text: "text-foreground/55",                   ring: "ring-foreground/10"  },
 };
 
 interface MoodCloudProps {
@@ -20,7 +20,7 @@ interface MoodCloudProps {
 
 export default function MoodCloud({ data }: MoodCloudProps) {
   if (data.length === 0) {
-    return <p className="text-sm text-surface-dark-foreground/40">No mood data yet.</p>;
+    return <p className="text-sm text-foreground/30">No mood data yet.</p>;
   }
 
   const max = data[0][1];
