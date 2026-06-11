@@ -24,7 +24,7 @@ A self-hosted, privacy-first personal journal. All data stays on your machine �
 - **Recovery codes** — Emergency recovery code in Settings → Security allows master password reset without data loss
 - **Mobile navigation** — Persistent bottom tab bar on small screens with swipe-to-navigate calendar
 - **Appearance** — 12 switchable color palettes, adjustable font size, and content density (Comfortable / Balanced / Compact)
-- **Advanced AI settings** — Configure Ollama model, embedding model, persona, and context window size (`num_ctx`) per-instance
+- **Advanced AI settings** — Configure Ollama model, persona, and context window size (`num_ctx`) per-instance
 
 ## Stack
 
