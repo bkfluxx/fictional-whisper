@@ -82,6 +82,7 @@ function DayCell({ day, moods, isToday, onClick }: DayCellProps) {
         width={SVG_SIZE}
         height={SVG_SIZE}
         viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
+        overflow="visible"
         aria-hidden
       >
         {hasData ? (
