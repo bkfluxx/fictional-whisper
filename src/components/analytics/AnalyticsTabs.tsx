@@ -8,7 +8,7 @@ import MonthlyBars from "@/components/analytics/MonthlyBars";
 import ActivityHeatmap from "@/components/analytics/ActivityHeatmap";
 import DigestSection from "@/components/analytics/DigestSection";
 import InsightsSection from "@/components/analytics/InsightsSection";
-import MoodTimeline from "@/components/analytics/MoodTimeline";
+import MoodCalendarView from "@/components/analytics/MoodCalendarView";
 import MoodTrendChart from "@/components/analytics/MoodTrendChart";
 import EmptyState from "@/components/ui/EmptyState";
 import { MoodFaceIcon } from "@/components/ui/MoodIcon";
@@ -229,14 +229,12 @@ export default function AnalyticsTabs({
                     Mood trend — last 30 days
                   </h2>
                   <MoodTrendChart data={moodTimeline} days={30} />
-                  {moodTimeline.length > 0 && (
-                    <div className="mt-6">
-                      <h3 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-3">
-                        All logged moods
-                      </h3>
-                      <MoodTimeline data={moodTimeline} />
-                    </div>
-                  )}
+                  <div className="mt-6">
+                    <h3 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-3">
+                      All logged moods
+                    </h3>
+                    <MoodCalendarView data={moodTimeline} />
+                  </div>
                 </section>
               )}
 
