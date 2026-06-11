@@ -4,7 +4,6 @@ import { useState } from "react";
 import { BarChart2 } from "lucide-react";
 import StatCard from "@/components/analytics/StatCard";
 import HorizontalBar from "@/components/analytics/HorizontalBar";
-import MonthlyBars from "@/components/analytics/MonthlyBars";
 import ActivityHeatmap from "@/components/analytics/ActivityHeatmap";
 import DigestSection from "@/components/analytics/DigestSection";
 import InsightsSection from "@/components/analytics/InsightsSection";
@@ -61,8 +60,6 @@ interface AnalyticsTabsProps {
 
 // ─── Static data ──────────────────────────────────────────────────────────────
 
-const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
 
 // ─── Tab definition ───────────────────────────────────────────────────────────
 
@@ -94,7 +91,6 @@ export default function AnalyticsTabs({
 }: AnalyticsTabsProps) {
   const [active, setActive] = useState<Tab>("stats");
 
-  const dowMax = Math.max(...dowCounts, 1);
   const latestDigest = digests[0] ?? null;
 
   // Goals derived stats
@@ -194,31 +190,6 @@ export default function AnalyticsTabs({
                 <ActivityHeatmap weeks={heatmapWeeks} />
               </section>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-                <section>
-                  <h2 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-4">
-                    Entries per month
-                  </h2>
-                  <MonthlyBars data={monthlyData} />
-                </section>
-
-                <section>
-                  <h2 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-4">
-                    Day of week
-                  </h2>
-                  <div>
-                    {DOW.map((day, i) => (
-                      <HorizontalBar
-                        key={day}
-                        label={day}
-                        count={dowCounts[i]}
-                        max={dowMax}
-                        color="bg-primary"
-                      />
-                    ))}
-                  </div>
-                </section>
-              </div>
 
               {/* Mood trend spline + dot timeline */}
               {moodTimeline.length > 0 && (
