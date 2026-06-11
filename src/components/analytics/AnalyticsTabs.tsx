@@ -9,10 +9,9 @@ import ActivityHeatmap from "@/components/analytics/ActivityHeatmap";
 import DigestSection from "@/components/analytics/DigestSection";
 import InsightsSection from "@/components/analytics/InsightsSection";
 import MoodCalendarView from "@/components/analytics/MoodCalendarView";
+import MoodCloud from "@/components/analytics/MoodCloud";
 import MoodTrendChart from "@/components/analytics/MoodTrendChart";
 import EmptyState from "@/components/ui/EmptyState";
-import { MoodFaceIcon } from "@/components/ui/MoodIcon";
-import { getMoodColor, getMoodLabel, getMoodBgClass, getMoodTextClass } from "@/lib/moods";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -243,21 +242,7 @@ export default function AnalyticsTabs({
                   <h2 className="text-xs font-semibold text-surface-dark-foreground/50 uppercase tracking-widest mb-4">
                     Mood breakdown
                   </h2>
-                  {moodBreakdown.length === 0 ? (
-                    <p className="text-sm text-surface-dark-foreground/40">No mood data yet.</p>
-                  ) : (
-                    moodBreakdown.map(([mood, count]) => (
-                      <HorizontalBar
-                        key={mood}
-                        label={getMoodLabel(mood)}
-                        labelPrefix={<MoodFaceIcon value={mood} size={14} className="inline-block mr-1 opacity-80" />}
-                        count={count}
-                        max={moodBreakdown[0][1]}
-                        color={getMoodColor(mood)}
-                        variant="dark"
-                      />
-                    ))
-                  )}
+                  <MoodCloud data={moodBreakdown} />
                 </section>
 
                 <section>
