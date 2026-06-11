@@ -82,7 +82,7 @@ export default function EntryPane({ entryId, onClose }: Props) {
       </div>
 
       {/* Pane body */}
-      <div className="flex-1 overflow-y-auto px-6 py-6">
+      <div className="flex-1 overflow-y-auto overscroll-y-contain px-6 py-6">
         {loading ? (
           <div className="space-y-4">
             <Skeleton className="h-7 w-2/3" />

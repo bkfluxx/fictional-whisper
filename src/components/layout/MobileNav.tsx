@@ -11,6 +11,9 @@ export default function MobileNav() {
 
   useEffect(() => {
     setOpen(false);
+    // App Router only resets window scroll on navigation; reset the inner
+    // scroll container too so pages always start at the top on mobile.
+    document.querySelector("main")?.scrollTo(0, 0);
   }, [pathname]);
 
   useEffect(() => {
@@ -57,7 +60,7 @@ export default function MobileNav() {
       {/* Backdrop */}
       {open && (
         <div
-          className="md:hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+          className="md:hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
           onClick={() => setOpen(false)}
         />
       )}

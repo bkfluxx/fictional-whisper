@@ -25,6 +25,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Aura",
   description: "Your private, encrypted journal",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    title: "Aura",
+    statusBarStyle: "default",
+  },
+  icons: {
+    apple: "/logo.jpg",
+  },
 };
 
 export const viewport = {

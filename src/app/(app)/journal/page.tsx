@@ -9,6 +9,7 @@ import { decryptString } from "@/lib/crypto";
 import { getJournalType } from "@/lib/journal-types";
 import JournalView, { type DayGroup, type CategoryLabel } from "@/components/journal/JournalView";
 import EmptyState from "@/components/ui/EmptyState";
+import MiniCalendar from "@/components/today/MiniCalendar";
 
 function formatDay(dateStr: string): { weekday: string; date: string } {
   const d = new Date(dateStr + "T00:00:00");
@@ -30,6 +31,12 @@ function formatDay(dateStr: string): { weekday: string; date: string } {
     weekday: d.toLocaleDateString("en-US", { weekday: "short" }),
     date: datePart,
   };
+}
+
+function localTimeStr(d: Date): string {
+  const h = d.getHours();
+  const m = String(d.getMinutes()).padStart(2, "0");
+  return `${h % 12 || 12}:${m} ${h >= 12 ? "PM" : "AM"}`;
 }
 
 function localDateStr(d: Date): string {
@@ -63,7 +70,7 @@ export default async function JournalPage({
   const { tag, from, to, category } = await searchParams;
   const categoryDef = category ? getJournalType(category) : null;
 
-  const [entries, userCategories] = await Promise.all([
+  const [entries, userCategories, allDates] = await Promise.all([
     prisma.entry.findMany({
       where: {
         ...(tag ? { tags: { some: { name: tag } } } : {}),
@@ -81,11 +88,15 @@ export default async function JournalPage({
         tags: { select: { id: true, name: true } },
         attachments: { select: { mimeType: true } },
       },
-      orderBy: { entryDate: "desc" },
+      orderBy: [{ entryDate: "desc" }, { createdAt: "desc" }],
       take: 100,
     }),
     prisma.userCategory.findMany({ select: { id: true, name: true, emoji: true } }),
+    prisma.entry.findMany({ select: { entryDate: true }, orderBy: { entryDate: "asc" } }),
   ]);
+
+  const allEntryDates = allDates.map((e) => localDateStr(e.entryDate));
+  const todayStr = localDateStr(new Date());
 
   // Build a lookup for user-created categories by ID
   const userCatMap = new Map(userCategories.map((c) => [c.id, c]));
@@ -124,6 +135,7 @@ export default async function JournalPage({
       tags: e.tags,
       isPrivate: e.isPrivate,
       entryType: e.entryType,
+      time: e.entryType === "mood" ? localTimeStr(e.createdAt) : undefined,
     });
   }
   const days = [...grouped.values()];
@@ -137,7 +149,7 @@ export default async function JournalPage({
     : null;
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden animate-in fade-in slide-in-from-right-4 duration-300">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-8 pb-4 shrink-0">
         <div>
@@ -157,6 +169,11 @@ export default async function JournalPage({
         >
           New entry
         </Link>
+      </div>
+
+      {/* Calendar filter */}
+      <div className="shrink-0 px-6 pb-2">
+        <MiniCalendar entryDates={allEntryDates} todayStr={todayStr} />
       </div>
 
       {entries.length === 0 ? (

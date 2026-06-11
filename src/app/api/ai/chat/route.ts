@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
   if (!isDEKResult(auth)) return auth;
   const { dek } = auth;
 
-  const { baseUrl, model, embedModel, systemPrompt } = await getOllamaConfig();
+  const { baseUrl, model, embedModel, numCtx, systemPrompt } = await getOllamaConfig();
   const modelSettings = await prisma.appSettings.findUnique({
     where: { id: "singleton" },
     select: { ollamaModelCapabilities: true },
@@ -110,13 +110,16 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  // Load recent history (excluding the message just saved)
+  // Load recent history (excluding the message just saved).
+  // Fetch desc to always get the MOST RECENT N messages, then reverse to
+  // chronological order before passing to the model.
   const historyRows = await prisma.chatMessage.findMany({
     where: { sessionId: session.id },
-    orderBy: { createdAt: "asc" },
+    orderBy: { createdAt: "desc" },
     take: HISTORY_TURNS * 2 + 1,
   });
-  const historyForContext = historyRows.slice(0, -1);
+  // Reverse to chronological; slice(1) drops the current user message (most recent)
+  const historyForContext = historyRows.reverse().slice(0, -1);
 
   // ── Entry-creation mode ─────────────────────────────────────────────────
   const isEntryRequest = ENTRY_CREATE_INTENT.test(message);
@@ -248,7 +251,7 @@ export async function POST(req: NextRequest) {
       let thinkingStart = 0;
 
       try {
-        for await (const token of chatStream(messages, model, baseUrl, AbortSignal.timeout(9 * 60 * 1000), modelSupportsThinking ? (think ?? false) : false)) {
+        for await (const token of chatStream(messages, model, baseUrl, AbortSignal.timeout(9 * 60 * 1000), modelSupportsThinking ? (think ?? false) : false, numCtx)) {
           const isThinking = token.startsWith("\x02");
           const text = isThinking ? token.slice(1) : token;
 

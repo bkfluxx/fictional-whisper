@@ -177,6 +177,7 @@ model AppSettings {
   ollamaModel               String?
   ollamaModelCapabilities   String[] @default([]) // cached from /api/show (e.g. ["completion","thinking","tools"])
   ollamaEmbedModel          String?
+  ollamaNumCtx              Int?     // context window size passed to Ollama (null = use app default 8192)
   chatSystemPrompt          String?  // custom system prompt for RAG chat (null = use hardcoded default)
   // Personas
   personasEnabled     Boolean  @default(false)

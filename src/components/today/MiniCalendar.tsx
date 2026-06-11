@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 interface Props {
   /** All dates that have at least one entry, as "YYYY-MM-DD" strings */
@@ -18,6 +18,7 @@ export default function MiniCalendar({ entryDates, todayStr }: Props) {
 
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth()); // 0-indexed
+  const [slideClass, setSlideClass] = useState("");
 
   const monthStart = new Date(viewYear, viewMonth, 1);
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
@@ -33,6 +34,8 @@ export default function MiniCalendar({ entryDates, todayStr }: Props) {
   ).length;
 
   function prev() {
+    if (isEarliestMonth) return;
+    setSlideClass("cal-slide-prev");
     if (viewMonth === 0) { setViewMonth(11); setViewYear((y) => y - 1); }
     else setViewMonth((m) => m - 1);
   }
@@ -40,6 +43,7 @@ export default function MiniCalendar({ entryDates, todayStr }: Props) {
   function next() {
     const now = new Date();
     if (viewYear > now.getFullYear() || (viewYear === now.getFullYear() && viewMonth >= now.getMonth())) return;
+    setSlideClass("cal-slide-next");
     if (viewMonth === 11) { setViewMonth(0); setViewYear((y) => y + 1); }
     else setViewMonth((m) => m + 1);
   }
@@ -51,6 +55,21 @@ export default function MiniCalendar({ entryDates, todayStr }: Props) {
   const minYear = oldest ? parseInt(oldest.slice(0, 4)) : viewYear;
   const minMonth = oldest ? parseInt(oldest.slice(5, 7)) - 1 : viewMonth;
   const isEarliestMonth = viewYear < minYear || (viewYear === minYear && viewMonth <= minMonth);
+
+  const touchStartX = useRef<number | null>(null);
+
+  function handleTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX;
+  }
+
+  function handleTouchEnd(e: React.TouchEvent) {
+    if (touchStartX.current === null) return;
+    const delta = touchStartX.current - e.changedTouches[0].clientX;
+    touchStartX.current = null;
+    if (Math.abs(delta) < 40) return;
+    if (delta > 0) next();
+    else prev();
+  }
 
   return (
     <div>
@@ -85,7 +104,12 @@ export default function MiniCalendar({ entryDates, todayStr }: Props) {
         </p>
       </div>
 
-      <div className="grid grid-cols-7 gap-y-1 gap-x-0.5">
+      <div
+        key={`${viewYear}-${viewMonth}`}
+        className={`grid grid-cols-7 gap-y-1 gap-x-0.5 ${slideClass}`}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {DAY_LABELS.map((d, i) => (
           <div key={i} className="text-center text-xs text-foreground/35 pb-1.5 font-medium">
             {d}

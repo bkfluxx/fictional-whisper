@@ -329,7 +329,7 @@ export default function ChatPage() {
   // ── render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="flex h-full overflow-hidden animate-in fade-in slide-in-from-right-4 duration-300">
       {/* Mobile backdrop — shown when sidebar is open on small screens */}
       {sidebarOpen && (
         <div

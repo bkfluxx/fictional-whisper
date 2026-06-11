@@ -32,7 +32,7 @@ export default async function NewEntryPage({
     for (const row of overrideRows) overrides[row.builtinId!] = row;
 
     return (
-      <div className="h-full overflow-y-auto">
+      <div className="h-full overflow-y-auto animate-in fade-in slide-in-from-right-4 duration-250">
         <TemplatePicker
           userTemplates={userTemplates}
           overrides={overrides}
@@ -45,7 +45,7 @@ export default async function NewEntryPage({
   // ?from=blank → bare editor
   if (from === "blank") {
     return (
-      <div className="h-full flex flex-col">
+      <div className="h-full flex flex-col animate-in fade-in slide-in-from-right-4 duration-250">
         <EntryForm />
       </div>
     );
@@ -61,7 +61,7 @@ export default async function NewEntryPage({
     // If hidden via override, fall back to blank
     if (override?.hidden) redirect("/journal/new?from=blank");
     return (
-      <div className="h-full flex flex-col">
+      <div className="h-full flex flex-col animate-in fade-in slide-in-from-right-4 duration-250">
         <EntryForm
           initialBody={override?.body ?? builtIn.body}
           initialCategories={override?.categories ?? builtIn.categories}
@@ -73,7 +73,7 @@ export default async function NewEntryPage({
   const userTemplate = await prisma.journalTemplate.findUnique({ where: { id: from } });
   if (userTemplate) {
     return (
-      <div className="h-full flex flex-col">
+      <div className="h-full flex flex-col animate-in fade-in slide-in-from-right-4 duration-250">
         <EntryForm
           initialBody={userTemplate.body}
           initialCategories={userTemplate.categories}

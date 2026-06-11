@@ -24,6 +24,7 @@ export interface EntryListItem {
   tags: { id: string; name: string }[];
   isPrivate: boolean;
   entryType: string;
+  time?: string;
 }
 
 export interface DayGroup {
@@ -60,7 +61,7 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
   return (
     <div className="flex h-full min-h-0 overflow-hidden">
       {/* ── Entry list ─────────────────────────────────────────────── */}
-      <div className={`overflow-y-auto shrink-0 ${selectedId ? "w-[380px]" : "flex-1"}`}>
+      <div className={`overflow-y-auto overscroll-y-contain shrink-0 ${selectedId ? "w-[380px]" : "flex-1"}`}>
         <div className="px-6 pb-8">
           {days.map((dayGroup, dayIdx) => (
             <div key={dayGroup.day} className={dayIdx === 0 ? "mb-1" : "pt-6 mb-1"}>
@@ -100,7 +101,7 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                             {getMoodLabel(e.mood)}
                           </span>
                         )}
-                        <span className="text-xs text-foreground/30 ml-auto">Mood snapshot</span>
+                        {e.time && <span className="text-xs text-foreground/30 ml-auto">{e.time}</span>}
                       </div>
                     );
                   }

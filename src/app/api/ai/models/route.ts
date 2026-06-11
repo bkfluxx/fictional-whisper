@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
 
   const settings = await prisma.appSettings.findUnique({
     where: { id: "singleton" },
-    select: { whisperBaseUrl: true, ollamaModelCapabilities: true },
+    select: { whisperBaseUrl: true, ollamaModelCapabilities: true, ollamaNumCtx: true },
   });
 
   // ?capabilities=<model> — returns capability list for a specific model
@@ -53,6 +53,7 @@ export async function GET(req: NextRequest) {
       embedModel: config.embedModel,
       systemPrompt: config.systemPrompt,
       whisperBaseUrl: settings?.whisperBaseUrl ?? "",
+      numCtx: settings?.ollamaNumCtx ?? null,
       capabilities: settings?.ollamaModelCapabilities ?? [],
     },
   });
@@ -66,6 +67,7 @@ export async function PATCH(req: NextRequest) {
     baseUrl?: string | null;
     model?: string | null;
     embedModel?: string | null;
+    numCtx?: number | null;
     systemPrompt?: string | null;
     whisperBaseUrl?: string | null;
   };
@@ -86,6 +88,7 @@ export async function PATCH(req: NextRequest) {
       ollamaModel: body.model || null,
       ollamaModelCapabilities: capabilities ?? [],
       ollamaEmbedModel: body.embedModel || null,
+      ollamaNumCtx: body.numCtx ?? null,
       chatSystemPrompt: body.systemPrompt || null,
       whisperBaseUrl: body.whisperBaseUrl || null,
     },
@@ -99,6 +102,9 @@ export async function PATCH(req: NextRequest) {
         : {}),
       ...(body.embedModel !== undefined
         ? { ollamaEmbedModel: body.embedModel || null }
+        : {}),
+      ...(body.numCtx !== undefined
+        ? { ollamaNumCtx: body.numCtx ?? null }
         : {}),
       ...(body.systemPrompt !== undefined
         ? { chatSystemPrompt: body.systemPrompt || null }

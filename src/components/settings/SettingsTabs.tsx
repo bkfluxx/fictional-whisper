@@ -16,6 +16,7 @@ import CategoriesSettings from "./CategoriesSettings";
 import PersonasSettings from "./PersonasSettings";
 import MoodSettings from "./MoodSettings";
 import ErrorLogSection from "./ErrorLogSection";
+import ContextWindowSettings from "./ContextWindowSettings";
 
 type Tab = "appearance" | "security" | "import-export" | "ai" | "personas" | "templates" | "categories" | "moods" | "advanced";
 
@@ -77,6 +78,7 @@ export default function SettingsTabs() {
         </div>
 
       {/* Tab panels */}
+      <div key={active} className="animate-in fade-in slide-in-from-right-4 duration-250">
       {active === "appearance" && (
         <section className="space-y-10">
           {/* Light / dark / system */}
@@ -233,15 +235,27 @@ export default function SettingsTabs() {
       )}
 
       {active === "advanced" && (
-        <section>
-          <div className="mb-5">
-            <h2 className="text-base font-medium text-foreground">Error log</h2>
+        <section className="space-y-10">
+          <div>
+            <div className="mb-5">
+              <h2 className="text-base font-medium text-foreground">Context window</h2>
+              <p className="text-sm text-foreground/40 mt-0.5">
+                Number of tokens Ollama allocates per request. Covers the system prompt, retrieved journal context, conversation history, and the current message. Increase if the model loses context in long conversations; decrease to reduce memory usage.
+              </p>
+            </div>
+            <ContextWindowSettings />
+          </div>
+
+          <div className="border-t border-border pt-8">
+            <div className="mb-5">
+              <h2 className="text-base font-medium text-foreground">Error log</h2>
             <p className="text-sm text-foreground/40 mt-0.5">
               Application errors logged since the last container start. Download
               as a text file to share with support or inspect yourself.
             </p>
           </div>
           <ErrorLogSection />
+          </div>
         </section>
       )}
 
@@ -268,6 +282,7 @@ export default function SettingsTabs() {
           <MoodSettings />
         </section>
       )}
+      </div>{/* end key={active} */}
       </div>
     </div>
   );

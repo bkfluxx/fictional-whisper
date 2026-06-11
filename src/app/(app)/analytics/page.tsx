@@ -205,7 +205,7 @@ export default async function AnalyticsPage() {
   }));
 
   return (
-    <div className="max-w-[900px] mx-auto px-6 py-8 animate-in fade-in duration-300">
+    <div className="max-w-[900px] mx-auto px-6 py-8 animate-in fade-in slide-in-from-right-4 duration-300">
       <h1 className="text-xl font-semibold text-foreground mb-8">Analytics</h1>
       <AnalyticsTabs
         totalEntries={totalEntries}

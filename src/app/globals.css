@@ -287,6 +287,17 @@ a:active {
   transform: scale(0.97);
 }
 
+@keyframes cal-slide-from-right {
+  from { transform: translateX(24px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes cal-slide-from-left {
+  from { transform: translateX(-24px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+.cal-slide-next { animation: cal-slide-from-right 0.22s ease-out both; }
+.cal-slide-prev { animation: cal-slide-from-left  0.22s ease-out both; }
+
 /* Respect OS reduced-motion preference — disable all transitions and animations */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

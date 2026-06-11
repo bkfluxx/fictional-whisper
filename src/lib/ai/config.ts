@@ -11,6 +11,7 @@ import {
   DEFAULT_BASE_URL,
   DEFAULT_MODEL,
   DEFAULT_EMBED_MODEL,
+  CHAT_NUM_CTX,
 } from "@/lib/ollama";
 import { DEFAULT_SYSTEM_PROMPT } from "@/lib/ai/prompts";
 import { BUILT_IN_PERSONAS } from "@/lib/personas";
@@ -20,6 +21,7 @@ export interface OllamaConfig {
   baseUrl: string;
   model: string;
   embedModel: string;
+  numCtx: number;
   systemPrompt: string;
 }
 
@@ -30,6 +32,7 @@ export async function getOllamaConfig(): Promise<OllamaConfig> {
       ollamaBaseUrl: true,
       ollamaModel: true,
       ollamaEmbedModel: true,
+      ollamaNumCtx: true,
       chatSystemPrompt: true,
       personasEnabled: true,
       activePersonaId: true,
@@ -54,6 +57,7 @@ export async function getOllamaConfig(): Promise<OllamaConfig> {
     baseUrl: settings?.ollamaBaseUrl || DEFAULT_BASE_URL(),
     model: settings?.ollamaModel || DEFAULT_MODEL(),
     embedModel: settings?.ollamaEmbedModel || DEFAULT_EMBED_MODEL(),
+    numCtx: settings?.ollamaNumCtx ?? CHAT_NUM_CTX,
     systemPrompt,
   };
 }

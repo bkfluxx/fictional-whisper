@@ -190,18 +190,25 @@ function supportsThinking(model: string): boolean {
  * for much faster responses at the cost of less reasoning depth.
  * Non-thinking models (gemma, llama, etc.) ignore the `think` param entirely.
  */
+// Explicit context window — large enough for system prompt + RAG context (5 entries
+// × ~600 tokens) + conversation history + current message, without inflating memory
+// beyond what's needed.
+export const CHAT_NUM_CTX = 8192;
+
 export async function* chatStream(
   messages: ChatMessage[],
   model?: string,
   baseUrl?: string,
   signal?: AbortSignal,
   think = false,
+  numCtx: number = CHAT_NUM_CTX,
 ): AsyncGenerator<string> {
   const resolvedModel = model ?? DEFAULT_MODEL();
   const body: Record<string, unknown> = {
     model: resolvedModel,
     messages,
     stream: true,
+    options: { num_ctx: numCtx },
   };
   // Only pass `think` for models that support it — others return 400
   if (supportsThinking(resolvedModel)) {

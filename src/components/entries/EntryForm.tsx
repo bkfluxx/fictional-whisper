@@ -239,7 +239,7 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
   return (
     <div className="flex h-full">
       {/* Main editor column */}
-      <div className="flex flex-col flex-1 min-w-0 px-6 py-4 gap-4">
+      <div className="flex flex-col flex-1 min-w-0 px-6 pt-6 pb-4 gap-4 md:pt-4">
         {/* Header row — stacks on mobile so title gets full width */}
         <div className="flex flex-col gap-1 md:flex-row md:items-start md:gap-4">
           <textarea

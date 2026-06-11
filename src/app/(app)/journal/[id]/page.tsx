@@ -91,7 +91,7 @@ export default async function EntryViewPage({
     .filter(Boolean).length;
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-8">
+    <div className="max-w-2xl mx-auto px-6 py-8 animate-in fade-in slide-in-from-right-4 duration-250">
       {/* Nav */}
       <div className="flex items-center justify-between mb-10">
         <Link

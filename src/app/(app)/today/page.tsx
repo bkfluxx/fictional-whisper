@@ -6,7 +6,6 @@ import { getDEK } from "@/lib/session/dek-store";
 import { prisma } from "@/lib/prisma";
 import { decryptString } from "@/lib/crypto";
 import Greeting from "@/components/today/Greeting";
-import MiniCalendar from "@/components/today/MiniCalendar";
 import MoodCheckIn from "@/components/today/MoodCheckIn";
 import { MoodPill } from "@/components/ui/MoodIcon";
 
@@ -74,7 +73,9 @@ function computeStreak(dates: Date[]): number {
 }
 
 function localTimeStr(d: Date): string {
-  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  const h = d.getHours();
+  const m = String(d.getMinutes()).padStart(2, "0");
+  return `${h % 12 || 12}:${m} ${h >= 12 ? "PM" : "AM"}`;
 }
 
 function textPreview(html: string, maxLen = 120): string {
@@ -116,7 +117,6 @@ export default async function TodayPage() {
   ]);
 
   const streak = computeStreak(allDates.map((e) => e.entryDate));
-  const allEntryDates = allDates.map((e) => localDateStr(e.entryDate));
 
   const todayDecrypted = todayEntries.map((e) => ({
     id: e.id,
@@ -138,11 +138,11 @@ export default async function TodayPage() {
   const prompt = getDailyPrompt();
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-8 space-y-8 animate-in fade-in duration-300">
+    <div className="max-w-2xl mx-auto px-6 pt-10 pb-8 space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
       {/* Greeting header */}
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-foreground/40 mb-1">
+          <p className="text-sm font-semibold uppercase tracking-wider text-foreground/65 mb-1">
             {todayLabel}
           </p>
           <Greeting />
@@ -181,9 +181,6 @@ export default async function TodayPage() {
       {/* Mood check-in */}
       <MoodCheckIn todayStr={todayStr} lastMood={lastMood} />
 
-      {/* Mini calendar */}
-      <MiniCalendar entryDates={allEntryDates} todayStr={todayStr} />
-
       {/* Today's entries */}
       {todayDecrypted.length > 0 && (
         <div>
@@ -200,7 +197,7 @@ export default async function TodayPage() {
                     className="flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 hover:bg-foreground/[0.02] transition-colors"
                   >
                     {entry.mood && <MoodPill value={entry.mood} />}
-                    <span className="text-xs text-foreground/30 ml-auto">Mood snapshot</span>
+                    <span className="text-xs text-foreground/30 ml-auto">{entry.time}</span>
                   </Link>
                 );
               }

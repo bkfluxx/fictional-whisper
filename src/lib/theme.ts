@@ -1,7 +1,7 @@
 /**
  * Aura color palette system.
  *
- * Presets (olive, ocean, rose, amber, teal, violet) are defined by four
+ * Presets (olive, ocean, rose, teal, violet) are defined by four
  * parameters each. A shared buildVars() function turns those into full
  * Shadcn CSS variable sets for both light and dark mode.
  *
@@ -19,7 +19,6 @@ export type PaletteId =
   | "olive"
   | "ocean"
   | "rose"
-  | "amber"
   | "teal"
   | "violet"
   | "custom";
@@ -59,7 +58,7 @@ function buildVars(
 ): { light: CssVars; dark: CssVars } {
   const bc = baseC;
   const darkPL = f(Math.min(themeL + 0.06, 0.75));
-  // Light foreground on primary unless primary is very light (amber/yellow)
+  // Light foreground on primary unless primary is very light (e.g. yellow)
   const pfg = themeL > 0.65 ? "oklch(0.10 0 0)" : "oklch(0.98 0 0)";
 
   // Chart hue ring
@@ -165,7 +164,6 @@ const PRESET_DEFS: Record<Exclude<PaletteId, "custom">, PresetDef> = {
   olive:  { baseH: 120, baseC: 0.04,  themeL: 0.50, themeC: 0.14, themeH: 142, chartH: 152 },
   ocean:  { baseH: 260, baseC: 0.02,  themeL: 0.54, themeC: 0.22, themeH: 264, chartH: 220 },
   rose:   { baseH: 10,  baseC: 0.04,  themeL: 0.60, themeC: 0.22, themeH: 350, chartH: 27  },
-  amber:  { baseH: 85,  baseC: 0.05,  themeL: 0.68, themeC: 0.18, themeH: 60,  chartH: 95  },
   teal:   { baseH: 185, baseC: 0.04,  themeL: 0.62, themeC: 0.16, themeH: 200, chartH: 155 },
   violet: { baseH: 295, baseC: 0.03,  themeL: 0.54, themeC: 0.24, themeH: 303, chartH: 285 },
 };
@@ -201,12 +199,6 @@ export const PALETTE_PRESETS: PalettePreset[] = [
     label: "Rose",
     description: "Rose · Pink · Red",
     swatches: ["oklch(0.97 0.016 10)", "oklch(0.60 0.22 350)", "oklch(0.62 0.187 27)"],
-  },
-  {
-    id: "amber",
-    label: "Amber",
-    description: "Amber · Orange · Yellow",
-    swatches: ["oklch(0.97 0.020 85)", "oklch(0.68 0.18 60)", "oklch(0.62 0.153 95)"],
   },
   {
     id: "teal",

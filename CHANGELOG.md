@@ -4,6 +4,30 @@ All notable changes to Aura will be documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.8.0] - 2026-06-10
+
+### Added
+
+- Calendar swipe gestures — swipe left/right on the mini-calendar to navigate months
+- Calendar month transition — slide animation when switching months (slides in the direction of navigation)
+- Page transition animations — consistent `slide-in-from-right` fade on all pages and settings tabs
+- PWA standalone mode — `public/manifest.json` with `scope: "/"` and Apple meta tags prevent subsequent navigations from breaking out of home-screen standalone mode
+- Context window setting — Advanced settings panel with a stepped slider (4k / 8k / 16k / 32k) to configure Ollama's `num_ctx`; persisted to `AppSettings` and applied to every chat request
+
+### Changed
+
+- MiniCalendar moved from Today page to Journal page where it acts as a date filter; Today page no longer shows the calendar
+- Mood entries now display the logged time (e.g. "8:34 AM") in place of the "Mood snapshot" label, on both the Today and Journal pages
+- Today page date label enlarged and given more visual weight (`text-sm`, `font-semibold`, increased opacity)
+- Color palettes reduced from 7 to 6 — Amber and Sunset removed; remaining 6 presets (Warm, Olive, Ocean, Rose, Teal, Violet) are evenly spaced across the hue wheel with at least 39° between any pair
+
+### Fixed
+
+- iOS scroll chaining — inner scroll containers (journal entry list, entry pane, goals page) now use `overscroll-y-contain` to prevent momentum from bubbling to the outer `<main>` and sliding the header out of view
+- Chat conversation memory — Ollama was defaulting to a 2048-token context window; the RAG journal context alone can exceed this, causing the model to silently drop conversation history and restart with a greeting on every message; context window is now explicitly set to 8192 tokens per request
+- Chat history fetch order — history was loaded oldest-first with a fixed `take` limit, so long conversations sent the oldest messages instead of the most recent ones; now fetches most-recent-first and reverses before passing to the model
+- Journal sort order — added `createdAt DESC` as a secondary sort key so same-day mood entries appear newest-first, consistent with the Today page
+
 ## [0.7.8] - 2026-06-02
 
 ### Fixed
