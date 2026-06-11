@@ -12,6 +12,7 @@ import CategoryIcon from "@/components/icons/CategoryIcon";
 import { MoodPill, MoodFaceIcon } from "@/components/ui/MoodIcon";
 import { getMoodLabel, getMoodGroup } from "@/lib/moods";
 import DeleteEntryButton from "@/components/entries/DeleteEntryButton";
+import { Badge } from "@/components/ui/badge";
 
 export default async function EntryViewPage({
   params,
@@ -126,12 +127,12 @@ export default async function EntryViewPage({
         </span>
         {entry.mood && <MoodPill value={entry.mood} />}
         {entry.isPrivate && (
-          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 bg-foreground/8 text-foreground/50 rounded-full">
+          <Badge variant="meta">
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
             </svg>
             Private
-          </span>
+          </Badge>
         )}
       </div>
 
@@ -143,16 +144,14 @@ export default async function EntryViewPage({
             const uc = userCatMap.get(c);
             const label = jt ? jt.name : uc ? uc.name : c;
             return (
-              <span key={c} className="inline-flex items-center gap-1 text-xs pl-2 pr-3 py-1 bg-primary/10 text-primary rounded-full font-medium">
+              <Badge key={c} variant="category">
                 <CategoryIcon id={c} className="w-3 h-3 shrink-0" />
                 {label}
-              </span>
+              </Badge>
             );
           })}
           {entry.tags.map((t) => (
-            <span key={t.id} className="text-xs px-3 py-1 bg-tertiary/10 text-tertiary/80 rounded-full">
-              #{t.name}
-            </span>
+            <Badge key={t.id} variant="tag">#{t.name}</Badge>
           ))}
         </div>
       )}

@@ -2,10 +2,19 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogPortal,
+  DialogPopup,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "@/components/ui/dialog";
 
 export default function DeleteEntryButton({ entryId }: { entryId: string }) {
   const router = useRouter();
-  const [confirming, setConfirming] = useState(false);
+  const [open, setOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   async function handleDelete() {
@@ -16,19 +25,20 @@ export default function DeleteEntryButton({ entryId }: { entryId: string }) {
   }
 
   return (
-    <>
+    <Dialog open={open} onOpenChange={setOpen}>
       <button
-        onClick={() => setConfirming(true)}
+        onClick={() => setOpen(true)}
         className="text-sm text-foreground/30 hover:text-red-400 transition-colors min-h-[44px] flex items-center"
       >
         Delete
       </button>
 
-      {confirming && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-6 animate-in fade-in duration-150">
-          <div role="dialog" aria-modal="true" className="bg-card border border-foreground/15 rounded-2xl p-6 w-full max-w-xs shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-            <p className="text-sm font-medium text-foreground mb-1">Delete this entry?</p>
-            <p className="text-xs text-foreground/50 mb-5">This action cannot be undone.</p>
+      <DialogPortal>
+        <DialogBackdrop />
+        <DialogPopup>
+          <div className="bg-card border border-foreground/15 rounded-2xl p-6 shadow-2xl">
+            <DialogTitle className="mb-1">Delete this entry?</DialogTitle>
+            <DialogDescription className="mb-5">This action cannot be undone.</DialogDescription>
             <div className="flex gap-2">
               <button
                 onClick={handleDelete}
@@ -37,16 +47,13 @@ export default function DeleteEntryButton({ entryId }: { entryId: string }) {
               >
                 {deleting ? "Deleting…" : "Delete"}
               </button>
-              <button
-                onClick={() => setConfirming(false)}
-                className="flex-1 text-sm py-2 bg-foreground/8 hover:bg-foreground/15 text-foreground rounded-xl transition-colors"
-              >
+              <DialogClose className="flex-1 text-sm py-2 bg-foreground/8 hover:bg-foreground/15 text-foreground rounded-xl transition-colors">
                 Cancel
-              </button>
+              </DialogClose>
             </div>
           </div>
-        </div>
-      )}
-    </>
+        </DialogPopup>
+      </DialogPortal>
+    </Dialog>
   );
 }

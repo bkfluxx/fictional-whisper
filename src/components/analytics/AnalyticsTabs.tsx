@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { BarChart2 } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import StatCard from "@/components/analytics/StatCard";
 import HorizontalBar from "@/components/analytics/HorizontalBar";
 import MonthlyBars from "@/components/analytics/MonthlyBars";
@@ -11,6 +11,7 @@ import InsightsSection from "@/components/analytics/InsightsSection";
 import MoodTimeline from "@/components/analytics/MoodTimeline";
 import MoodTrendChart from "@/components/analytics/MoodTrendChart";
 import EmptyState from "@/components/ui/EmptyState";
+import { Card, CardContent } from "@/components/ui/card";
 import { MoodFaceIcon } from "@/components/ui/MoodIcon";
 import { getMoodColor, getMoodLabel, getMoodBgClass, getMoodTextClass } from "@/lib/moods";
 
@@ -68,13 +69,11 @@ const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 // ─── Tab definition ───────────────────────────────────────────────────────────
 
-type Tab = "stats" | "digest" | "insights";
-
-const TABS: { id: Tab; label: string }[] = [
+const TABS = [
   { id: "stats", label: "Stats" },
   { id: "digest", label: "Weekly Digest" },
   { id: "insights", label: "Insights" },
-];
+] as const;
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -94,8 +93,6 @@ export default function AnalyticsTabs({
   digests,
   latestInsight,
 }: AnalyticsTabsProps) {
-  const [active, setActive] = useState<Tab>("stats");
-
   const dowMax = Math.max(...dowCounts, 1);
   const latestDigest = digests[0] ?? null;
 
@@ -115,26 +112,25 @@ export default function AnalyticsTabs({
   }
 
   return (
-    <div>
+    <Tabs defaultValue="stats">
       {/* Tab bar */}
-      <div className="flex border-b border-border mb-8">
+      <TabsList
+        variant="line"
+        className="w-full justify-start h-auto gap-0 rounded-none bg-transparent p-0 border-b border-border mb-8"
+      >
         {TABS.map((tab) => (
-          <button
+          <TabsTrigger
             key={tab.id}
-            onClick={() => setActive(tab.id)}
-            className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
-              active === tab.id
-                ? "border-primary text-foreground"
-                : "border-transparent text-foreground/40 hover:text-foreground/80"
-            }`}
+            value={tab.id}
+            className="px-4 py-2.5 rounded-none h-auto flex-none text-foreground/40 hover:text-foreground/80 data-active:text-foreground [&[data-active]]:after:bg-primary after:bottom-0"
           >
             {tab.label}
-          </button>
+          </TabsTrigger>
         ))}
-      </div>
+      </TabsList>
 
       {/* Stats tab */}
-      {active === "stats" && (
+      <TabsContent value="stats">
         <>
           {totalEntries === 0 ? (
             <EmptyState
@@ -181,11 +177,13 @@ export default function AnalyticsTabs({
                     unit: "days written",
                   },
                 ].map(({ icon, value, unit }) => (
-                  <div key={unit} className="bg-card border border-border rounded-xl p-4 text-center">
-                    <div className="flex justify-center mb-2">{icon}</div>
-                    <div className="text-2xl font-normal text-foreground">{value}</div>
-                    <div className="text-[10px] text-foreground/40 uppercase tracking-wider mt-0.5">{unit}</div>
-                  </div>
+                  <Card key={unit}>
+                    <CardContent className="text-center">
+                      <div className="flex justify-center mb-2">{icon}</div>
+                      <div className="text-2xl font-normal text-foreground">{value}</div>
+                      <div className="text-[10px] text-foreground/40 uppercase tracking-wider mt-0.5">{unit}</div>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
 
@@ -289,18 +287,24 @@ export default function AnalyticsTabs({
                     Goal progress
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                    <div className="bg-card border border-border rounded-xl p-4 text-center">
-                      <p className="text-2xl font-semibold text-foreground">{activeGoals.length}</p>
-                      <p className="text-xs text-foreground/40 mt-0.5">Active</p>
-                    </div>
-                    <div className="bg-card border border-border rounded-xl p-4 text-center">
-                      <p className="text-2xl font-semibold text-primary">{completedGoals.length}</p>
-                      <p className="text-xs text-foreground/40 mt-0.5">Completed</p>
-                    </div>
-                    <div className="bg-card border border-border rounded-xl p-4 text-center">
-                      <p className="text-2xl font-semibold text-foreground">{completionRate}%</p>
-                      <p className="text-xs text-foreground/40 mt-0.5">Completion rate</p>
-                    </div>
+                    <Card>
+                      <CardContent className="text-center">
+                        <p className="text-2xl font-semibold text-foreground">{activeGoals.length}</p>
+                        <p className="text-xs text-foreground/40 mt-0.5">Active</p>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="text-center">
+                        <p className="text-2xl font-semibold text-primary">{completedGoals.length}</p>
+                        <p className="text-xs text-foreground/40 mt-0.5">Completed</p>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardContent className="text-center">
+                        <p className="text-2xl font-semibold text-foreground">{completionRate}%</p>
+                        <p className="text-xs text-foreground/40 mt-0.5">Completion rate</p>
+                      </CardContent>
+                    </Card>
                   </div>
 
                   {/* Completion progress bar */}
@@ -374,17 +378,17 @@ export default function AnalyticsTabs({
             </>
           )}
         </>
-      )}
+      </TabsContent>
 
       {/* Weekly Digest tab */}
-      {active === "digest" && (
+      <TabsContent value="digest">
         <DigestSection initial={latestDigest} all={digests} />
-      )}
+      </TabsContent>
 
       {/* Insights tab */}
-      {active === "insights" && (
+      <TabsContent value="insights">
         <InsightsSection initial={latestInsight} />
-      )}
-    </div>
+      </TabsContent>
+    </Tabs>
   );
 }

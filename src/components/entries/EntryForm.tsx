@@ -10,6 +10,15 @@ import AiPanel from "./AiPanel";
 import MoodPicker from "./MoodPicker";
 import VoiceNotesList from "./VoiceNotesList";
 import VoiceMicButton from "@/components/editor/VoiceMicButton";
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogPortal,
+  DialogPopup,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "@/components/ui/dialog";
 
 interface UserCategory {
   id: string;
@@ -505,35 +514,34 @@ export default function EntryForm({ initial, initialBody, initialCategories }: E
       </div>
 
       {/* Delete confirmation modal */}
-      {deleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-6 animate-in fade-in duration-150">
-          <div role="dialog" aria-modal="true" aria-labelledby="delete-dialog-title" className="bg-card border border-foreground/15 rounded-2xl p-6 w-full max-w-xs shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-
-            <p id="delete-dialog-title" className="text-sm font-medium text-foreground mb-1">Delete this entry?</p>
-            <p className="text-xs text-foreground/50 mb-5">This action cannot be undone.</p>
-            <div className="flex gap-2">
-              <button
-                onClick={async () => {
-                  setDeleting(true);
-                  await fetch(`/api/entries/${entryId}`, { method: "DELETE" });
-                  toast.success("Entry deleted");
-                  _router.push("/journal");
-                }}
-                disabled={deleting}
-                className="flex-1 text-sm py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl transition-colors disabled:opacity-50"
-              >
-                {deleting ? "Deleting…" : "Delete"}
-              </button>
-              <button
-                onClick={() => setDeleteConfirm(false)}
-                className="flex-1 text-sm py-2 bg-foreground/8 hover:bg-foreground/15 text-foreground rounded-xl transition-colors"
-              >
-                Cancel
-              </button>
+      <Dialog open={deleteConfirm} onOpenChange={setDeleteConfirm}>
+        <DialogPortal>
+          <DialogBackdrop />
+          <DialogPopup>
+            <div className="bg-card border border-foreground/15 rounded-2xl p-6 shadow-2xl">
+              <DialogTitle className="mb-1">Delete this entry?</DialogTitle>
+              <DialogDescription className="mb-5">This action cannot be undone.</DialogDescription>
+              <div className="flex gap-2">
+                <button
+                  onClick={async () => {
+                    setDeleting(true);
+                    await fetch(`/api/entries/${entryId}`, { method: "DELETE" });
+                    toast.success("Entry deleted");
+                    _router.push("/journal");
+                  }}
+                  disabled={deleting}
+                  className="flex-1 text-sm py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl transition-colors disabled:opacity-50"
+                >
+                  {deleting ? "Deleting…" : "Delete"}
+                </button>
+                <DialogClose className="flex-1 text-sm py-2 bg-foreground/8 hover:bg-foreground/15 text-foreground rounded-xl transition-colors">
+                  Cancel
+                </DialogClose>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </DialogPopup>
+        </DialogPortal>
+      </Dialog>
 
       {/* AI sidebar — side panel on desktop, overlay on mobile */}
       {aiOpen && (

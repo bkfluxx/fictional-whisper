@@ -9,6 +9,16 @@ import type { DecryptedEntry } from "@/types/entry";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MoodPill, MoodFaceIcon } from "@/components/ui/MoodIcon";
 import { getMoodLabel, getMoodGroup } from "@/lib/moods";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogPortal,
+  DialogPopup,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "@/components/ui/dialog";
 
 interface UserCat { id: string; name: string; emoji: string; }
 
@@ -139,15 +149,11 @@ export default function EntryPane({ entryId, onClose }: Props) {
                   const uc = userCatMap.get(c);
                   const label = jt ? jt.name : uc ? uc.name : c;
                   return (
-                    <span key={c} className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full">
-                      {label}
-                    </span>
+                    <Badge key={c} variant="category">{label}</Badge>
                   );
                 })}
                 {entry.tags.map((t) => (
-                  <span key={t.id} className="text-xs px-2 py-0.5 bg-foreground/10 text-foreground/60 rounded-full">
-                    #{t.name}
-                  </span>
+                  <Badge key={t.id} variant="tag">#{t.name}</Badge>
                 ))}
               </div>
             )}
@@ -193,29 +199,29 @@ export default function EntryPane({ entryId, onClose }: Props) {
       </div>
 
       {/* Delete confirmation modal */}
-      {confirmDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-6 animate-in fade-in duration-150">
-          <div role="dialog" aria-modal="true" className="bg-card border border-foreground/15 rounded-2xl p-6 w-full max-w-xs shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-            <p className="text-sm font-medium text-foreground mb-1">Delete this entry?</p>
-            <p className="text-xs text-foreground/50 mb-5">This action cannot be undone.</p>
-            <div className="flex gap-2">
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="flex-1 text-sm py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl transition-colors disabled:opacity-50"
-              >
-                {deleting ? "Deleting…" : "Delete"}
-              </button>
-              <button
-                onClick={() => setConfirmDelete(false)}
-                className="flex-1 text-sm py-2 bg-foreground/8 hover:bg-foreground/15 text-foreground rounded-xl transition-colors"
-              >
-                Cancel
-              </button>
+      <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+        <DialogPortal>
+          <DialogBackdrop />
+          <DialogPopup>
+            <div className="bg-card border border-foreground/15 rounded-2xl p-6 shadow-2xl">
+              <DialogTitle className="mb-1">Delete this entry?</DialogTitle>
+              <DialogDescription className="mb-5">This action cannot be undone.</DialogDescription>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className="flex-1 text-sm py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl transition-colors disabled:opacity-50"
+                >
+                  {deleting ? "Deleting…" : "Delete"}
+                </button>
+                <DialogClose className="flex-1 text-sm py-2 bg-foreground/8 hover:bg-foreground/15 text-foreground rounded-xl transition-colors">
+                  Cancel
+                </DialogClose>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </DialogPopup>
+        </DialogPortal>
+      </Dialog>
     </div>
   );
 }

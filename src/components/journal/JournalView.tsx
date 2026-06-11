@@ -6,6 +6,7 @@ import EntryPane from "./EntryPane";
 import CategoryIcon from "@/components/icons/CategoryIcon";
 import { MoodFaceIcon } from "@/components/ui/MoodIcon";
 import { getMoodLabel, getMoodBgClass, getMoodTextClass } from "@/lib/moods";
+import { Badge } from "@/components/ui/badge";
 
 export interface CategoryLabel {
   id: string;
@@ -190,29 +191,23 @@ export default function JournalView({ days }: { days: DayGroup[] }) {
                               </span>
                             )}
                             {e.categoryLabels.map((c) => (
-                              <span
+                              <Badge
                                 key={c.id}
-                                className={`inline-flex items-center gap-1 text-xs pl-1.5 pr-2 py-0.5 rounded-full ${
-                                  isFirst
-                                    ? "bg-surface-dark-foreground/15 text-surface-dark-foreground/75"
-                                    : "bg-primary/15 text-primary"
-                                }`}
+                                variant="category"
+                                className={isFirst ? "bg-surface-dark-foreground/15 border-transparent text-surface-dark-foreground/75" : undefined}
                               >
                                 <CategoryIcon id={c.id} className="w-3 h-3 shrink-0" />
                                 {c.name}
-                              </span>
+                              </Badge>
                             ))}
                             {e.tags.map((t) => (
-                              <span
+                              <Badge
                                 key={t.id}
-                                className={`text-xs px-2 py-0.5 rounded-full ${
-                                  isFirst
-                                    ? "bg-surface-dark-foreground/15 text-surface-dark-foreground/75"
-                                    : "bg-tertiary/10 text-tertiary/80"
-                                }`}
+                                variant="tag"
+                                className={isFirst ? "bg-surface-dark-foreground/15 border-transparent text-surface-dark-foreground/75" : undefined}
                               >
                                 #{t.name}
-                              </span>
+                              </Badge>
                             ))}
                           </div>
                         )}
