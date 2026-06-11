@@ -10,7 +10,6 @@ import DigestSection from "@/components/analytics/DigestSection";
 import InsightsSection from "@/components/analytics/InsightsSection";
 import MoodCalendarView from "@/components/analytics/MoodCalendarView";
 import MoodCloud from "@/components/analytics/MoodCloud";
-import MoodTrendChart from "@/components/analytics/MoodTrendChart";
 import EmptyState from "@/components/ui/EmptyState";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -225,15 +224,9 @@ export default function AnalyticsTabs({
               {moodTimeline.length > 0 && (
                 <section className="mb-10">
                   <h2 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-4">
-                    Mood trend — last 30 days
+                    All logged moods
                   </h2>
-                  <MoodTrendChart data={moodTimeline} days={30} />
-                  <div className="mt-6">
-                    <h3 className="text-xs font-semibold text-foreground/40 uppercase tracking-widest mb-3">
-                      All logged moods
-                    </h3>
-                    <MoodCalendarView data={moodTimeline} />
-                  </div>
+                  <MoodCalendarView data={moodTimeline} />
                 </section>
               )}
 
