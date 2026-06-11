@@ -62,15 +62,10 @@ export default function MoodCloud({ data }: { data: [string, number][] }) {
         const items = byGroup.get(group.id);
         if (!items?.length) return null;
         return (
-          <div key={group.id} className="flex items-start gap-3">
-            {/* Group color dot */}
-            <span className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${group.barClass}`} />
-            {/* Pills */}
-            <div className="flex flex-wrap gap-1.5">
+          <div key={group.id} className="flex flex-wrap gap-1.5">
               {items.map(({ mood, count }) => (
                 <Pill key={mood} mood={mood} count={count} max={max} />
               ))}
-            </div>
           </div>
         );
       })}
