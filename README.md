@@ -2,22 +2,29 @@
 
 A self-hosted, privacy-first personal journal. All data stays on your machine — AI runs locally via Ollama, everything is encrypted at rest with AES-256-GCM, and there is no cloud dependency of any kind.
 
+> **⚠ Active Development**
+> This project is under active development. Releases may include breaking changes to the database schema, environment variables, or Docker Compose configuration. Always read the [CHANGELOG](./CHANGELOG.md) before upgrading, and back up your data first.
+
+---
+
 ## Features
 
 - **Journal** — Rich-text entries with mood tracking, categories, tags, and templates
+- **Mood check-in** — Quick two-tap mood snapshot from the Today page; logs a mood-only entry without opening the editor
 - **Voice notes** — Record audio attachments; transcribe with local faster-whisper
 - **Guided sessions** — Conversational journaling guided by Aura, synthesised into an entry
 - **AI chat** — RAG-powered chat grounded in your own entries (Ollama, fully local)
 - **AI personas** — Shape the tone of chat and analysis with built-in or custom personas
 - **Weekly digest** — AI-generated weekly reflection, auto-scheduled via cron
 - **Insights** — Longitudinal pattern analysis across a custom date range
-- **Analytics** — Streak tracking, activity heatmap, mood and category breakdowns
+- **Analytics** — Streak tracking, activity heatmap, mood trend chart, and category breakdowns
 - **Full-text search** — HMAC-tokenised keyword search (no plaintext indexed)
 - **Encrypted backups** — Scheduled exports with a separate backup key
-- **Goal tracking** — Create goals with target dates and status (active / completed / abandoned); digest includes active goals in its weekly summary
+- **Goal tracking** — Create goals with target dates and status (active / completed / abandoned); active goals are included in the weekly digest
 - **Recovery codes** — Emergency recovery code in Settings → Security allows master password reset without data loss
-- **Mobile navigation** — Persistent bottom tab bar on small screens
+- **Mobile navigation** — Persistent bottom tab bar on small screens with swipe-to-navigate calendar
 - **Appearance** — 12 switchable color palettes, adjustable font size, and content density (Comfortable / Balanced / Compact)
+- **Advanced AI settings** — Configure Ollama model, embedding model, persona, and context window size (`num_ctx`) per-instance
 
 ## Stack
 
@@ -26,7 +33,7 @@ A self-hosted, privacy-first personal journal. All data stays on your machine �
 | Framework | Next.js 16 (App Router) · TypeScript |
 | Database | PostgreSQL 16 + pgvector |
 | ORM | Prisma |
-| Styling | Tailwind CSS v4 · Shadcn/ui · next-themes |
+| Styling | Tailwind CSS v4 · Shadcn/ui (base-nova) · next-themes |
 | Auth | NextAuth (credentials + optional TOTP) |
 | AI | Ollama (local LLM + embeddings) |
 | Transcription | faster-whisper-server (optional) |
@@ -88,7 +95,9 @@ Recommended models:
 | Purpose | Model |
 | --- | --- |
 | LLM | `qwen3:5b` or `llama3.2:3b` |
-| Embeddings | `nomic-embed-text` or `qwen3-embedding` |
+| Embeddings | `nomic-embed-text` |
+
+> **Note:** The embedding model is set once at instance creation. Changing it after entries exist requires a schema migration and full re-embedding of all entries — do not change `nomic-embed-text` unless you intend to rebuild the vector store.
 
 If Ollama runs on the Docker host, use `http://host.docker.internal:11434` as the base URL.
 
@@ -197,7 +206,7 @@ Database migrations run automatically on startup.
 To pin a specific version:
 
 ```yaml
-image: ghcr.io/bkfluxx/fictional-whisper:0.7.0
+image: ghcr.io/bkfluxx/fictional-whisper:0.8.0
 ```
 
 Available tags are listed on the [releases page](https://github.com/bkfluxx/fictional-whisper/releases).
